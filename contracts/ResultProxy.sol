@@ -2,13 +2,16 @@
 pragma solidity ^0.8.0;
 
 import "./interface/IDelegator.sol";
+import "./interface/IResultHandler.sol";
 
 contract ResultProxy {
     IDelegator public delegator;
+    IResultHandler public resultHandler;
     address public owner;
 
-    constructor(address _delegatorAddress) {
+    constructor(address _delegatorAddress, address _resultHandlerAddress) {
         delegator = IDelegator(_delegatorAddress);
+        resultHandler = IResultHandler(_resultHandlerAddress);
         owner = msg.sender;
     }
 
@@ -17,14 +20,15 @@ contract ResultProxy {
         _;
     }
 
-    function updateDelegatorAddress(address _newDelegatorAddress)
-        public
-        onlyOwner
-    {
+    function updateAddress(
+        address _newDelegatorAddress,
+        address _newResultHandlerAddress
+    ) public onlyOwner {
         delegator = IDelegator(_newDelegatorAddress);
+        resultHandler = IResultHandler(_newResultHandlerAddress);
     }
 
-    function publishResult() public view returns (bytes memory) {
+    function publishResult() public returns (bytes memory data) {
         uint16[] memory activeCollections = delegator.getActiveCollections();
 
         uint16[] memory ids = new uint16[](activeCollections.length);
@@ -40,6 +44,7 @@ contract ResultProxy {
         }
 
         // send encoded data to MessageProxy
-        return abi.encode(ids, results, power);
+        data = abi.encode(ids, results, power);
+        resultHandler.postMessage(data);
     }
 }

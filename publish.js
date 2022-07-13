@@ -1,6 +1,6 @@
 const ethers = require("ethers");
 
-const PROXY_ADDRESS = "0x59a667a6430CBcED19023a97c0A6faC758259Bfc";
+const PROXY_ADDRESS = "0x3495e761eBeb87991C6CD1137108Fd3e7D3c74ba";
 const provider = ethers.providers.getDefaultProvider(
   "https://staging-v2.skalenodes.com/v1/whispering-turais/"
 );
@@ -15,9 +15,6 @@ const fetchData = async () => {
   const result = await contract.publishResult();
   console.log("result");
   console.log(result);
-
-  // const salt = await contract.salt();
-  // console.log(`salt: ${salt}`);
 };
 
 fetchData();
