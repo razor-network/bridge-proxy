@@ -1,9 +1,7 @@
 const ethers = require("ethers");
 
-const RESULT_HANDLER_ADDRESS = "0xB0F974464eA9BbB2adA6a08B0AB226Cbc57F7261";
-const provider = ethers.providers.getDefaultProvider(
-  "https://staging-v2.skalenodes.com/v1/whispering-turais/"
-);
+const RESULT_HANDLER_ADDRESS = "0xC5888275e0a1ca13a26463318105957aa4d1feD7";
+const provider = ethers.providers.getDefaultProvider("http://127.0.0.1:1545");
 const ResultHandler = require("./artifacts/contracts/ResultHandler.sol/ResultHandler.json");
 const privateKey =
   "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";

@@ -1,0 +1,14 @@
+curl http://localhost:15000 \
+  -X POST \
+  -H "Content-Type: application/json" \
+  --data '{"method":"eth_getTransactionReceipt","params":["0xb78440538f9a5e8bd6ba393afbc345bc1c84ac641d375deebe377d5632383a00"],"id":1,"jsonrpc":"2.0"}'
+
+
+0xf99fb964a8d8617eb790d2bf4adc71c0fb7d4c3cba7006b2485b7b6f6679569b
+
+Mainnet:
+
+curl http://localhost:1545 \
+  -X POST \
+  -H "Content-Type: application/json" \
+  --data '{"method":"eth_getTransactionReceipt","params":["0x672805181434132b6b972867b1a4ac2d15cdbfec5ea9291aee4cf615a8471db9"],"id":1,"jsonrpc":"2.0"}'
