@@ -1,15 +1,16 @@
 const hre = require("hardhat");
 
-// const ProxySchainABI = require("../abis/proxySchain.json");
 const ProxySchainABI = require("../abis/proxySchainv2.json");
 
-const RESULT_HANDLER_ADDRESS = "0x4D6f9B03e6448B7470fb5985bB1813A2f2508284";
+const RESULT_HANDLER_ADDRESS = "0xb605aFC49b3Fe7282832665b8dC94623790Fe2E6";
+const DELEGATOR_ADDRESS = "0xE9043a524c886A3556849bCcf307f4208ef7e675";
 
 async function main() {
   const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");
   const resultProxy = await ResultProxy.deploy(
     RESULT_HANDLER_ADDRESS,
-    ProxySchainABI.message_proxy_chain_address
+    ProxySchainABI.message_proxy_chain_address,
+    DELEGATOR_ADDRESS
   );
 
   await resultProxy.deployed();

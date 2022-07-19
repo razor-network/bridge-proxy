@@ -4,7 +4,7 @@ const PROXY_ADDRESS = "0x51Bb5928dDbE14344FB71e5db06974390CEC2Fba";
 const ProxyChainABI = require("../abis/proxySchainv2.json");
 
 const SCHAIN_RESULT_PROXY_ADDRESS =
-  "0x66Cc0e3E19f00CFaE1A84EE384FE4348C665C32f";
+  "0x5289d99396cE0B92F467162d65f3e8a66bfe9EA1";
 
 const abi = hre.ethers.utils.defaultAbiCoder;
 
@@ -29,10 +29,7 @@ async function main() {
 
   // const resultInBytes = await resultProxy.proxy();
 
-  const resultInBytes = await resultProxy.publishResult(
-    destinationChainHash,
-    encodedData
-  );
+  const resultInBytes = await resultProxy.publishResult(destinationChainHash);
   await resultInBytes.wait();
   console.log("resultInBytes");
   console.log(resultInBytes);
