@@ -4,12 +4,12 @@ const PROXY_ADDRESS = "0x51Bb5928dDbE14344FB71e5db06974390CEC2Fba";
 const ProxyChainABI = require("../abis/proxySchainv2.json");
 
 const SCHAIN_RESULT_PROXY_ADDRESS =
-  "0x71c5C2a006F933C4D11B887De89524f62d92E8B0";
+  "0x66Cc0e3E19f00CFaE1A84EE384FE4348C665C32f";
 
 const abi = hre.ethers.utils.defaultAbiCoder;
 
 const ids = [1, 2, 3, 4, 5];
-const result = [12122, 212121, 21212, 212, 21];
+const result = [4000, 212121, 21212, 212, 21];
 const power = [2, 2, 2, 2, 5];
 
 const encodedData = abi.encode(

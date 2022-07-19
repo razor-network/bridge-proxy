@@ -3,7 +3,7 @@ const hre = require("hardhat");
 // const ProxySchainABI = require("../abis/proxySchain.json");
 const ProxySchainABI = require("../abis/proxySchainv2.json");
 
-const RESULT_HANDLER_ADDRESS = "0x7631bf7Eb61c5B88C66BFb2abE36Cb6FC7774C16";
+const RESULT_HANDLER_ADDRESS = "0x4D6f9B03e6448B7470fb5985bB1813A2f2508284";
 
 async function main() {
   const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");

@@ -5,7 +5,7 @@ const ProxyMainnetABI = require("../abis/proxySchainv3.json");
 // const MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS =
 //   "0x87B6a0ab90d826189cC004Dc2ff16E2b472309db";
 const MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS =
-  "0x7631bf7Eb61c5B88C66BFb2abE36Cb6FC7774C16";
+  "0x4D6f9B03e6448B7470fb5985bB1813A2f2508284";
 
 const main = async () => {
   try {
