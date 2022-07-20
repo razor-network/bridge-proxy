@@ -22,15 +22,9 @@ async function main() {
   const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");
   const resultProxy = ResultProxy.attach(SCHAIN_RESULT_PROXY_ADDRESS);
 
-  // const resultInBytes = await resultProxy.proxy();
-
-  const resultInBytes = await resultProxy.publishResult(destinationChainHash);
-  await resultInBytes.wait();
-  console.log("resultInBytes");
-  console.log(resultInBytes);
-
-  // await resultProxy.deployed();
-  // console.log(`Result Proxy deployed at: ${resultProxy.address}`);
+  const tx = await resultProxy.publishResult(destinationChainHash);
+  await tx.wait();
+  console.log("Transaction hash: ", tx.hash);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
