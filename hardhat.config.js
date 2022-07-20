@@ -13,7 +13,9 @@ module.exports = {
     },
     sChainV2: {
       url: "https://staging-v2.skalenodes.com/v1/whispering-turais",
-      accounts: [],
+      accounts: [
+        "0x5a7c50274b03088fe686ef99f9fadf9f89a463b36730e0804b410c9a869971e2",
+      ],
     },
     sChainV3: {
       url: "https://staging-v2.skalenodes.com/v1/attractive-merope",
