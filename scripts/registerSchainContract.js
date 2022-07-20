@@ -5,7 +5,7 @@ const ProxySchainABI = require("../abis/proxySchainv2.json");
 // const SCHAIN_RESULT_PROXY_ADDRESS =
 //   "0x71c5C2a006F933C4D11B887De89524f62d92E8B0";
 const SCHAIN_RESULT_PROXY_ADDRESS =
-  "0x5289d99396cE0B92F467162d65f3e8a66bfe9EA1";
+  "0x848818A5ba81CB3b3FDe95fC89e8cbBf0186F412";
 
 const main = async () => {
   try {

@@ -53,7 +53,7 @@ contract ResultProxy {
         }
 
         // send encoded data to MessageProxy
-        bytes memory data = abi.encode(ids, results, power);
+        bytes memory data = abi.encode(ids, results, power, block.timestamp);
         proxy.postOutgoingMessage(_targetChainHash, resultHandler, data);
     }
 }
