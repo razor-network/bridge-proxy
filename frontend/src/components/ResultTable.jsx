@@ -9,14 +9,21 @@ import {
   TableCaption,
   TableContainer,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { dummyTableData } from "../utils/data";
+import moment from "moment";
 
 const ResultTable = ({ collectionsData, lastUpdatedTimestamp }) => {
   return (
     <TableContainer>
       <Table variant="striped" size="lg">
-        <TableCaption>Last updated on {lastUpdatedTimestamp}</TableCaption>
+        <TableCaption>
+          Last updated on{" "}
+          {lastUpdatedTimestamp
+            ? moment(lastUpdatedTimestamp * 1000).format() +
+              " (" +
+              moment(lastUpdatedTimestamp * 1000).fromNow() +
+              ")"
+            : 0}
+        </TableCaption>
         <Thead>
           <Tr>
             <Th isNumeric>Collection ID</Th>
