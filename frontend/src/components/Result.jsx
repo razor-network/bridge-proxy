@@ -1,4 +1,4 @@
-import { Button, Heading, VStack } from "@chakra-ui/react";
+import { Button, Heading, Tooltip, VStack } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useState } from "react";
 import { useEffect } from "react";
@@ -58,9 +58,19 @@ const Result = () => {
         collectionsData={collectionsData}
         lastUpdatedTimestamp={lastUpdatedTimestamp}
       />
-      <Button colorScheme="teal" onClick={fetchAllResult}>
-        Fetch Result
-      </Button>
+      <Tooltip
+        shouldWrapChildren
+        isDisabled={account.address}
+        label="Please connect metamask to fetch result"
+      >
+        <Button
+          colorScheme="teal"
+          onClick={fetchAllResult}
+          disabled={!account.address}
+        >
+          Fetch Result
+        </Button>
+      </Tooltip>
     </VStack>
   );
 };
