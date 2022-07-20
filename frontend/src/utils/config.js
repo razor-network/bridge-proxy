@@ -1,0 +1,5 @@
+export const config = {
+  RESULT_HANDLER_ADDRESS:
+    import.meta.env.RESULT_HANDLER_ADDRESS ||
+    "0x14638D581e351B0a2388009aA855208BC89dFA6A",
+};
