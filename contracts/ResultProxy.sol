@@ -27,14 +27,22 @@ contract ResultProxy {
         _;
     }
 
-    function updateAddress(
-        address _newResultHandlerAddress,
-        address _newProxyAddress,
-        address _newDelegatorAddress
-    ) public onlyOwner {
-        resultHandler = _newResultHandlerAddress;
+    function updateDelegatorAddress(address _delegatorAddress)
+        public
+        onlyOwner
+    {
+        delegator = IDelegator(_delegatorAddress);
+    }
+
+    function updateProxyAddress(address _newProxyAddress) public onlyOwner {
         proxy = IProxy(_newProxyAddress);
-        delegator = IDelegator(_newDelegatorAddress);
+    }
+
+    function updateResultHandlerAddress(address _resultHandlerAddress)
+        public
+        onlyOwner
+    {
+        resultHandler = _resultHandlerAddress;
     }
 
     function publishResult(bytes32 _targetChainHash) public {

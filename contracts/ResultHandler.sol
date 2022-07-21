@@ -5,6 +5,10 @@ contract ResultHandler {
     uint16[] public activeCollectionIds;
     uint256 public lastUpdatedTimestamp;
 
+    bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
+    address public constant RESULT_PROXY_ADDRESS =
+        0x848818A5ba81CB3b3FDe95fC89e8cbBf0186F412;
+
     mapping(uint16 => CollectionResult) public collectionResults;
 
     event DataReceived(bytes32 schainHash, address sender, bytes data);
@@ -19,6 +23,8 @@ contract ResultHandler {
         address sender,
         bytes calldata data
     ) external returns (address) {
+        require(schainHash == SOURCE_CHAIN_HASH, "Source chain does not match");
+        require(sender == RESULT_PROXY_ADDRESS, "Not Result proxy contract");
         (
             uint16[] memory ids,
             uint256[] memory results,
