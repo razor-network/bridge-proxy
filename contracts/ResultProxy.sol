@@ -27,6 +27,9 @@ contract ResultProxy {
         _;
     }
 
+    /**
+     * @dev Allows admin to update delegator address.
+     */
     function updateDelegatorAddress(address _delegatorAddress)
         public
         onlyOwner
@@ -34,10 +37,16 @@ contract ResultProxy {
         delegator = IDelegator(_delegatorAddress);
     }
 
+    /**
+     * @dev Allows admin to update skale IMA proxy address.
+     */
     function updateProxyAddress(address _newProxyAddress) public onlyOwner {
         proxy = IProxy(_newProxyAddress);
     }
 
+    /**
+     * @dev Allows admin to update result handler address of desitnation chain.
+     */
     function updateResultHandlerAddress(address _resultHandlerAddress)
         public
         onlyOwner
@@ -45,6 +54,9 @@ contract ResultProxy {
         resultHandler = _resultHandlerAddress;
     }
 
+    /**
+     * @dev publish collection result via delegator.
+     */
     function publishResult(bytes32 _targetChainHash) public {
         uint16[] memory activeCollections = delegator.getActiveCollections();
 

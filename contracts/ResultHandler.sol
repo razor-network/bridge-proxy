@@ -28,6 +28,14 @@ contract ResultHandler {
         _;
     }
 
+    /**
+     * @dev Receives source chain data through validators/IMA
+     * Requirements:
+     *
+     * - `msg.sender` should be MESSAGE_PROXY_ADDRESS
+     * - schainHash should be SOURCE_CHAIN_HASH
+     * - sender should be RESULT_PROXY_ADDRESS
+     */
     function postMessage(
         bytes32 schainHash,
         address sender,
@@ -54,6 +62,9 @@ contract ResultHandler {
         return sender;
     }
 
+    /**
+     * @dev Returns all active collection ids, result, power and lastUpdated timestamp
+     */
     function getAllResult()
         public
         view
@@ -77,6 +88,9 @@ contract ResultHandler {
         return (activeCollectionIds, results, power, lastUpdatedTimestamp);
     }
 
+    /**
+     * @dev Returns collection result and power with collectionId as parameter
+     */
     function getResult(uint16 _id) public view returns (uint256, int8) {
         return (collectionResults[_id].result, collectionResults[_id].power);
     }
