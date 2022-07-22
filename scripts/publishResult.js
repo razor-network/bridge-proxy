@@ -16,7 +16,7 @@ const destinationChainHash =
   "0x44e247f49a9e6321f857375220890622a446abe945db7ed24b82fcbbbae07d12";
 
 const SCHAIN_RESULT_PROXY_ADDRESS =
-  "0x848818A5ba81CB3b3FDe95fC89e8cbBf0186F412";
+  "0x57C6099D1dbe241e499a5109CC15203eD8D471E0";
 
 async function main() {
   const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");

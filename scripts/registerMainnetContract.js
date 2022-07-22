@@ -2,10 +2,8 @@ const hre = require("hardhat");
 // const ProxyMainnetABI = require("../abis/proxyMainnet.json");
 const ProxyMainnetABI = require("../abis/proxySchainv3.json");
 
-// const MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS =
-//   "0x87B6a0ab90d826189cC004Dc2ff16E2b472309db";
 const MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS =
-  "0x14638D581e351B0a2388009aA855208BC89dFA6A";
+  "0x7F7D2f85aD97307B95bCb1533EE8dA3adafD235b";
 
 const main = async () => {
   try {
