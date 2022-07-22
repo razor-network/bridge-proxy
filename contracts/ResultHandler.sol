@@ -6,8 +6,10 @@ contract ResultHandler {
     uint256 public lastUpdatedTimestamp;
 
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
+    address public constant MESSAGE_PROXY_ADDRESS =
+        0xd2AAa00100000000000000000000000000000000;
     address public constant RESULT_PROXY_ADDRESS =
-        0x848818A5ba81CB3b3FDe95fC89e8cbBf0186F412;
+        0x57C6099D1dbe241e499a5109CC15203eD8D471E0;
 
     mapping(uint16 => CollectionResult) public collectionResults;
 
@@ -18,13 +20,22 @@ contract ResultHandler {
         int8 power;
     }
 
+    modifier onlyMessageProxy() {
+        require(
+            msg.sender == MESSAGE_PROXY_ADDRESS,
+            "Not message proxy address"
+        );
+        _;
+    }
+
     function postMessage(
         bytes32 schainHash,
         address sender,
         bytes calldata data
-    ) external returns (address) {
+    ) external onlyMessageProxy returns (address) {
         require(schainHash == SOURCE_CHAIN_HASH, "Source chain does not match");
         require(sender == RESULT_PROXY_ADDRESS, "Not Result proxy contract");
+
         (
             uint16[] memory ids,
             uint256[] memory results,
