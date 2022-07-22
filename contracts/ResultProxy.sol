@@ -3,16 +3,23 @@ pragma solidity ^0.8.0;
 
 import "./interface/IDelegator.sol";
 import "./interface/IResultHandler.sol";
+import "./interface/IProxy.sol";
 
 contract ResultProxy {
     IDelegator public delegator;
-    IResultHandler public resultHandler;
+    address public resultHandler;
+    IProxy public proxy;
     address public owner;
 
-    constructor(address _delegatorAddress, address _resultHandlerAddress) {
-        delegator = IDelegator(_delegatorAddress);
-        resultHandler = IResultHandler(_resultHandlerAddress);
+    constructor(
+        address _resultHandlerAddress,
+        address _proxyAddress,
+        address _delegatorAddress
+    ) {
         owner = msg.sender;
+        resultHandler = _resultHandlerAddress;
+        proxy = IProxy(_proxyAddress);
+        delegator = IDelegator(_delegatorAddress);
     }
 
     modifier onlyOwner() {
@@ -20,15 +27,37 @@ contract ResultProxy {
         _;
     }
 
-    function updateAddress(
-        address _newDelegatorAddress,
-        address _newResultHandlerAddress
-    ) public onlyOwner {
-        delegator = IDelegator(_newDelegatorAddress);
-        resultHandler = IResultHandler(_newResultHandlerAddress);
+    /**
+     * @dev Allows admin to update delegator address.
+     */
+    function updateDelegatorAddress(address _delegatorAddress)
+        public
+        onlyOwner
+    {
+        delegator = IDelegator(_delegatorAddress);
     }
 
-    function publishResult() public returns (bytes memory data) {
+    /**
+     * @dev Allows admin to update skale IMA proxy address.
+     */
+    function updateProxyAddress(address _newProxyAddress) public onlyOwner {
+        proxy = IProxy(_newProxyAddress);
+    }
+
+    /**
+     * @dev Allows admin to update result handler address of desitnation chain.
+     */
+    function updateResultHandlerAddress(address _resultHandlerAddress)
+        public
+        onlyOwner
+    {
+        resultHandler = _resultHandlerAddress;
+    }
+
+    /**
+     * @dev publish collection result via delegator.
+     */
+    function publishResult(bytes32 _targetChainHash) public {
         uint16[] memory activeCollections = delegator.getActiveCollections();
 
         uint16[] memory ids = new uint16[](activeCollections.length);
@@ -44,7 +73,7 @@ contract ResultProxy {
         }
 
         // send encoded data to MessageProxy
-        data = abi.encode(ids, results, power);
-        resultHandler.postMessage(data);
+        bytes memory data = abi.encode(ids, results, power, block.timestamp);
+        proxy.postOutgoingMessage(_targetChainHash, resultHandler, data);
     }
 }
