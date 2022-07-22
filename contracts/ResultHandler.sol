@@ -9,7 +9,7 @@ contract ResultHandler {
     address public constant MESSAGE_PROXY_ADDRESS =
         0xd2AAa00100000000000000000000000000000000;
     address public constant RESULT_PROXY_ADDRESS =
-        0x57C6099D1dbe241e499a5109CC15203eD8D471E0;
+        0xcBAcB0bFD136E43b998E45eB096E2a06dCb2a5C7;
 
     mapping(uint16 => CollectionResult) public collectionResults;
 

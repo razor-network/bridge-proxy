@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 const MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS =
-  "0x6fc86e05A4c9d27568cEe515d3A68a6E77c4e008";
+  "0x1C44BFe51762CF87aF4C95ABebB6607298eaF04a";
 
 async function main() {
   const ResultHandler = await hre.ethers.getContractFactory("ResultHandler");

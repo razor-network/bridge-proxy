@@ -3,7 +3,7 @@ const hre = require("hardhat");
 const ProxySchainABI = require("../abis/proxySchainv2.json");
 
 const SCHAIN_RESULT_PROXY_ADDRESS =
-  "0x57C6099D1dbe241e499a5109CC15203eD8D471E0";
+  "0xcBAcB0bFD136E43b998E45eB096E2a06dCb2a5C7";
 
 const main = async () => {
   try {
