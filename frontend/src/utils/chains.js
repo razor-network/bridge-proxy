@@ -1,6 +1,6 @@
 export const sChainAttractiveMerope = {
   id: 1211818568165862,
-  name: "Skale devnet",
+  name: "SKALE Dappnet (attractive-merope)",
   network: "Skale",
   iconUrl: "https://example.com/icon.svg",
   iconBackground: "#fff",

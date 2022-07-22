@@ -34,9 +34,15 @@ const ResultTable = ({ collectionsData, lastUpdatedTimestamp }) => {
         <Tbody>
           {collectionsData.map((collection) => (
             <Tr key={collection.id}>
-              <Td>{collection.id}</Td>
-              <Td>{collection.result}</Td>
-              <Td>{collection.power}</Td>
+              <Td textAlign="center" verticalAlign="middle">
+                {collection.id}
+              </Td>
+              <Td textAlign="center" verticalAlign="middle">
+                {collection.result}
+              </Td>
+              <Td textAlign="center" verticalAlign="middle">
+                {collection.power}
+              </Td>
             </Tr>
           ))}
         </Tbody>
