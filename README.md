@@ -1,5 +1,9 @@
 # Razor collection result proxy
 
+## Architecture
+
+![Architecture Diagram](/IMA-arch.png)
+
 ## Working
 
 There are 2 contracts that are required to bridge collection result from skale chain to destination chain.
@@ -12,10 +16,21 @@ There are 2 contracts that are required to bridge collection result from skale c
 - Razor-go calls `publishResult()` of **ResultProxy** contract which fetches all the active collections and it's result and publish the data as bytes to `ResultHandler` on destination chain via Skale IMA bridge.
 - `ResultHandler` listens for `postMessage`, as soon as message is received bytes data is decoded and collection result is updated.
 
+## Deployment
+
+1. Deploy ResultProxy contract on source chain.
+2. Whitelist the result proxy contract address on soruce chain using registerSchainContrat.js script.
+3. Update RESULT_PROXY_ADDRESS in ResultHanlder.sol contract (since it's a constant).
+4. Deploy ResultHanlder contract on destination chain.
+5. Whitelist the result handler contract address on destination chain using registerMainnetContract.js script.
+6. Update result handler address in proxy contract using updateHandler.js script.
+
 ## Contract Address
 
-| Contract      | Address                                    |
-| ------------- | ------------------------------------------ |
-| ResultHandler | 0xB0F974464eA9BbB2adA6a08B0AB226Cbc57F7261 |
-| ResultProxy   | 0x3495e761eBeb87991C6CD1137108Fd3e7D3c74ba |
-| Delegator     | 0xEe0F436708677c399466Fd61179f8D9864999903 |
+| Contract      | Address                                    | Chain Name        |
+| ------------- | ------------------------------------------ | ----------------- |
+| ResultHandler | 0x1C44BFe51762CF87aF4C95ABebB6607298eaF04a | attractive-merope |
+| MessageProxy  | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
+| ResultProxy   | 0xcBAcB0bFD136E43b998E45eB096E2a06dCb2a5C7 | whispering-turais |
+| Delegator     | 0xEe0F436708677c399466Fd61179f8D9864999903 | whispering-turais |
+| MessageProxy  | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |

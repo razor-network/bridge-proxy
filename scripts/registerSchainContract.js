@@ -1,5 +1,4 @@
 const hre = require("hardhat");
-// const ProxySchainABI = require("../abis/proxySchain.json");
 const ProxySchainABI = require("../abis/proxySchainv2.json");
 
 const SCHAIN_RESULT_PROXY_ADDRESS =

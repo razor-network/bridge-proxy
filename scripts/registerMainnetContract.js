@@ -1,5 +1,4 @@
 const hre = require("hardhat");
-// const ProxyMainnetABI = require("../abis/proxyMainnet.json");
 const ProxyMainnetABI = require("../abis/proxySchainv3.json");
 
 const MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS =
