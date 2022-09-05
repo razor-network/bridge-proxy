@@ -19,7 +19,13 @@ module.exports = {
     },
     sChainV3: {
       url: "https://staging-v2.skalenodes.com/v1/attractive-merope",
-      accounts: [],
+      accounts: [
+      ],
+    },
+    mainnet: {
+      url: "https://rinkeby.infura.io/v3/",
+      accounts: [
+      ],
     },
   },
 };
