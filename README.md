@@ -27,10 +27,13 @@ There are 2 contracts that are required to bridge collection result from skale c
 
 ## Contract Address
 
-| Contract      | Address                                    | Chain Name        |
-| ------------- | ------------------------------------------ | ----------------- |
-| ResultHandler | 0x1C44BFe51762CF87aF4C95ABebB6607298eaF04a | attractive-merope |
-| MessageProxy  | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
-| ResultProxy   | 0xcBAcB0bFD136E43b998E45eB096E2a06dCb2a5C7 | whispering-turais |
-| Delegator     | 0xEe0F436708677c399466Fd61179f8D9864999903 | whispering-turais |
-| MessageProxy  | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
+| Contract              | Address                                    | Chain Name        |
+| --------------------- | ------------------------------------------ | ----------------- |
+| ResultHandler         | 0x1C44BFe51762CF87aF4C95ABebB6607298eaF04a | attractive-merope |
+| MessageProxy          | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
+| ResultProxy           | 0xcBAcB0bFD136E43b998E45eB096E2a06dCb2a5C7 | whispering-turais |
+| Delegator             | 0xEe0F436708677c399466Fd61179f8D9864999903 | whispering-turais |
+| MessageProxy          | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
+| ResultProxy (rinkeby) | 0xbf823D9323B74AE01096d84EcbE76Fb7e4D44209 | whispering-turais |
+| ResultHandler         | 0x8DFdbC21f1F406A92F05C8B192fAd10e3b79eeb6 | Mainnet (rinkeby) |
+| MessageProxy          | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | Mainnet (rinkeby) |
