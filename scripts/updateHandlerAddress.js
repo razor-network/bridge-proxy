@@ -1,8 +1,8 @@
 const hre = require("hardhat");
 
-const RESULT_PROXY_ADDRESS = "0xcBAcB0bFD136E43b998E45eB096E2a06dCb2a5C7";
+const RESULT_PROXY_ADDRESS = "0xbf823D9323B74AE01096d84EcbE76Fb7e4D44209";
 
-const RESULT_HANDLER_ADDRESS = "0x1C44BFe51762CF87aF4C95ABebB6607298eaF04a";
+const RESULT_HANDLER_ADDRESS = "0x8DFdbC21f1F406A92F05C8B192fAd10e3b79eeb6";
 
 async function main() {
   const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");
