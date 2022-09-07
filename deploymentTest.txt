@@ -1,0 +1,17 @@
+
+Result Proxy SCHAINV2 = 0xee150054a6c201D3a55A31Cc16e52E55DeD195b5
+
+Result handler SCHAINv3 - 0x70B2c30B048cE877DbFD5f43Dc8431aacD947747
+
+
+Result Proxy SCHAINV2 - mainnet = 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03
+
+Result handler Mainnet - 0x10144adD7B8cB532BE580cf508837f155416D21A
+
+
+deployResultProxy (update Delegator address)(source)
+updated ResultHandler.sol (verify message and result proxy addresses)
+deployResultHandler update handler address (destination)
+updateHandlerAddress (source)
+publishResult(source)
+result  (destination)
