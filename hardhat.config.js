@@ -1,6 +1,11 @@
 require("@nomicfoundation/hardhat-toolbox");
 
 /** @type import('hardhat/config').HardhatUserConfig */
+
+const {
+  RINKEBY_RPC,
+} = process.env;
+
 module.exports = {
   solidity: "0.8.9",
   networks: {
@@ -24,7 +29,7 @@ module.exports = {
       ],
     },
     rinkeby: {
-      url: "https://eth-rinkeby.alchemyapi.io/v2/wp4eHsQ2qW3Trprn8IHWCi6bE4a_HcuC",
+      url: RINKEBY_RPC || "",
       accounts: [
         "0x11b0275c26eb8b6ce0fd130776faf5f7293e0cdbe63f6017b8b843906f60080f"
       ],
