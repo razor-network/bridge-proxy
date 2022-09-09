@@ -19,19 +19,19 @@ module.exports = {
     sChainV2: {
       url: "https://staging-v2.skalenodes.com/v1/whispering-turais",
       accounts: [
-        "0x11b0275c26eb8b6ce0fd130776faf5f7293e0cdbe63f6017b8b843906f60080f",
+        "",
       ],
     },
     sChainV3: {
       url: "https://staging-v2.skalenodes.com/v1/attractive-merope",
       accounts: [
-        "0xafb39e2f91d9ae624e00efb0bae865421c73a60047e2699f79dd40c8bcaf73fe"
+        ""
       ],
     },
     rinkeby: {
       url: RINKEBY_RPC || "",
       accounts: [
-        "0x11b0275c26eb8b6ce0fd130776faf5f7293e0cdbe63f6017b8b843906f60080f"
+        ""
       ],
     },
   },
