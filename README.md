@@ -19,7 +19,7 @@ There are 2 contracts that are required to bridge collection result from skale c
 ## Deployment
 
 1. Deploy ResultProxy contract on source chain.
-2. Whitelist the result proxy contract address on soruce chain using registerSchainContrat.js script.
+2. Whitelist the result proxy contract address on soruce chain using registerSchainContract.js script.
 3. Update RESULT_PROXY_ADDRESS in ResultHanlder.sol contract (since it's a constant).
 4. Deploy ResultHanlder contract on destination chain.
 5. Whitelist the result handler contract address on destination chain using registerMainnetContract.js script.
@@ -29,11 +29,10 @@ There are 2 contracts that are required to bridge collection result from skale c
 
 | Contract              | Address                                    | Chain Name        |
 | --------------------- | ------------------------------------------ | ----------------- |
-| ResultHandler         | 0x1C44BFe51762CF87aF4C95ABebB6607298eaF04a | attractive-merope |
+| ResultHandler         | 0x70B2c30B048cE877DbFD5f43Dc8431aacD947747 | attractive-merope |
 | MessageProxy          | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
-| ResultProxy           | 0xcBAcB0bFD136E43b998E45eB096E2a06dCb2a5C7 | whispering-turais |
-| Delegator             | 0xEe0F436708677c399466Fd61179f8D9864999903 | whispering-turais |
+| ResultProxy           | 0xee150054a6c201D3a55A31Cc16e52E55DeD195b5 | whispering-turais |
 | MessageProxy          | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
-| ResultProxy (rinkeby) | 0xbf823D9323B74AE01096d84EcbE76Fb7e4D44209 | whispering-turais |
-| ResultHandler         | 0x8DFdbC21f1F406A92F05C8B192fAd10e3b79eeb6 | Mainnet (rinkeby) |
+| ResultProxy (rinkeby) | 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03 | whispering-turais |
+| ResultHandler         | 0x10144adD7B8cB532BE580cf508837f155416D21A | Mainnet (rinkeby) |
 | MessageProxy          | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | Mainnet (rinkeby) |

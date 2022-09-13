@@ -1,22 +1,10 @@
 const hre = require("hardhat");
 
-const abi = hre.ethers.utils.defaultAbiCoder;
-
-const ids = [1, 2, 3, 4, 5];
-const result = [4000, 212121, 21212, 212, 21];
-const power = [2, 2, 2, 2, 5];
-
-const encodedData = abi.encode(
-  ["uint16[]", "uint256[]", "int8[]"],
-  [ids, result, power]
-);
-
-// keccak256("attractive-merope")
 const destinationChainHash =
-  "0x44e247f49a9e6321f857375220890622a446abe945db7ed24b82fcbbbae07d12";
+  "0x8d646f556e5d9d6f1edcf7a39b77f5ac253776eb34efcfd688aacbee518efc26";
 
 const SCHAIN_RESULT_PROXY_ADDRESS =
-  "0xcBAcB0bFD136E43b998E45eB096E2a06dCb2a5C7";
+  "0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03";
 
 async function main() {
   const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");

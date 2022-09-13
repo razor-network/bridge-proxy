@@ -4,12 +4,13 @@ pragma solidity ^0.8.0;
 contract ResultHandler {
     uint16[] public activeCollectionIds;
     uint256 public lastUpdatedTimestamp;
+    uint32 public updatedCounter = 0;
 
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
     address public constant MESSAGE_PROXY_ADDRESS =
-        0xd2AAa00100000000000000000000000000000000;
+        0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4;
     address public constant RESULT_PROXY_ADDRESS =
-        0xcBAcB0bFD136E43b998E45eB096E2a06dCb2a5C7;
+        0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03;
 
     mapping(uint16 => CollectionResult) public collectionResults;
 
@@ -50,6 +51,8 @@ contract ResultHandler {
             int8[] memory power,
             uint256 timestamp
         ) = abi.decode(data, (uint16[], uint256[], int8[], uint256));
+
+        updatedCounter++;
 
         activeCollectionIds = ids;
         lastUpdatedTimestamp = timestamp;

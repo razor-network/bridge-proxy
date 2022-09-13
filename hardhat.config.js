@@ -1,6 +1,11 @@
 require("@nomicfoundation/hardhat-toolbox");
 
 /** @type import('hardhat/config').HardhatUserConfig */
+
+const {
+  RINKEBY_RPC,
+} = process.env;
+
 module.exports = {
   solidity: "0.8.9",
   networks: {
@@ -14,17 +19,19 @@ module.exports = {
     sChainV2: {
       url: "https://staging-v2.skalenodes.com/v1/whispering-turais",
       accounts: [
-        "0x5a7c50274b03088fe686ef99f9fadf9f89a463b36730e0804b410c9a869971e2",
+        "",
       ],
     },
     sChainV3: {
       url: "https://staging-v2.skalenodes.com/v1/attractive-merope",
       accounts: [
+        ""
       ],
     },
-    mainnet: {
-      url: "https://rinkeby.infura.io/v3/",
+    rinkeby: {
+      url: RINKEBY_RPC || "",
       accounts: [
+        ""
       ],
     },
   },

@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 const MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS =
-  "0x1C44BFe51762CF87aF4C95ABebB6607298eaF04a";
+  "0x10144adD7B8cB532BE580cf508837f155416D21A";
 
 async function main() {
   const ResultHandler = await hre.ethers.getContractFactory("ResultHandler");
@@ -12,6 +12,10 @@ async function main() {
   const collectionsResult = await resultHandler.getAllResult();
   console.log(`collectionResult`);
   console.log(collectionsResult);
+
+  const updatedCounter = await resultHandler.updatedCounter();
+  console.log(`updatedCounter`);
+  console.log(updatedCounter);
   // for (let i = 1; i <= 5; i++) {
   //   const result = await resultHandler.getResult(i);
   //   console.log(

@@ -7,10 +7,10 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import App from "./App";
-import { sChainAttractiveMerope } from "./utils/chains";
+import { rinkebyMainnet, sChainAttractiveMerope } from "./utils/chains";
 
 const { provider, chains } = configureChains(
-  [sChainAttractiveMerope],
+  [sChainAttractiveMerope, rinkebyMainnet],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 
