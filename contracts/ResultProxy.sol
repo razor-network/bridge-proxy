@@ -2,22 +2,15 @@
 pragma solidity ^0.8.0;
 
 import "./interface/IDelegator.sol";
-import "./interface/IResultHandler.sol";
 import "./interface/IProxy.sol";
 
 contract ResultProxy {
     IDelegator public delegator;
-    address public resultHandler;
     IProxy public proxy;
     address public owner;
 
-    constructor(
-        address _resultHandlerAddress,
-        address _proxyAddress,
-        address _delegatorAddress
-    ) {
+    constructor(address _proxyAddress, address _delegatorAddress) {
         owner = msg.sender;
-        resultHandler = _resultHandlerAddress;
         proxy = IProxy(_proxyAddress);
         delegator = IDelegator(_delegatorAddress);
     }
@@ -45,19 +38,11 @@ contract ResultProxy {
     }
 
     /**
-     * @dev Allows admin to update result handler address of desitnation chain.
-     */
-    function updateResultHandlerAddress(address _resultHandlerAddress)
-        public
-        onlyOwner
-    {
-        resultHandler = _resultHandlerAddress;
-    }
-
-    /**
      * @dev publish collection result via delegator.
      */
-    function publishResult(bytes32 _targetChainHash) public {
+    function publishResult(bytes32 _targetChainHash, address _resultHandler)
+        public
+    {
         uint16[] memory activeCollections = delegator.getActiveCollections();
 
         uint16[] memory ids = new uint16[](activeCollections.length);
@@ -74,6 +59,6 @@ contract ResultProxy {
 
         // send encoded data to MessageProxy
         bytes memory data = abi.encode(ids, results, power, block.timestamp);
-        proxy.postOutgoingMessage(_targetChainHash, resultHandler, data);
+        proxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }
 }
