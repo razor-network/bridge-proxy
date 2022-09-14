@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 contract ResultHandler {
     uint16[] public activeCollectionIds;
     uint256 public lastUpdatedTimestamp;
-    uint32 public updatedCounter = 0;
+    uint32 public updatedCounter;
 
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
     address public constant MESSAGE_PROXY_ADDRESS =
