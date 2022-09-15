@@ -64,7 +64,9 @@ contract ResultProxy is AccessControlEnumerable {
         for (uint256 i = 0; i < activeCollections.length; i++) {
             (uint256 collectionResult, int8 collectionPower) = delegator
                 .getResultFromID(activeCollections[i]);
-            string memory name = collectionManager.getCollection(ids[i]).name;
+            string memory name = collectionManager
+                .getCollection(activeCollections[i])
+                .name;
             bytes32 nameHash = keccak256(abi.encodePacked(name));
 
             ids[i] = activeCollections[i];
