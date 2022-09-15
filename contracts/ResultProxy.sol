@@ -3,23 +3,28 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "./interface/IDelegator.sol";
+import "./interface/ICollectionManager.sol";
 import "./interface/IProxy.sol";
 
 contract ResultProxy is AccessControlEnumerable {
+    uint256 public lastUpdatedTimestamp;
+
     IDelegator public delegator;
+    ICollectionManager public collectionManager;
     IProxy public proxy;
 
     bytes32 public constant DISPATCHER_ROLE = keccak256("DISPATCHER_ROLE");
 
-    constructor(address _proxyAddress, address _delegatorAddress) {
+    constructor(
+        address _delegatorAddress,
+        address _collectionManagerAddress,
+        address _proxyAddress
+    ) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        proxy = IProxy(_proxyAddress);
+        _setupRole(DISPATCHER_ROLE, msg.sender);
         delegator = IDelegator(_delegatorAddress);
-    }
-
-    modifier onlyDispatcherRole() {
-        require(hasRole(DISPATCHER_ROLE, msg.sender), "Not a dispatcher");
-        _;
+        collectionManager = ICollectionManager(_collectionManagerAddress);
+        proxy = IProxy(_proxyAddress);
     }
 
     /**
@@ -54,17 +59,30 @@ contract ResultProxy is AccessControlEnumerable {
         uint16[] memory ids = new uint16[](activeCollections.length);
         uint256[] memory results = new uint256[](activeCollections.length);
         int8[] memory power = new int8[](activeCollections.length);
+        bytes32[] memory namesHash = new bytes32[](activeCollections.length);
 
         for (uint256 i = 0; i < activeCollections.length; i++) {
             (uint256 collectionResult, int8 collectionPower) = delegator
                 .getResultFromID(activeCollections[i]);
+            string memory name = collectionManager.getCollection(ids[i]).name;
+            bytes32 nameHash = keccak256(abi.encodePacked(name));
+
             ids[i] = activeCollections[i];
             results[i] = collectionResult;
             power[i] = collectionPower;
+            namesHash[i] = nameHash;
         }
 
+        lastUpdatedTimestamp = block.timestamp;
+
         // send encoded data to MessageProxy
-        bytes memory data = abi.encode(ids, results, power, block.timestamp);
+        bytes memory data = abi.encode(
+            ids,
+            results,
+            power,
+            namesHash,
+            block.timestamp
+        );
         proxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }
 }
