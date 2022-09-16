@@ -8,9 +8,9 @@ contract ResultHandler {
 
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
     address public constant MESSAGE_PROXY_ADDRESS =
-        0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4;
+        0xd2AAa00100000000000000000000000000000000;
     address public constant RESULT_PROXY_ADDRESS =
-        0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03;
+        0x7C871343cA214CD4dFF3E73e93D8Fe24E66c2fB3;
 
     struct Collection {
         uint16 id;
@@ -112,7 +112,7 @@ contract ResultHandler {
      */
     function getCollectionStatus(uint16 _id) public view returns (bool) {
         bool isActive;
-        for (uint256 i = 0; i < 16; i++) {
+        for (uint256 i = 0; i < activeCollectionIds.length; i++) {
             if (activeCollectionIds[i] == _id) {
                 isActive = true;
                 break;
