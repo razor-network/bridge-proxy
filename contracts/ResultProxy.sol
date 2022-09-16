@@ -38,6 +38,16 @@ contract ResultProxy is AccessControlEnumerable {
     }
 
     /**
+     * @dev Allows admin to update collection manager address.
+     */
+    function updateCollectionManagerAddress(address _collectionManagerAddress)
+        public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        collectionManager = ICollectionManager(_collectionManagerAddress);
+    }
+
+    /**
      * @dev Allows admin to update skale IMA proxy address.
      */
     function updateProxyAddress(address _newProxyAddress)
