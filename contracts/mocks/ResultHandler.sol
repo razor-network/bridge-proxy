@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-contract ResultHandler {
+contract ResultHandlerMock {
     uint16[] public activeCollectionIds;
     uint256 public lastUpdatedTimestamp;
     uint32 public updatedCounter;
@@ -10,7 +10,7 @@ contract ResultHandler {
     address public constant MESSAGE_PROXY_ADDRESS =
         0xd2AAa00100000000000000000000000000000000;
     address public constant RESULT_PROXY_ADDRESS =
-        0x4d03D2fd0aa2EF6bC286dd8C0C970148d681529C;
+        0x7C871343cA214CD4dFF3E73e93D8Fe24E66c2fB3;
 
     struct Collection {
         uint16 id;
@@ -24,15 +24,7 @@ contract ResultHandler {
     /// @notice mapping for CollectionID -> Collection Info
     mapping(uint16 => Collection) public collections;
 
-    event DataReceived(bytes32 schainHash, address sender, bytes data);
-
-    modifier onlyMessageProxy() {
-        require(
-            msg.sender == MESSAGE_PROXY_ADDRESS,
-            "Not message proxy address"
-        );
-        _;
-    }
+    event DataReceived(bytes data);
 
     /**
      * @dev Receives source chain data through validators/IMA
@@ -42,14 +34,7 @@ contract ResultHandler {
      * - schainHash should be SOURCE_CHAIN_HASH
      * - sender should be RESULT_PROXY_ADDRESS
      */
-    function postMessage(
-        bytes32 schainHash,
-        address sender,
-        bytes calldata data
-    ) external onlyMessageProxy returns (address) {
-        require(schainHash == SOURCE_CHAIN_HASH, "Source chain does not match");
-        require(sender == RESULT_PROXY_ADDRESS, "Not Result proxy contract");
-
+    function postMessage(bytes calldata data) external {
         (
             uint16[] memory ids,
             uint256[] memory results,
@@ -68,8 +53,7 @@ contract ResultHandler {
             collections[ids[i]].power = power[i];
             collectionIds[namesHash[i]] = ids[i];
         }
-        emit DataReceived(schainHash, sender, data);
-        return sender;
+        emit DataReceived(data);
     }
 
     /**
