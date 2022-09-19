@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 const MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS =
-  "0x10144adD7B8cB532BE580cf508837f155416D21A";
+  "0xCfF9840C6D8912D91E5f47Cf32672F94Ef673521";
 
 async function main() {
   const ResultHandler = await hre.ethers.getContractFactory("ResultHandler");
@@ -9,21 +9,29 @@ async function main() {
     MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS
   );
 
-  const collectionsResult = await resultHandler.getAllResult();
+  const collectionsResult = await resultHandler.getResultFromID(1);
   console.log(`collectionResult`);
   console.log(collectionsResult);
 
-  const updatedCounter = await resultHandler.updatedCounter();
-  console.log(`updatedCounter`);
-  console.log(updatedCounter);
-  // for (let i = 1; i <= 5; i++) {
-  //   const result = await resultHandler.getResult(i);
-  //   console.log(
-  //     `CollectionID: ${i}\t Result: ${result[0].toNumber()}\t Power: ${
-  //       result[1]
-  //     }`
-  //   );
-  // }
+  const collectionsResult1 = await resultHandler.getResult(
+    "0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9"
+  );
+  console.log(`collectionResult`);
+  console.log(collectionsResult1);
+
+  const collectionsResult2 = await resultHandler.getCollectionID(
+    "0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9"
+  );
+  console.log(`collectionResult`);
+  console.log(collectionsResult2);
+
+  const collectionsResult3 = await resultHandler.getActiveCollections();
+  console.log(`collectionResult`);
+  console.log(collectionsResult3);
+
+  const collectionsResult4 = await resultHandler.getCollectionStatus(1);
+  console.log(`collectionResult`);
+  console.log(collectionsResult4);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

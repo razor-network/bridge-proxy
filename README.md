@@ -10,6 +10,7 @@ There are 2 contracts that are required to bridge collection result from skale c
 
 1. `ResultProxy.sol` - To be deployed on skale chain (where Razor contracts are deployed).
 2. `ResultHandler.sol` - To be deployed on destination chain (where Skale IMA bridge is supported).
+   _NOTE_: `ResultHandler.sol` contract is deployed with OZ transparent proxy.
 
 ### How result will be updated?
 
@@ -27,12 +28,13 @@ There are 2 contracts that are required to bridge collection result from skale c
 
 ## Contract Address
 
-| Contract              | Address                                    | Chain Name        |
-| --------------------- | ------------------------------------------ | ----------------- |
-| ResultHandler         | 0x70B2c30B048cE877DbFD5f43Dc8431aacD947747 | attractive-merope |
-| MessageProxy          | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
-| ResultProxy           | 0xee150054a6c201D3a55A31Cc16e52E55DeD195b5 | whispering-turais |
-| MessageProxy          | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
-| ResultProxy (rinkeby) | 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03 | whispering-turais |
-| ResultHandler         | 0x10144adD7B8cB532BE580cf508837f155416D21A | Mainnet (rinkeby) |
-| MessageProxy          | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | Mainnet (rinkeby) |
+| Contract                       | Address                                    | Chain Name        |
+| ------------------------------ | ------------------------------------------ | ----------------- |
+| ResultHandler (Proxy)          | 0xCfF9840C6D8912D91E5f47Cf32672F94Ef673521 | attractive-merope |
+| ResultHandler (Implementation) | 0x35Fc80564fb755c8C7e1BCB277445fC726649b70 | attractive-merope |
+| MessageProxy                   | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
+| ResultProxy                    | 0x4d03D2fd0aa2EF6bC286dd8C0C970148d681529C | whispering-turais |
+| MessageProxy                   | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
+| ResultProxy (rinkeby)          | 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03 | whispering-turais |
+| ResultHandler                  | 0x10144adD7B8cB532BE580cf508837f155416D21A | Mainnet (rinkeby) |
+| MessageProxy                   | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | Mainnet (rinkeby) |
