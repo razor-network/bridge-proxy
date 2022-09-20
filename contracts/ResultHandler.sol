@@ -13,7 +13,7 @@ contract ResultHandler is OwnableUpgradeable {
         0xd2AAa00100000000000000000000000000000000;
     address public resultProxy;
 
-    function initialize(address _resultProxy) public payable initializer {
+    function initialize(address _resultProxy) public initializer {
         __Ownable_init();
         resultProxy = _resultProxy;
     }

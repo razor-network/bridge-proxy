@@ -22,7 +22,7 @@ contract ResultProxyMock is AccessControlEnumerable {
         onlyRole(DISPATCHER_ROLE)
     {
         lastUpdatedTimestamp = block.timestamp;
-        ResultHandlerMock(_resultHandler).postMessage(data);
+        ResultHandlerMock(_resultHandler).postMessage(address(this), data);
         // proxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }
 }

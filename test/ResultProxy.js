@@ -23,14 +23,19 @@ describe("ResultProxy", () => {
   let resultHandler;
   let signers;
   let DISPATCHER_ROLE;
+  let RESULT_PROXY_ADDRESS;
 
   before(async () => {
     const ResultProxy = await hre.ethers.getContractFactory("ResultProxyMock");
     resultProxy = await ResultProxy.deploy();
+    RESULT_PROXY_ADDRESS = resultProxy.address;
+
     const ResultHandler = await hre.ethers.getContractFactory(
       "ResultHandlerMock"
     );
-    resultHandler = await ResultHandler.deploy();
+    resultHandler = await hre.upgrades.deployProxy(ResultHandler, [
+      RESULT_PROXY_ADDRESS,
+    ]);
 
     signers = await hre.ethers.getSigners();
     DISPATCHER_ROLE = await resultProxy.DISPATCHER_ROLE();
@@ -87,5 +92,34 @@ describe("ResultProxy", () => {
 
     const updatedCounter = await resultHandler.updatedCounter();
     expect(updatedCounter).to.be.equal(1);
+  });
+
+  it("Only admin can update resultProxy address in ResulHandler contract", async () => {
+    resultHandler = await resultHandler.connect(signers[1]);
+    await expect(
+      resultHandler.updateResultProxy(
+        "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A"
+      )
+    ).to.be.revertedWith("Ownable: caller is not the owner");
+
+    resultHandler = await resultHandler.connect(signers[0]);
+    await resultHandler.updateResultProxy(RESULT_PROXY_ADDRESS);
+  });
+
+  it("initialize should not be called more than once", async () => {
+    await expect(
+      resultHandler.initialize(RESULT_PROXY_ADDRESS)
+    ).to.be.revertedWith("Initializable: contract is already initialized");
+  });
+
+  it("postMessage should fail if resultProxy address is incorrect", async () => {
+    await resultHandler.updateResultProxy(
+      "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A"
+    );
+    await expect(
+      resultProxy.publishResult(resultHandler.address, encodedData)
+    ).to.be.revertedWith("Not Result proxy contract");
+
+    await resultHandler.updateResultProxy(RESULT_PROXY_ADDRESS);
   });
 });
