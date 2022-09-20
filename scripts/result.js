@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 const RESULT_HANDLER_PROXY_ADDRESS =
-  "0x779589CbcbF1F98383E323A29Af13DEBF3B792CA";
+  "0xaeC062ecf7Af0FdB9C9f134AD671027B22C3eF46";
 
 async function main() {
   const ResultHandler = await hre.ethers.getContractFactory("ResultHandler");
@@ -30,6 +30,10 @@ async function main() {
   const collectionsResult4 = await resultHandler.getCollectionStatus(1);
   console.log(`collectionResult`);
   console.log(collectionsResult4);
+
+  const updatedCounter = await resultHandler.updatedCounter();
+  console.log(`updatedCounter`);
+  console.log(updatedCounter);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

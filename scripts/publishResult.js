@@ -4,10 +4,10 @@ const destinationChainHash =
   "0x44e247f49a9e6321f857375220890622a446abe945db7ed24b82fcbbbae07d12";
 
 const SCHAIN_RESULT_PROXY_ADDRESS =
-  "0xc8B077666Ee9094eA7e0DD879c8540C1c585085F";
+  "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A";
 
 const RESULT_HANDLER_PROXY_ADDRESS =
-  "0x779589CbcbF1F98383E323A29Af13DEBF3B792CA";
+  "0xaeC062ecf7Af0FdB9C9f134AD671027B22C3eF46";
 
 async function main() {
   const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");
