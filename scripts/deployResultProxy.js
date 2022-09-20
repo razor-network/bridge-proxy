@@ -2,17 +2,17 @@ const hre = require("hardhat");
 
 const ProxySchainABI = require("../abis/proxySchainv2.json");
 
-const RESULT_HANDLER_ADDRESS = "0xcC63e647758f33E473B1bD577D4bBBA0247fC23f";
-const DELEGATOR_ADDRESS = "0x83DC292e959a9E89Bec308C92e89197Cea296D18";
+const DELEGATOR_ADDRESS = "0x4535E7486c48Df8e1121be2A31b74aBb2b0a5B8b";
+const COLLECTION_MANAGER_ADDRESS = "0x4A6d18E64AF3dC24dAA7a0abbA00670476395A2c";
 
-const DESTINATION_CHAIN = "Mainnet";
+const DESTINATION_CHAIN = "attractive-merope";
 
 async function main() {
   const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");
   const resultProxy = await ResultProxy.deploy(
-    RESULT_HANDLER_ADDRESS,
-    ProxySchainABI.message_proxy_chain_address,
-    DELEGATOR_ADDRESS
+    DELEGATOR_ADDRESS,
+    COLLECTION_MANAGER_ADDRESS,
+    ProxySchainABI.message_proxy_chain_address
   );
 
   await resultProxy.deployed();

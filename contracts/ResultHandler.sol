@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-contract ResultHandler {
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+
+contract ResultHandler is Initializable, OwnableUpgradeable {
     uint16[] public activeCollectionIds;
     uint256 public lastUpdatedTimestamp;
     uint32 public updatedCounter;
@@ -9,8 +11,12 @@ contract ResultHandler {
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
     address public constant MESSAGE_PROXY_ADDRESS =
         0xd2AAa00100000000000000000000000000000000;
-    address public constant RESULT_PROXY_ADDRESS =
-        0x4d03D2fd0aa2EF6bC286dd8C0C970148d681529C;
+    address public resultProxy;
+
+    function initialize(address _resultProxy) public payable initializer {
+        __Ownable_init();
+        resultProxy = _resultProxy;
+    }
 
     struct Collection {
         uint16 id;
@@ -35,12 +41,21 @@ contract ResultHandler {
     }
 
     /**
+     * @dev Update resultProxy address
+     * Requirements:
+     * - `msg.sender` should be admin
+     */
+    function updateResultProxy(address _resultProxy) public onlyOwner {
+        resultProxy = _resultProxy;
+    }
+
+    /**
      * @dev Receives source chain data through validators/IMA
      * Requirements:
      *
      * - `msg.sender` should be MESSAGE_PROXY_ADDRESS
      * - schainHash should be SOURCE_CHAIN_HASH
-     * - sender should be RESULT_PROXY_ADDRESS
+     * - sender should be resultProxy
      */
     function postMessage(
         bytes32 schainHash,
@@ -48,7 +63,7 @@ contract ResultHandler {
         bytes calldata data
     ) external onlyMessageProxy returns (address) {
         require(schainHash == SOURCE_CHAIN_HASH, "Source chain does not match");
-        require(sender == RESULT_PROXY_ADDRESS, "Not Result proxy contract");
+        require(sender == resultProxy, "Not Result proxy contract");
 
         (
             uint16[] memory ids,
