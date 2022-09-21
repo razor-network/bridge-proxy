@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract ResultHandlerMock is OwnableUpgradeable {
+contract ResultReceiverProxyMock is OwnableUpgradeable {
     uint16[] public activeCollectionIds;
     uint256 public lastUpdatedTimestamp;
     uint32 public updatedCounter;
@@ -10,11 +10,11 @@ contract ResultHandlerMock is OwnableUpgradeable {
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
     address public constant MESSAGE_PROXY_ADDRESS =
         0xd2AAa00100000000000000000000000000000000;
-    address public resultProxy;
+    address public resultSender;
 
-    function initialize(address _resultProxy) public initializer {
+    function initialize(address _resultSender) public initializer {
         __Ownable_init();
-        resultProxy = _resultProxy;
+        resultSender = _resultSender;
     }
 
     struct Collection {
@@ -32,12 +32,12 @@ contract ResultHandlerMock is OwnableUpgradeable {
     event DataReceived(bytes data);
 
     /**
-     * @dev Update resultProxy address
+     * @dev Update resultSender address
      * Requirements:
      * - `msg.sender` should be admin
      */
-    function updateResultProxy(address _resultProxy) public onlyOwner {
-        resultProxy = _resultProxy;
+    function updateResultSender(address _resultSender) public onlyOwner {
+        resultSender = _resultSender;
     }
 
     /**
@@ -49,7 +49,7 @@ contract ResultHandlerMock is OwnableUpgradeable {
      * - sender should be RESULT_PROXY_ADDRESS
      */
     function postMessage(address sender, bytes calldata data) external {
-        require(sender == resultProxy, "Not Result proxy contract");
+        require(sender == resultSender, "Not Result proxy contract");
         (
             uint16[] memory ids,
             uint256[] memory results,

@@ -18,39 +18,41 @@ const encodedData = hre.ethers.utils.defaultAbiCoder.encode(
   [ids, result, power, namesHash]
 );
 
-describe("ResultProxy", () => {
-  let resultProxy;
-  let resultHandler;
+describe("ResultSender", () => {
+  let resultSender;
+  let resultReceiverProxy;
   let signers;
   let DISPATCHER_ROLE;
   let RESULT_PROXY_ADDRESS;
 
   before(async () => {
-    const ResultProxy = await hre.ethers.getContractFactory("ResultProxyMock");
-    resultProxy = await ResultProxy.deploy();
-    RESULT_PROXY_ADDRESS = resultProxy.address;
-
-    const ResultHandler = await hre.ethers.getContractFactory(
-      "ResultHandlerMock"
+    const ResultSender = await hre.ethers.getContractFactory(
+      "ResultSenderMock"
     );
-    resultHandler = await hre.upgrades.deployProxy(ResultHandler, [
+    resultSender = await ResultSender.deploy();
+    RESULT_PROXY_ADDRESS = resultSender.address;
+
+    const ResultReceiverProxy = await hre.ethers.getContractFactory(
+      "ResultReceiverProxyMock"
+    );
+    resultReceiverProxy = await hre.upgrades.deployProxy(ResultReceiverProxy, [
       RESULT_PROXY_ADDRESS,
     ]);
 
     signers = await hre.ethers.getSigners();
-    DISPATCHER_ROLE = await resultProxy.DISPATCHER_ROLE();
+    DISPATCHER_ROLE = await resultSender.DISPATCHER_ROLE();
   });
 
   it("Admin should have DEFAULT_ADMIN_ROLE", async () => {
     const admin = signers[0].address;
-    const DEFAULT_ADMIN_ROLE = await resultProxy.DEFAULT_ADMIN_ROLE();
-    const hasAdminRole = await resultProxy.hasRole(DEFAULT_ADMIN_ROLE, admin);
+    const DEFAULT_ADMIN_ROLE = await resultSender.DEFAULT_ADMIN_ROLE();
+    const hasAdminRole = await resultSender.hasRole(DEFAULT_ADMIN_ROLE, admin);
 
     expect(hasAdminRole).to.be.true;
   });
 
   it("Admin should have DISPATCHER_ROLE", async () => {
-    const hasDispatcherRole = await resultProxy.hasRole(
+    const hasDispatcherRole = await resultSender.hasRole(
       DISPATCHER_ROLE,
       signers[0].address
     );
@@ -58,8 +60,8 @@ describe("ResultProxy", () => {
   });
 
   it("Admin should be able to grant DISPATCHER_ROLE", async () => {
-    await resultProxy.grantRole(DISPATCHER_ROLE, signers[2].address);
-    const hasDispatcherRole = await resultProxy.hasRole(
+    await resultSender.grantRole(DISPATCHER_ROLE, signers[2].address);
+    const hasDispatcherRole = await resultSender.hasRole(
       DISPATCHER_ROLE,
       signers[2].address
     );
@@ -67,59 +69,61 @@ describe("ResultProxy", () => {
   });
 
   it("publishResult can be called only by address having DISPATCHER_ROLE", async () => {
-    resultProxy = await resultProxy.connect(signers[1]);
-    const DISPATCHER_ROLE = await resultProxy.DISPATCHER_ROLE();
+    resultSender = await resultSender.connect(signers[1]);
+    const DISPATCHER_ROLE = await resultSender.DISPATCHER_ROLE();
     await expect(
-      resultProxy.publishResult(resultHandler.address, encodedData)
+      resultSender.publishResult(resultReceiverProxy.address, encodedData)
     ).to.be.revertedWith(
       `AccessControl: account ${signers[1].address.toLowerCase()} is missing role ${DISPATCHER_ROLE.toLowerCase()}`
     );
   });
 
   it("Collection result should update on publishResult", async () => {
-    resultProxy = await resultProxy.connect(signers[0]);
-    await resultProxy.publishResult(resultHandler.address, encodedData);
-    const updatedCounter = await resultHandler.updatedCounter();
+    resultSender = await resultSender.connect(signers[0]);
+    await resultSender.publishResult(resultReceiverProxy.address, encodedData);
+    const updatedCounter = await resultReceiverProxy.updatedCounter();
     expect(updatedCounter).to.be.equal(1);
   });
 
   it("Collection result should be same as bridge data", async () => {
     for (let i = 0; i < ids.length; i++) {
-      const collectionResult = await resultHandler.getResultFromID(ids[i]);
+      const collectionResult = await resultReceiverProxy.getResultFromID(
+        ids[i]
+      );
       expect(collectionResult[0].toNumber()).to.be.equal(result[i]);
       expect(collectionResult[1]).to.be.equal(power[i]);
     }
 
-    const updatedCounter = await resultHandler.updatedCounter();
+    const updatedCounter = await resultReceiverProxy.updatedCounter();
     expect(updatedCounter).to.be.equal(1);
   });
 
-  it("Only admin can update resultProxy address in ResulHandler contract", async () => {
-    resultHandler = await resultHandler.connect(signers[1]);
+  it("Only admin can update resultSender address in ResulHandler contract", async () => {
+    resultReceiverProxy = await resultReceiverProxy.connect(signers[1]);
     await expect(
-      resultHandler.updateResultProxy(
+      resultReceiverProxy.updateResultSender(
         "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A"
       )
     ).to.be.revertedWith("Ownable: caller is not the owner");
 
-    resultHandler = await resultHandler.connect(signers[0]);
-    await resultHandler.updateResultProxy(RESULT_PROXY_ADDRESS);
+    resultReceiverProxy = await resultReceiverProxy.connect(signers[0]);
+    await resultReceiverProxy.updateResultSender(RESULT_PROXY_ADDRESS);
   });
 
   it("initialize should not be called more than once", async () => {
     await expect(
-      resultHandler.initialize(RESULT_PROXY_ADDRESS)
+      resultReceiverProxy.initialize(RESULT_PROXY_ADDRESS)
     ).to.be.revertedWith("Initializable: contract is already initialized");
   });
 
-  it("postMessage should fail if resultProxy address is incorrect", async () => {
-    await resultHandler.updateResultProxy(
+  it("postMessage should fail if resultSender address is incorrect", async () => {
+    await resultReceiverProxy.updateResultSender(
       "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A"
     );
     await expect(
-      resultProxy.publishResult(resultHandler.address, encodedData)
+      resultSender.publishResult(resultReceiverProxy.address, encodedData)
     ).to.be.revertedWith("Not Result proxy contract");
 
-    await resultHandler.updateResultProxy(RESULT_PROXY_ADDRESS);
+    await resultReceiverProxy.updateResultSender(RESULT_PROXY_ADDRESS);
   });
 });

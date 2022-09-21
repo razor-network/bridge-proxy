@@ -3,19 +3,19 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract ResultHandler is OwnableUpgradeable {
+contract ResultReceiverProxy is OwnableUpgradeable {
     uint16[] public activeCollectionIds;
     uint256 public lastUpdatedTimestamp;
     uint32 public updatedCounter;
 
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
-    address public constant MESSAGE_PROXY_ADDRESS =
+    address public constant IMA_PROXY_ADDRESS =
         0xd2AAa00100000000000000000000000000000000;
-    address public resultProxy;
+    address public resultSender;
 
-    function initialize(address _resultProxy) public initializer {
+    function initialize(address _resultSender) public initializer {
         __Ownable_init();
-        resultProxy = _resultProxy;
+        resultSender = _resultSender;
     }
 
     struct Collection {
@@ -33,29 +33,27 @@ contract ResultHandler is OwnableUpgradeable {
     event DataReceived(bytes32 schainHash, address sender, bytes data);
 
     modifier onlyMessageProxy() {
-        require(
-            msg.sender == MESSAGE_PROXY_ADDRESS,
-            "Not message proxy address"
-        );
+        require(msg.sender == IMA_PROXY_ADDRESS, "Not message proxy address");
         _;
     }
 
     /**
-     * @dev Update resultProxy address
+     * @dev Update resultSender address
      * Requirements:
      * - `msg.sender` should be admin
      */
-    function updateResultProxy(address _resultProxy) public onlyOwner {
-        resultProxy = _resultProxy;
+    function updateResultSender(address _resultSender) public onlyOwner {
+        resultSender = _resultSender;
     }
 
+    // * NOTE: Add initialized modifier to all functions
     /**
      * @dev Receives source chain data through validators/IMA
      * Requirements:
      *
-     * - `msg.sender` should be MESSAGE_PROXY_ADDRESS
+     * - `msg.sender` should be IMA_PROXY_ADDRESS
      * - schainHash should be SOURCE_CHAIN_HASH
-     * - sender should be resultProxy
+     * - sender should be resultSender
      */
     function postMessage(
         bytes32 schainHash,
@@ -63,7 +61,7 @@ contract ResultHandler is OwnableUpgradeable {
         bytes calldata data
     ) external onlyMessageProxy returns (address) {
         require(schainHash == SOURCE_CHAIN_HASH, "Source chain does not match");
-        require(sender == resultProxy, "Not Result proxy contract");
+        require(sender == resultSender, "Not Result proxy contract");
 
         (
             uint16[] memory ids,

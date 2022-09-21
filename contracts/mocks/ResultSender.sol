@@ -2,9 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "./ResultHandler.sol";
+import "./ResultReceiverProxy.sol";
 
-contract ResultProxyMock is AccessControlEnumerable {
+contract ResultSenderMock is AccessControlEnumerable {
     uint256 public lastUpdatedTimestamp;
 
     bytes32 public constant DISPATCHER_ROLE = keccak256("DISPATCHER_ROLE");
@@ -17,12 +17,15 @@ contract ResultProxyMock is AccessControlEnumerable {
     /**
      * @dev publish collection result via delegator.
      */
-    function publishResult(address _resultHandler, bytes memory data)
+    function publishResult(address _resultReceiver, bytes memory data)
         public
         onlyRole(DISPATCHER_ROLE)
     {
         lastUpdatedTimestamp = block.timestamp;
-        ResultHandlerMock(_resultHandler).postMessage(address(this), data);
+        ResultReceiverProxyMock(_resultReceiver).postMessage(
+            address(this),
+            data
+        );
         // proxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }
 }

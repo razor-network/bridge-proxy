@@ -4,27 +4,27 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "./interface/IDelegator.sol";
 import "./interface/ICollectionManager.sol";
-import "./interface/IProxy.sol";
+import "./interface/IMAProxy.sol";
 
-contract ResultProxy is AccessControlEnumerable {
+contract ResultSender is AccessControlEnumerable {
     uint256 public lastUpdatedTimestamp;
 
     IDelegator public delegator;
     ICollectionManager public collectionManager;
-    IProxy public proxy;
+    IMAProxy public imaProxy;
 
     bytes32 public constant DISPATCHER_ROLE = keccak256("DISPATCHER_ROLE");
 
     constructor(
         address _delegatorAddress,
         address _collectionManagerAddress,
-        address _proxyAddress
+        address _imaProxyAddress
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(DISPATCHER_ROLE, msg.sender);
         delegator = IDelegator(_delegatorAddress);
         collectionManager = ICollectionManager(_collectionManagerAddress);
-        proxy = IProxy(_proxyAddress);
+        imaProxy = IMAProxy(_imaProxyAddress);
     }
 
     /**
@@ -54,7 +54,7 @@ contract ResultProxy is AccessControlEnumerable {
         public
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
-        proxy = IProxy(_newProxyAddress);
+        imaProxy = IMAProxy(_newProxyAddress);
     }
 
     /**
@@ -95,6 +95,6 @@ contract ResultProxy is AccessControlEnumerable {
             namesHash,
             block.timestamp
         );
-        proxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
+        imaProxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }
 }
