@@ -28,13 +28,13 @@ There are 2 contracts that are required to bridge collection result from skale c
 
 ## Contract Address
 
-| Contract                       | Address                                    | Chain Name        |
-| ------------------------------ | ------------------------------------------ | ----------------- |
-| ResultHandler (Proxy)          | 0xCfF9840C6D8912D91E5f47Cf32672F94Ef673521 | attractive-merope |
-| ResultHandler (Implementation) | 0x35Fc80564fb755c8C7e1BCB277445fC726649b70 | attractive-merope |
-| MessageProxy                   | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
-| ResultProxy                    | 0x4d03D2fd0aa2EF6bC286dd8C0C970148d681529C | whispering-turais |
-| MessageProxy                   | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
-| ResultProxy (rinkeby)          | 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03 | whispering-turais |
-| ResultHandler                  | 0x10144adD7B8cB532BE580cf508837f155416D21A | Mainnet (rinkeby) |
-| MessageProxy                   | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | Mainnet (rinkeby) |
+| Contract                             | Address                                    | Chain Name        |
+| ------------------------------------ | ------------------------------------------ | ----------------- |
+| ResultReceiverProxy (Proxy)          | 0x14C74129C283114857c3A4AE82e0fee79CD54E20 | attractive-merope |
+| ResultReceiverProxy (Implementation) | 0x2A804c66Aec03a7da28A2BC865DA1eC6E200E7F1 | attractive-merope |
+| IMAProxy                             | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
+| ResultSender                         | 0xfF590bb926C81370A09e20554F992cb45A2d56F0 | whispering-turais |
+| IMAProxy                             | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
+| ResultProxy (rinkeby)                | 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03 | whispering-turais |
+| ResultHandler                        | 0x10144adD7B8cB532BE580cf508837f155416D21A | Mainnet (rinkeby) |
+| IMAProxy                             | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | Mainnet (rinkeby) |
