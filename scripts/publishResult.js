@@ -3,16 +3,16 @@ const hre = require("hardhat");
 const destinationChainHash =
   "0x44e247f49a9e6321f857375220890622a446abe945db7ed24b82fcbbbae07d12";
 
-const RESULT_SENDER_ADDRESS = "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A";
+const RESULT_SENDER_ADDRESS = "0xfF590bb926C81370A09e20554F992cb45A2d56F0";
 
 const RESULT_RECEIVER_PROXY_ADDRESS =
-  "0xaeC062ecf7Af0FdB9C9f134AD671027B22C3eF46";
+  "0x14C74129C283114857c3A4AE82e0fee79CD54E20";
 
 async function main() {
-  const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");
-  const resultProxy = ResultProxy.attach(RESULT_SENDER_ADDRESS);
+  const ResultSender = await hre.ethers.getContractFactory("ResultSender");
+  const resultSender = ResultSender.attach(RESULT_SENDER_ADDRESS);
 
-  const tx = await resultProxy.publishResult(
+  const tx = await resultSender.publishResult(
     destinationChainHash,
     RESULT_RECEIVER_PROXY_ADDRESS
   );

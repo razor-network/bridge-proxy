@@ -9,6 +9,11 @@
       "address": "0xaeC062ecf7Af0FdB9C9f134AD671027B22C3eF46",
       "txHash": "0x53c422fa32c8e6fe629134b388509351ac5a684fdc84d3938841b58635cfff87",
       "kind": "transparent"
+    },
+    {
+      "address": "0x14C74129C283114857c3A4AE82e0fee79CD54E20",
+      "txHash": "0xfe20f557c2428ae6f23ea0f372504d498404a01113025b74707425c72c5a226c",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -146,6 +151,181 @@
           },
           "t_struct(Collection)611_storage": {
             "label": "struct ResultHandler.Collection",
+            "members": [
+              {
+                "label": "id",
+                "type": "t_uint16",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "power",
+                "type": "t_int8",
+                "offset": 2,
+                "slot": "0"
+              },
+              {
+                "label": "result",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint32": {
+            "label": "uint32",
+            "numberOfBytes": "4"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        }
+      }
+    },
+    "b3504898cf632cdc0f70f532f817b7d87e647f47982fcd8190391c9a0bdc285b": {
+      "address": "0x2A804c66Aec03a7da28A2BC865DA1eC6E200E7F1",
+      "txHash": "0xb926d5bcca0fb6dad0d62f0fa79b963bca9b5614acd67c48480e4cefde0784d1",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:62",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:67"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:94"
+          },
+          {
+            "label": "activeCollectionIds",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_array(t_uint16)dyn_storage",
+            "contract": "ResultReceiverProxy",
+            "src": "contracts/ResultReceiverProxy.sol:7"
+          },
+          {
+            "label": "lastUpdatedTimestamp",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_uint256",
+            "contract": "ResultReceiverProxy",
+            "src": "contracts/ResultReceiverProxy.sol:8"
+          },
+          {
+            "label": "updatedCounter",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_uint32",
+            "contract": "ResultReceiverProxy",
+            "src": "contracts/ResultReceiverProxy.sol:9"
+          },
+          {
+            "label": "resultSender",
+            "offset": 4,
+            "slot": "103",
+            "type": "t_address",
+            "contract": "ResultReceiverProxy",
+            "src": "contracts/ResultReceiverProxy.sol:14"
+          },
+          {
+            "label": "collectionIds",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_bytes32,t_uint16)",
+            "contract": "ResultReceiverProxy",
+            "src": "contracts/ResultReceiverProxy.sol:28"
+          },
+          {
+            "label": "collections",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint16,t_struct(Collection)2037_storage)",
+            "contract": "ResultReceiverProxy",
+            "src": "contracts/ResultReceiverProxy.sol:31"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint16)dyn_storage": {
+            "label": "uint16[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_int8": {
+            "label": "int8",
+            "numberOfBytes": "1"
+          },
+          "t_mapping(t_bytes32,t_uint16)": {
+            "label": "mapping(bytes32 => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint16,t_struct(Collection)2037_storage)": {
+            "label": "mapping(uint16 => struct ResultReceiverProxy.Collection)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Collection)2037_storage": {
+            "label": "struct ResultReceiverProxy.Collection",
             "members": [
               {
                 "label": "id",
