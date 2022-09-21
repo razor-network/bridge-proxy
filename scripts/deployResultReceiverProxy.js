@@ -2,12 +2,14 @@ const hre = require("hardhat");
 const proxySchainV3 = require("../abis/proxySchainv3.json");
 
 const SOURCE_CHAIN = "whispering-turais";
-const RESULT_PROXY_ADDRESS = "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A";
+const RESULT_SENDER_ADDRESS = "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A";
 
 async function main() {
-  const ResultHandler = await hre.ethers.getContractFactory("ResultHandler");
-  const instance = await hre.upgrades.deployProxy(ResultHandler, [
-    RESULT_PROXY_ADDRESS,
+  const ResultReceiverProxy = await hre.ethers.getContractFactory(
+    "ResultReceiverProxy"
+  );
+  const instance = await hre.upgrades.deployProxy(ResultReceiverProxy, [
+    RESULT_SENDER_ADDRESS,
   ]);
   await instance.deployed();
 

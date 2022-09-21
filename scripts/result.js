@@ -1,11 +1,11 @@
 const hre = require("hardhat");
 
-const RESULT_HANDLER_PROXY_ADDRESS =
+const RESULT_RECEIVER_PROXY_ADDRESS =
   "0xaeC062ecf7Af0FdB9C9f134AD671027B22C3eF46";
 
 async function main() {
   const ResultHandler = await hre.ethers.getContractFactory("ResultHandler");
-  const resultHandler = ResultHandler.attach(RESULT_HANDLER_PROXY_ADDRESS);
+  const resultHandler = ResultHandler.attach(RESULT_RECEIVER_PROXY_ADDRESS);
 
   const collectionsResult = await resultHandler.getResultFromID(1);
   console.log(`collectionResult`);

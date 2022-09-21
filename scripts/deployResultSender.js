@@ -8,15 +8,15 @@ const COLLECTION_MANAGER_ADDRESS = "0x4A6d18E64AF3dC24dAA7a0abbA00670476395A2c";
 const DESTINATION_CHAIN = "attractive-merope";
 
 async function main() {
-  const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");
-  const resultProxy = await ResultProxy.deploy(
+  const ResultSender = await hre.ethers.getContractFactory("ResultSender");
+  const resultSender = await ResultSender.deploy(
     DELEGATOR_ADDRESS,
     COLLECTION_MANAGER_ADDRESS,
     ProxySchainABI.message_proxy_chain_address
   );
 
-  await resultProxy.deployed();
-  console.log(`Result Proxy deployed at: ${resultProxy.address}`);
+  await resultSender.deployed();
+  console.log(`ResultSender contract deployed at: ${resultSender.address}`);
 
   console.log(`Registering contract for IMA`);
   const proxySchainContract = await hre.ethers.getContractAt(
@@ -25,7 +25,7 @@ async function main() {
   );
   const tx = await proxySchainContract.registerExtraContract(
     DESTINATION_CHAIN,
-    resultProxy.address
+    resultSender.address
   );
   await tx.wait();
   console.log("tx");
