@@ -49,11 +49,14 @@ contract ResultReceiverProxy is OwnableUpgradeable {
      * Requirements:
      * - `msg.sender` should be admin
      */
-    function updateResultSender(address _resultSender) public onlyOwner {
+    function updateResultSender(address _resultSender)
+        public
+        onlyInitialized
+        onlyOwner
+    {
         resultSender = _resultSender;
     }
 
-    // * NOTE: Add initialized modifier to all functions
     /**
      * @dev Receives source chain data through validators/IMA
      * Requirements:
@@ -97,7 +100,7 @@ contract ResultReceiverProxy is OwnableUpgradeable {
      * @param _name bytes32 hash of the collection name
      * @return collection ID
      */
-    function getCollectionID(bytes32 _name) public view returns (uint16) {
+    function getCollectionID(bytes32 _name) external view returns (uint16) {
         return collectionIds[_name];
     }
 
@@ -106,7 +109,7 @@ contract ResultReceiverProxy is OwnableUpgradeable {
      * @param _name bytes32 hash of the collection name
      * @return result of the collection and its power
      */
-    function getResult(bytes32 _name) public view returns (uint256, int8) {
+    function getResult(bytes32 _name) external view returns (uint256, int8) {
         uint16 id = collectionIds[_name];
         return getResultFromID(id);
     }
@@ -130,7 +133,7 @@ contract ResultReceiverProxy is OwnableUpgradeable {
      * @param _id collection ID
      * @return status of the collection
      */
-    function getCollectionStatus(uint16 _id) public view returns (bool) {
+    function getCollectionStatus(uint16 _id) external view returns (bool) {
         bool isActive;
         for (uint256 i = 0; i < activeCollectionIds.length; i++) {
             if (activeCollectionIds[i] == _id) {
