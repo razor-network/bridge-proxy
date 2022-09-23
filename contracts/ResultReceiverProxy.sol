@@ -7,6 +7,7 @@ contract ResultReceiverProxy is OwnableUpgradeable {
     uint16[] public activeCollectionIds;
     uint256 public lastUpdatedTimestamp;
     uint32 public updatedCounter;
+    bool public initialized;
 
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
     address public constant IMA_PROXY_ADDRESS =
@@ -16,6 +17,7 @@ contract ResultReceiverProxy is OwnableUpgradeable {
     function initialize(address _resultSender) public initializer {
         __Ownable_init();
         resultSender = _resultSender;
+        initialized = true;
     }
 
     struct Collection {
@@ -34,6 +36,11 @@ contract ResultReceiverProxy is OwnableUpgradeable {
 
     modifier onlyMessageProxy() {
         require(msg.sender == IMA_PROXY_ADDRESS, "Not message proxy address");
+        _;
+    }
+
+    modifier onlyInitialized() {
+        require(initialized, "Contract should be initialized");
         _;
     }
 
@@ -59,7 +66,7 @@ contract ResultReceiverProxy is OwnableUpgradeable {
         bytes32 schainHash,
         address sender,
         bytes calldata data
-    ) external onlyMessageProxy returns (address) {
+    ) external onlyInitialized onlyMessageProxy returns (address) {
         require(schainHash == SOURCE_CHAIN_HASH, "Source chain does not match");
         require(sender == resultSender, "Not Result proxy contract");
 
