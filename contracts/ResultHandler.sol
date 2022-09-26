@@ -1,36 +1,37 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-contract ResultReceiverProxy is OwnableUpgradeable {
+contract ResultHandler is AccessControlEnumerableUpgradeable {
     uint16[] public activeCollectionIds;
-    uint256 public lastUpdatedTimestamp;
-    uint32 public updatedCounter;
     bool public initialized;
+    address public keygenAddress;
 
-    bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
     address public constant IMA_PROXY_ADDRESS =
         0xd2AAa00100000000000000000000000000000000;
-    address public resultSender;
-
-    function initialize(address _resultSender) public initializer {
-        __Ownable_init();
-        resultSender = _resultSender;
-        initialized = true;
+    struct Block {
+        uint32 requestId;
+        bytes message;
+        bytes signature;
     }
 
-    struct Collection {
-        uint16 id;
+    struct Value {
         int8 power;
-        uint256 result;
+        uint16 collectionId;
+        bytes32 name;
+        uint256 value;
     }
+
+    // requestId => Block
+    mapping(uint32 => Block) public blocks;
 
     /// @notice mapping for name of collection in bytes32 -> collectionid
     mapping(bytes32 => uint16) public collectionIds;
 
-    /// @notice mapping for CollectionID -> Collection Info
-    mapping(uint16 => Collection) public collections;
+    /// @notice mapping for CollectionID -> Value Info
+    mapping(uint16 => Value) public collectionResults;
 
     event DataReceived(bytes32 schainHash, address sender, bytes data);
 
@@ -44,17 +45,43 @@ contract ResultReceiverProxy is OwnableUpgradeable {
         _;
     }
 
-    /**
-     * @dev Update resultSender address
-     * Requirements:
-     * - `msg.sender` should be admin
-     */
-    function updateResultSender(address _resultSender)
-        public
-        onlyInitialized
-        onlyOwner
-    {
-        resultSender = _resultSender;
+    function initialize() public initializer {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        initialized = true;
+    }
+
+    function setKeygen(address _keygenAddress) external {
+        require(
+            msg.sender == keygenAddress ||
+                hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
+            "Invalid Caller"
+        );
+        keygenAddress = _keygenAddress;
+    }
+
+    function setBlock(Block memory tssBlock) public onlyInitialized {
+        bytes32 messageHash = keccak256(tssBlock.message);
+        require(
+            ECDSA.recover(
+                ECDSA.toEthSignedMessageHash(messageHash),
+                tssBlock.signature
+            ) == keygenAddress,
+            "invalid signature"
+        );
+
+        (, uint32 requestId, Value[] memory values) = abi.decode(
+            tssBlock.message,
+            (uint256, uint32, Value[])
+        ); // solhint-disable-line
+        uint16[] memory ids = new uint16[](values.length);
+
+        blocks[requestId] = tssBlock;
+        for (uint256 i; i < values.length; i++) {
+            collectionResults[values[i].collectionId] = values[i];
+            collectionIds[values[i].name] = values[i].collectionId;
+            ids[i] = values[i].collectionId;
+        }
+        activeCollectionIds = ids;
     }
 
     /**
@@ -62,37 +89,16 @@ contract ResultReceiverProxy is OwnableUpgradeable {
      * Requirements:
      *
      * - `msg.sender` should be IMA_PROXY_ADDRESS
-     * - schainHash should be SOURCE_CHAIN_HASH
      * - sender should be resultSender
      */
     function postMessage(
         bytes32 schainHash,
         address sender,
         bytes calldata data
-    ) external onlyInitialized onlyMessageProxy returns (address) {
-        require(schainHash == SOURCE_CHAIN_HASH, "Source chain does not match");
-        require(sender == resultSender, "Not Result proxy contract");
-
-        (
-            uint16[] memory ids,
-            uint256[] memory results,
-            int8[] memory power,
-            bytes32[] memory namesHash,
-            uint256 timestamp
-        ) = abi.decode(data, (uint16[], uint256[], int8[], bytes32[], uint256));
-
-        updatedCounter++;
-
-        activeCollectionIds = ids;
-        lastUpdatedTimestamp = timestamp;
-
-        for (uint256 i = 0; i < ids.length; i++) {
-            collections[ids[i]].result = results[i];
-            collections[ids[i]].power = power[i];
-            collectionIds[namesHash[i]] = ids[i];
-        }
+    ) external onlyInitialized onlyMessageProxy {
+        Block memory tssBlock = abi.decode(data, (Block));
+        setBlock(tssBlock);
         emit DataReceived(schainHash, sender, data);
-        return sender;
     }
 
     /**
@@ -118,7 +124,7 @@ contract ResultReceiverProxy is OwnableUpgradeable {
      * @dev Returns collection result and power with collectionId as parameter
      */
     function getResultFromID(uint16 _id) public view returns (uint256, int8) {
-        return (collections[_id].result, collections[_id].power);
+        return (collectionResults[_id].value, collectionResults[_id].power);
     }
 
     /**
