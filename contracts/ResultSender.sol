@@ -8,12 +8,25 @@ import "./interface/IMAProxy.sol";
 
 contract ResultSender is AccessControlEnumerable {
     uint256 public lastUpdatedTimestamp;
+    uint256 public lastRequestId;
 
     IDelegator public delegator;
     ICollectionManager public collectionManager;
     IMAProxy public imaProxy;
 
     bytes32 public constant DISPATCHER_ROLE = keccak256("DISPATCHER_ROLE");
+    struct Block {
+        uint32 requestId;
+        bytes message;
+        bytes signature;
+    }
+
+    struct Value {
+        int8 power;
+        uint16 collectionId;
+        bytes32 name;
+        uint256 value;
+    }
 
     constructor(
         address _delegatorAddress,
@@ -57,44 +70,42 @@ contract ResultSender is AccessControlEnumerable {
         imaProxy = IMAProxy(_newProxyAddress);
     }
 
-    /**
-     * @dev publish collection result via delegator.
-     */
-    function publishResult(bytes32 _targetChainHash, address _resultHandler)
-        public
-        onlyRole(DISPATCHER_ROLE)
-    {
+    function getMessage() public view returns (bytes memory) {
         uint16[] memory activeCollections = delegator.getActiveCollections();
-
-        uint16[] memory ids = new uint16[](activeCollections.length);
-        uint256[] memory results = new uint256[](activeCollections.length);
-        int8[] memory power = new int8[](activeCollections.length);
-        bytes32[] memory namesHash = new bytes32[](activeCollections.length);
+        Value[] memory values = new Value[](activeCollections.length);
 
         for (uint256 i = 0; i < activeCollections.length; i++) {
-            (uint256 collectionResult, int8 collectionPower) = delegator
-                .getResultFromID(activeCollections[i]);
+            (uint256 value, int8 power) = delegator.getResultFromID(
+                activeCollections[i]
+            );
             string memory name = collectionManager
                 .getCollection(activeCollections[i])
                 .name;
             bytes32 nameHash = keccak256(abi.encodePacked(name));
 
-            ids[i] = activeCollections[i];
-            results[i] = collectionResult;
-            power[i] = collectionPower;
-            namesHash[i] = nameHash;
+            values[i] = Value(power, activeCollections[i], nameHash, value);
         }
 
+        bytes memory message = abi.encode(values);
+        return message;
+    }
+
+    /**
+     * @dev publish collection result via delegator.
+     */
+    function publishResult(
+        bytes32 _targetChainHash,
+        address _resultHandler,
+        uint32 _requestId,
+        bytes calldata _signature
+    ) public onlyRole(DISPATCHER_ROLE) {
+        lastRequestId = _requestId;
         lastUpdatedTimestamp = block.timestamp;
 
-        // send encoded data to MessageProxy
-        bytes memory data = abi.encode(
-            ids,
-            results,
-            power,
-            namesHash,
-            block.timestamp
-        );
+        bytes memory message = getMessage();
+        Block memory tssBlock = Block(_requestId, message, _signature);
+        bytes memory data = abi.encode(tssBlock);
+
         imaProxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }
 }

@@ -5,12 +5,13 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgrad
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract ResultHandler is AccessControlEnumerableUpgradeable {
+    address public constant IMA_PROXY_ADDRESS =
+        0xd2AAa00100000000000000000000000000000000;
+
     uint16[] public activeCollectionIds;
     bool public initialized;
     address public keygenAddress;
 
-    address public constant IMA_PROXY_ADDRESS =
-        0xd2AAa00100000000000000000000000000000000;
     struct Block {
         uint32 requestId;
         bytes message;
@@ -45,9 +46,10 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
         _;
     }
 
-    function initialize() public initializer {
+    function initialize(address _keygenAddress) public initializer {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         initialized = true;
+        keygenAddress = _keygenAddress;
     }
 
     function setKeygen(address _keygenAddress) external {
