@@ -18,28 +18,43 @@ const encodedData = hre.ethers.utils.defaultAbiCoder.encode(
   [ids, result, power, namesHash]
 );
 
+const getMessage = async (resultSender) => {
+  const message = await resultSender.getMessage(power, ids, namesHash, result);
+  return message;
+};
+
+const getSignature = async (message, signer) => {
+  const messageHash = hre.ethers.utils.arrayify(
+    hre.ethers.utils.keccak256(message)
+  );
+
+  const signature = await signer.signMessage(messageHash);
+  return signature;
+};
+
 describe("ResultSender", () => {
   let resultSender;
-  let resultReceiverProxy;
+  let resultHandler;
   let signers;
   let DISPATCHER_ROLE;
-  let RESULT_PROXY_ADDRESS;
+  let KEYGEN_ADDRESS;
 
   before(async () => {
+    signers = await hre.ethers.getSigners();
+
     const ResultSender = await hre.ethers.getContractFactory(
       "ResultSenderMock"
     );
     resultSender = await ResultSender.deploy();
-    RESULT_PROXY_ADDRESS = resultSender.address;
+    KEYGEN_ADDRESS = signers[0].address;
 
-    const ResultReceiverProxy = await hre.ethers.getContractFactory(
-      "ResultReceiverProxyMock"
+    const ResultHandler = await hre.ethers.getContractFactory(
+      "ResultHandlerMock"
     );
-    resultReceiverProxy = await hre.upgrades.deployProxy(ResultReceiverProxy, [
-      RESULT_PROXY_ADDRESS,
+    resultHandler = await hre.upgrades.deployProxy(ResultHandler, [
+      KEYGEN_ADDRESS,
     ]);
 
-    signers = await hre.ethers.getSigners();
     DISPATCHER_ROLE = await resultSender.DISPATCHER_ROLE();
   });
 
@@ -68,62 +83,48 @@ describe("ResultSender", () => {
     expect(hasDispatcherRole).to.be.true;
   });
 
+  it("initialize should not be called more than once", async () => {
+    await expect(resultHandler.initialize(KEYGEN_ADDRESS)).to.be.revertedWith(
+      "Initializable: contract is already initialized"
+    );
+  });
+
   it("publishResult can be called only by address having DISPATCHER_ROLE", async () => {
     resultSender = await resultSender.connect(signers[1]);
     const DISPATCHER_ROLE = await resultSender.DISPATCHER_ROLE();
+
+    const message = await getMessage(resultSender);
+    const signature = await getSignature(message, signers[0]);
+
     await expect(
-      resultSender.publishResult(resultReceiverProxy.address, encodedData)
+      resultSender.publishResult(resultHandler.address, 1, signature, message)
     ).to.be.revertedWith(
       `AccessControl: account ${signers[1].address.toLowerCase()} is missing role ${DISPATCHER_ROLE.toLowerCase()}`
     );
-  });
-
-  it("Collection result should update on publishResult", async () => {
     resultSender = await resultSender.connect(signers[0]);
-    await resultSender.publishResult(resultReceiverProxy.address, encodedData);
-    const updatedCounter = await resultReceiverProxy.updatedCounter();
-    expect(updatedCounter).to.be.equal(1);
   });
 
-  it("Collection result should be same as bridge data", async () => {
-    for (let i = 0; i < ids.length; i++) {
-      const collectionResult = await resultReceiverProxy.getResultFromID(
-        ids[i]
-      );
-      expect(collectionResult[0].toNumber()).to.be.equal(result[i]);
-      expect(collectionResult[1]).to.be.equal(power[i]);
-    }
+  it("publish result should fail if KEYGEN_ADDRESS is wrong", async () => {
+    const message = await getMessage(resultSender);
+    const signature = await getSignature(message, signers[1]);
 
-    const updatedCounter = await resultReceiverProxy.updatedCounter();
-    expect(updatedCounter).to.be.equal(1);
-  });
-
-  it("Only admin can update resultSender address in ResulHandler contract", async () => {
-    resultReceiverProxy = await resultReceiverProxy.connect(signers[1]);
     await expect(
-      resultReceiverProxy.updateResultSender(
-        "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A"
-      )
-    ).to.be.revertedWith("Ownable: caller is not the owner");
-
-    resultReceiverProxy = await resultReceiverProxy.connect(signers[0]);
-    await resultReceiverProxy.updateResultSender(RESULT_PROXY_ADDRESS);
+      resultSender.publishResult(resultHandler.address, 1, signature, message)
+    ).to.be.revertedWith("invalid signature");
   });
 
-  it("initialize should not be called more than once", async () => {
-    await expect(
-      resultReceiverProxy.initialize(RESULT_PROXY_ADDRESS)
-    ).to.be.revertedWith("Initializable: contract is already initialized");
-  });
+  it("Publish result should update ResultHandler data", async () => {
+    const message = await getMessage(resultSender);
+    const signature = await getSignature(message, signers[0]);
 
-  it("postMessage should fail if resultSender address is incorrect", async () => {
-    await resultReceiverProxy.updateResultSender(
-      "0x9ffF410Ecf9acaC08dE61482f91096843f9A035A"
+    await resultSender.publishResult(
+      resultHandler.address,
+      1,
+      signature,
+      message
     );
-    await expect(
-      resultSender.publishResult(resultReceiverProxy.address, encodedData)
-    ).to.be.revertedWith("Not Result proxy contract");
 
-    await resultReceiverProxy.updateResultSender(RESULT_PROXY_ADDRESS);
+    const activeCollectionIds = await resultHandler.getActiveCollections();
+    expect(activeCollectionIds).to.have.same.members(ids);
   });
 });

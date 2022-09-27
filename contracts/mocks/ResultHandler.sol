@@ -2,72 +2,83 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract ResultReceiverProxyMock is OwnableUpgradeable {
+import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
+contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
     uint16[] public activeCollectionIds;
-    uint256 public lastUpdatedTimestamp;
-    uint32 public updatedCounter;
 
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
     address public constant MESSAGE_PROXY_ADDRESS =
         0xd2AAa00100000000000000000000000000000000;
     address public resultSender;
+    bool public initialized;
+    address public keygenAddress;
 
-    function initialize(address _resultSender) public initializer {
-        __Ownable_init();
-        resultSender = _resultSender;
+    function initialize(address _keygenAddress) public initializer {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        initialized = true;
+        keygenAddress = _keygenAddress;
     }
 
-    struct Collection {
-        uint16 id;
+    struct Block {
+        uint32 requestId;
+        bytes message;
+        bytes signature;
+    }
+
+    struct Value {
         int8 power;
-        uint256 result;
+        uint16 collectionId;
+        bytes32 name;
+        uint256 value;
     }
+
+    // requestId => Block
+    mapping(uint32 => Block) public blocks;
 
     /// @notice mapping for name of collection in bytes32 -> collectionid
     mapping(bytes32 => uint16) public collectionIds;
 
-    /// @notice mapping for CollectionID -> Collection Info
-    mapping(uint16 => Collection) public collections;
+    /// @notice mapping for CollectionID -> Value Info
+    mapping(uint16 => Value) public collectionResults;
 
     event DataReceived(bytes data);
 
-    /**
-     * @dev Update resultSender address
-     * Requirements:
-     * - `msg.sender` should be admin
-     */
-    function updateResultSender(address _resultSender) public onlyOwner {
-        resultSender = _resultSender;
+    modifier onlyInitialized() {
+        require(initialized, "Contract should be initialized");
+        _;
+    }
+
+    function setBlock(Block memory tssBlock) public onlyInitialized {
+        bytes32 messageHash = keccak256(tssBlock.message);
+
+        require(
+            ECDSA.recover(
+                ECDSA.toEthSignedMessageHash(messageHash),
+                tssBlock.signature
+            ) == keygenAddress,
+            "invalid signature"
+        );
+
+        Value[] memory values = abi.decode(tssBlock.message, (Value[])); // solhint-disable-line
+        uint16[] memory ids = new uint16[](values.length);
+
+        blocks[tssBlock.requestId] = tssBlock;
+        for (uint256 i; i < values.length; i++) {
+            collectionResults[values[i].collectionId] = values[i];
+            collectionIds[values[i].name] = values[i].collectionId;
+            ids[i] = values[i].collectionId;
+        }
+        activeCollectionIds = ids;
     }
 
     /**
      * @dev Receives source chain data through validators/IMA
-     * Requirements:
-     *
-     * - `msg.sender` should be MESSAGE_PROXY_ADDRESS
-     * - schainHash should be SOURCE_CHAIN_HASH
-     * - sender should be RESULT_PROXY_ADDRESS
      */
     function postMessage(address sender, bytes calldata data) external {
-        require(sender == resultSender, "Not Result proxy contract");
-        (
-            uint16[] memory ids,
-            uint256[] memory results,
-            int8[] memory power,
-            bytes32[] memory namesHash,
-            uint256 timestamp
-        ) = abi.decode(data, (uint16[], uint256[], int8[], bytes32[], uint256));
-
-        updatedCounter++;
-
-        activeCollectionIds = ids;
-        lastUpdatedTimestamp = timestamp;
-
-        for (uint256 i = 0; i < ids.length; i++) {
-            collections[ids[i]].result = results[i];
-            collections[ids[i]].power = power[i];
-            collectionIds[namesHash[i]] = ids[i];
-        }
+        Block memory tssBlock = abi.decode(data, (Block));
+        setBlock(tssBlock);
         emit DataReceived(data);
     }
 
@@ -94,7 +105,7 @@ contract ResultReceiverProxyMock is OwnableUpgradeable {
      * @dev Returns collection result and power with collectionId as parameter
      */
     function getResultFromID(uint16 _id) public view returns (uint256, int8) {
-        return (collections[_id].result, collections[_id].power);
+        return (collectionResults[_id].value, collectionResults[_id].power);
     }
 
     /**
