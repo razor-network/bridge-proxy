@@ -8,7 +8,7 @@ import "./interface/IMAProxy.sol";
 
 contract ResultSender is AccessControlEnumerable {
     uint256 public lastUpdatedTimestamp;
-    uint256 public lastRequestId;
+    uint32 public lastRequestId;
 
     IDelegator public delegator;
     ICollectionManager public collectionManager;

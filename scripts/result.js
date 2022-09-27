@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 const RESULT_HANDLER_PROXY_ADDRESS =
-  "0xff12b2c1F167863Fc0c5aC6584889E0759731fc7";
+  "0xEe9C45A4aA4e62250ddE79e94222aBb9dE465b1d";
 
 async function main() {
   const ResultHandlerProxy = await hre.ethers.getContractFactory(
@@ -9,10 +9,6 @@ async function main() {
   );
   const resultHandlerProxy = ResultHandlerProxy.attach(
     RESULT_HANDLER_PROXY_ADDRESS
-  );
-
-  await resultHandlerProxy.setKeygen(
-    "0x905173b6c0a51925d3c9b619466c623c754fb7bb"
   );
 
   const keygenAddress = await resultHandlerProxy.keygenAddress();

@@ -3,17 +3,17 @@ const hre = require("hardhat");
 const destinationChainHash =
   "0x44e247f49a9e6321f857375220890622a446abe945db7ed24b82fcbbbae07d12";
 
-const RESULT_SENDER_ADDRESS = "0xCec573e1FeC01441e66Ca4b26f04f88A57258457";
+const RESULT_SENDER_ADDRESS = "0x0C28A8881182591A62ea54F27F774bf254B78dbf";
 
 const RESULT_RECEIVER_PROXY_ADDRESS =
-  "0xff12b2c1F167863Fc0c5aC6584889E0759731fc7";
+  "0xEe9C45A4aA4e62250ddE79e94222aBb9dE465b1d";
 
 async function main() {
   const ResultSender = await hre.ethers.getContractFactory("ResultSender");
   const resultSender = ResultSender.attach(RESULT_SENDER_ADDRESS);
 
   const lastRequestId = await resultSender.lastRequestId();
-  console.log("lastRequestId: ", lastRequestId.toNumber());
+  console.log("lastRequestId: ", lastRequestId);
 
   const message = await resultSender.getMessage();
 
@@ -27,7 +27,7 @@ async function main() {
   console.log("signature");
   console.log(signature);
 
-  const newRequestId = lastRequestId.add("1");
+  const newRequestId = lastRequestId + 1;
   console.log("newRequestId");
   console.log(newRequestId);
   const tx = await resultSender.publishResult(

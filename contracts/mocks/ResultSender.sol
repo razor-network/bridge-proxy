@@ -6,7 +6,7 @@ import "./ResultHandler.sol";
 
 contract ResultSenderMock is AccessControlEnumerable {
     uint256 public lastUpdatedTimestamp;
-    uint256 public lastRequestId;
+    uint32 public lastRequestId;
 
     bytes32 public constant DISPATCHER_ROLE = keccak256("DISPATCHER_ROLE");
 
