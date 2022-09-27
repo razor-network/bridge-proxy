@@ -104,7 +104,7 @@ describe("ResultSender", () => {
     resultSender = await resultSender.connect(signers[0]);
   });
 
-  it("publish result should fail if KEYGEN_ADDRESS is wrong", async () => {
+  it("publish result should fail if KEYGEN_ADDRESS is incorrect", async () => {
     const message = await getMessage(resultSender);
     const signature = await getSignature(message, signers[1]);
 
@@ -113,18 +113,63 @@ describe("ResultSender", () => {
     ).to.be.revertedWith("invalid signature");
   });
 
-  it("Publish result should update ResultHandler data", async () => {
+  it("Publish result should update collection results", async () => {
+    const message = await getMessage(resultSender);
+    const signature = await getSignature(message, signers[0]);
+
+    const lastRequestId = await resultSender.lastRequestId();
+    const currentRequestId = lastRequestId + 1;
+
+    await resultSender.publishResult(
+      resultHandler.address,
+      currentRequestId,
+      signature,
+      message
+    );
+
+    for (let i = 0; i < ids.length; i++) {
+      // * test getCollectionID
+      const cId = await resultHandler.getCollectionID(namesHash[i]);
+      expect(cId).to.be.equal(ids[i]);
+
+      // * test getResult
+      let [cResult, cPower] = await resultHandler.getResult(namesHash[i]);
+      expect(cPower).to.be.equal(power[i]);
+      expect(cResult.toNumber()).to.be.equal(result[i]);
+
+      // * test getResultFromID
+      [cResult, cPower] = await resultHandler.getResultFromID(ids[i]);
+      expect(cPower).to.be.equal(power[i]);
+      expect(cResult.toNumber()).to.be.equal(result[i]);
+    }
+
+    // * test activeCollectionIds
+    const activeCollectionIds = await resultHandler.getActiveCollections();
+    expect(activeCollectionIds).to.have.same.members(ids);
+
+    // * test getCollectionStatus
+    for (let i = 0; i < ids.length + 1; i++) {
+      const isActive = await resultHandler.getCollectionStatus(i);
+      const isExist = ids.includes(i);
+      expect(isActive).to.be.equal(isExist);
+    }
+  });
+
+  it("Publish result should create block with requestId", async () => {
+    const lastRequestId = await resultSender.lastRequestId();
+    const currentRequestId = lastRequestId + 1;
+
     const message = await getMessage(resultSender);
     const signature = await getSignature(message, signers[0]);
 
     await resultSender.publishResult(
       resultHandler.address,
-      1,
+      currentRequestId,
       signature,
       message
     );
 
-    const activeCollectionIds = await resultHandler.getActiveCollections();
-    expect(activeCollectionIds).to.have.same.members(ids);
+    const block = await resultHandler.blocks(currentRequestId);
+    expect(block.requestId).to.be.equal(currentRequestId);
   });
 });
