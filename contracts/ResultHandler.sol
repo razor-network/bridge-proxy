@@ -63,6 +63,7 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
 
     function setBlock(Block memory tssBlock) public onlyInitialized {
         bytes32 messageHash = keccak256(tssBlock.message);
+
         require(
             ECDSA.recover(
                 ECDSA.toEthSignedMessageHash(messageHash),
@@ -71,13 +72,10 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
             "invalid signature"
         );
 
-        (, uint32 requestId, Value[] memory values) = abi.decode(
-            tssBlock.message,
-            (uint256, uint32, Value[])
-        ); // solhint-disable-line
+        Value[] memory values = abi.decode(tssBlock.message, (Value[])); // solhint-disable-line
         uint16[] memory ids = new uint16[](values.length);
 
-        blocks[requestId] = tssBlock;
+        blocks[tssBlock.requestId] = tssBlock;
         for (uint256 i; i < values.length; i++) {
             collectionResults[values[i].collectionId] = values[i];
             collectionIds[values[i].name] = values[i].collectionId;
