@@ -11,7 +11,6 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
     uint16[] public activeCollectionIds;
     bool public initialized;
     address public keygenAddress;
-    uint256 public lastUpdatedEpoch;
     uint256 public lastUpdatedTimestamp;
 
     struct Block {
@@ -76,7 +75,7 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
             "invalid signature"
         );
 
-        (uint256 epoch, uint32 requestId, Value[] memory values) = abi.decode(
+        (, uint32 requestId, Value[] memory values) = abi.decode(
             tssBlock.message,
             (uint256, uint32, Value[])
         );
@@ -89,7 +88,6 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
             ids[i] = values[i].collectionId;
         }
         activeCollectionIds = ids;
-        lastUpdatedEpoch = epoch;
         lastUpdatedTimestamp = timestamp;
     }
 

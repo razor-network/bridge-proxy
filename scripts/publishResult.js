@@ -3,10 +3,10 @@ const hre = require("hardhat");
 const destinationChainHash =
   "0x44e247f49a9e6321f857375220890622a446abe945db7ed24b82fcbbbae07d12";
 
-const RESULT_SENDER_ADDRESS = "0xE93C1C49Ed593CaA13027C3B8987A9DdB8fE35c7";
+const RESULT_SENDER_ADDRESS = "0x8C05D8141A47E927376AbbE9eA8C76a858b59C0b";
 
-const RESULT_RECEIVER_PROXY_ADDRESS =
-  "0xE5E77D25a53b801cA312aEBa6c798e47E992d77c";
+const RESULT_HANDLER_PROXY_ADDRESS =
+  "0x05468561345Ee7A401597232c5335ffF5c4deff8";
 
 async function main() {
   const ResultSender = await hre.ethers.getContractFactory("ResultSender");
@@ -33,17 +33,13 @@ async function main() {
 
   const tx = await resultSender.publishResult(
     destinationChainHash,
-    RESULT_RECEIVER_PROXY_ADDRESS,
+    RESULT_HANDLER_PROXY_ADDRESS,
     newRequestId,
     1,
     timesstamp,
     signature
   );
 
-  // const tx = await resultSender.publishResult(
-  //   destinationChainHash,
-  //   RESULT_RECEIVER_PROXY_ADDRESS
-  // );
   await tx.wait();
   console.log("Transaction hash: ", tx.hash);
 }

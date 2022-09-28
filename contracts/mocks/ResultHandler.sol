@@ -13,7 +13,6 @@ contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
     uint16[] public activeCollectionIds;
     bool public initialized;
     address public keygenAddress;
-    uint256 public lastUpdatedEpoch;
 
     function initialize(address _keygenAddress) public initializer {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -60,7 +59,7 @@ contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
             "invalid signature"
         );
 
-        (uint256 epoch, uint32 requestId, Value[] memory values) = abi.decode(
+        (, uint32 requestId, Value[] memory values) = abi.decode(
             tssBlock.message,
             (uint256, uint32, Value[])
         );
@@ -73,7 +72,6 @@ contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
             ids[i] = values[i].collectionId;
         }
         activeCollectionIds = ids;
-        lastUpdatedEpoch = epoch;
     }
 
     /**
