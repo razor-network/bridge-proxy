@@ -18,8 +18,15 @@ const encodedData = hre.ethers.utils.defaultAbiCoder.encode(
   [ids, result, power, namesHash]
 );
 
-const getMessage = async (resultSender) => {
-  const message = await resultSender.getMessage(power, ids, namesHash, result);
+const getMessage = async (resultSender, epoch, requestId) => {
+  const message = await resultSender.getMessage(
+    power,
+    ids,
+    namesHash,
+    result,
+    epoch,
+    requestId
+  );
   return message;
 };
 
@@ -38,6 +45,7 @@ describe("ResultSender", () => {
   let signers;
   let DISPATCHER_ROLE;
   let KEYGEN_ADDRESS;
+  let epoch;
 
   before(async () => {
     signers = await hre.ethers.getSigners();
@@ -56,6 +64,7 @@ describe("ResultSender", () => {
     ]);
 
     DISPATCHER_ROLE = await resultSender.DISPATCHER_ROLE();
+    epoch = 1;
   });
 
   it("Admin should have DEFAULT_ADMIN_ROLE", async () => {
@@ -93,11 +102,11 @@ describe("ResultSender", () => {
     resultSender = await resultSender.connect(signers[1]);
     const DISPATCHER_ROLE = await resultSender.DISPATCHER_ROLE();
 
-    const message = await getMessage(resultSender);
+    const message = await getMessage(resultSender, epoch, 1);
     const signature = await getSignature(message, signers[0]);
 
     await expect(
-      resultSender.publishResult(resultHandler.address, 1, signature, message)
+      resultSender.publishResult(resultHandler.address, signature, message)
     ).to.be.revertedWith(
       `AccessControl: account ${signers[1].address.toLowerCase()} is missing role ${DISPATCHER_ROLE.toLowerCase()}`
     );
@@ -105,27 +114,22 @@ describe("ResultSender", () => {
   });
 
   it("publish result should fail if KEYGEN_ADDRESS is incorrect", async () => {
-    const message = await getMessage(resultSender);
+    const message = await getMessage(resultSender, epoch, 1);
     const signature = await getSignature(message, signers[1]);
 
     await expect(
-      resultSender.publishResult(resultHandler.address, 1, signature, message)
+      resultSender.publishResult(resultHandler.address, signature, message)
     ).to.be.revertedWith("invalid signature");
   });
 
   it("Publish result should update collection results", async () => {
-    const message = await getMessage(resultSender);
-    const signature = await getSignature(message, signers[0]);
-
     const lastRequestId = await resultSender.lastRequestId();
     const currentRequestId = lastRequestId + 1;
 
-    await resultSender.publishResult(
-      resultHandler.address,
-      currentRequestId,
-      signature,
-      message
-    );
+    const message = await getMessage(resultSender, epoch, currentRequestId);
+    const signature = await getSignature(message, signers[0]);
+
+    await resultSender.publishResult(resultHandler.address, signature, message);
 
     for (let i = 0; i < ids.length; i++) {
       // * test getCollectionID
@@ -159,17 +163,12 @@ describe("ResultSender", () => {
     const lastRequestId = await resultSender.lastRequestId();
     const currentRequestId = lastRequestId + 1;
 
-    const message = await getMessage(resultSender);
+    const message = await getMessage(resultSender, epoch, currentRequestId);
     const signature = await getSignature(message, signers[0]);
 
-    await resultSender.publishResult(
-      resultHandler.address,
-      currentRequestId,
-      signature,
-      message
-    );
+    await resultSender.publishResult(resultHandler.address, signature, message);
 
     const block = await resultHandler.blocks(currentRequestId);
-    expect(block.requestId).to.be.equal(currentRequestId);
+    expect(block.message).to.be.not.equal("0x");
   });
 });

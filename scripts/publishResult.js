@@ -3,10 +3,10 @@ const hre = require("hardhat");
 const destinationChainHash =
   "0x44e247f49a9e6321f857375220890622a446abe945db7ed24b82fcbbbae07d12";
 
-const RESULT_SENDER_ADDRESS = "0x0C28A8881182591A62ea54F27F774bf254B78dbf";
+const RESULT_SENDER_ADDRESS = "0xE93C1C49Ed593CaA13027C3B8987A9DdB8fE35c7";
 
 const RESULT_RECEIVER_PROXY_ADDRESS =
-  "0xEe9C45A4aA4e62250ddE79e94222aBb9dE465b1d";
+  "0xE5E77D25a53b801cA312aEBa6c798e47E992d77c";
 
 async function main() {
   const ResultSender = await hre.ethers.getContractFactory("ResultSender");
@@ -15,7 +15,9 @@ async function main() {
   const lastRequestId = await resultSender.lastRequestId();
   console.log("lastRequestId: ", lastRequestId);
 
-  const message = await resultSender.getMessage();
+  const newRequestId = lastRequestId + 1;
+
+  const message = await resultSender.getMessage(1, newRequestId);
 
   const signer = await hre.ethers.getSigner();
 
@@ -27,13 +29,14 @@ async function main() {
   console.log("signature");
   console.log(signature);
 
-  const newRequestId = lastRequestId + 1;
-  console.log("newRequestId");
-  console.log(newRequestId);
+  const timesstamp = Math.floor(Date.now() / 1000);
+
   const tx = await resultSender.publishResult(
     destinationChainHash,
     RESULT_RECEIVER_PROXY_ADDRESS,
     newRequestId,
+    1,
+    timesstamp,
     signature
   );
 

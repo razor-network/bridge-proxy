@@ -5,13 +5,12 @@ import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "./ResultHandler.sol";
 
 contract ResultSenderMock is AccessControlEnumerable {
-    uint256 public lastUpdatedTimestamp;
+    uint256 public lastUpdatedEpoch;
     uint32 public lastRequestId;
 
     bytes32 public constant DISPATCHER_ROLE = keccak256("DISPATCHER_ROLE");
 
     struct Block {
-        uint32 requestId;
         bytes message;
         bytes signature;
     }
@@ -32,14 +31,16 @@ contract ResultSenderMock is AccessControlEnumerable {
         int8[] memory power,
         uint16[] memory ids,
         bytes32[] memory names,
-        uint256[] memory value
+        uint256[] memory value,
+        uint256 epoch,
+        uint32 requestId
     ) public pure returns (bytes memory) {
         Value[] memory values = new Value[](ids.length);
         for (uint256 i = 0; i < ids.length; i++) {
             values[i] = Value(power[i], ids[i], names[i], value[i]);
         }
 
-        bytes memory message = abi.encode(values);
+        bytes memory message = abi.encode(epoch, requestId, values);
         return message;
     }
 
@@ -48,15 +49,12 @@ contract ResultSenderMock is AccessControlEnumerable {
      */
     function publishResult(
         address _resultHandler,
-        uint32 _requestId,
         bytes calldata _signature,
         bytes calldata _message
     ) public onlyRole(DISPATCHER_ROLE) {
-        lastUpdatedTimestamp = block.timestamp;
-        lastRequestId = _requestId;
-
-        Block memory tssBlock = Block(_requestId, _message, _signature);
+        Block memory tssBlock = Block(_message, _signature);
         bytes memory data = abi.encode(tssBlock);
+        lastRequestId += 1;
 
         ResultHandlerMock(_resultHandler).postMessage(address(this), data);
         // proxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);

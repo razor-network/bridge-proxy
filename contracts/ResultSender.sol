@@ -7,7 +7,8 @@ import "./interface/ICollectionManager.sol";
 import "./interface/IMAProxy.sol";
 
 contract ResultSender is AccessControlEnumerable {
-    uint256 public lastUpdatedTimestamp;
+    uint256 public lastUpdatedEpoch;
+    uint256 public lastUPdatedTimestamp;
     uint32 public lastRequestId;
 
     IDelegator public delegator;
@@ -16,7 +17,6 @@ contract ResultSender is AccessControlEnumerable {
 
     bytes32 public constant DISPATCHER_ROLE = keccak256("DISPATCHER_ROLE");
     struct Block {
-        uint32 requestId;
         bytes message;
         bytes signature;
     }
@@ -70,7 +70,11 @@ contract ResultSender is AccessControlEnumerable {
         imaProxy = IMAProxy(_newProxyAddress);
     }
 
-    function getMessage() public view returns (bytes memory) {
+    function getMessage(uint256 _epoch, uint32 _requestId)
+        public
+        view
+        returns (bytes memory)
+    {
         uint16[] memory activeCollections = delegator.getActiveCollections();
         Value[] memory values = new Value[](activeCollections.length);
 
@@ -86,7 +90,7 @@ contract ResultSender is AccessControlEnumerable {
             values[i] = Value(power, activeCollections[i], nameHash, value);
         }
 
-        bytes memory message = abi.encode(values);
+        bytes memory message = abi.encode(_epoch, _requestId, values);
         return message;
     }
 
@@ -97,14 +101,17 @@ contract ResultSender is AccessControlEnumerable {
         bytes32 _targetChainHash,
         address _resultHandler,
         uint32 _requestId,
+        uint256 _epoch,
+        uint256 _timestamp,
         bytes calldata _signature
     ) public onlyRole(DISPATCHER_ROLE) {
         lastRequestId = _requestId;
-        lastUpdatedTimestamp = block.timestamp;
+        lastUpdatedEpoch = _epoch;
+        lastUPdatedTimestamp = _timestamp;
 
-        bytes memory message = getMessage();
-        Block memory tssBlock = Block(_requestId, message, _signature);
-        bytes memory data = abi.encode(tssBlock);
+        bytes memory message = getMessage(_epoch, _requestId);
+        Block memory tssBlock = Block(message, _signature);
+        bytes memory data = abi.encode(_timestamp, tssBlock);
 
         imaProxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }

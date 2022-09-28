@@ -30,10 +30,10 @@ There are 2 contracts that are required to bridge collection result from skale c
 
 | Contract                       | Address                                    | Chain Name        |
 | ------------------------------ | ------------------------------------------ | ----------------- |
-| ResultHandler (Proxy)          | 0xEe9C45A4aA4e62250ddE79e94222aBb9dE465b1d | attractive-merope |
-| ResultHandler (Implementation) | 0x39B571C9a7f9165c21F4D15C7225998009162912 | attractive-merope |
+| ResultHandler (Proxy)          | 0xE5E77D25a53b801cA312aEBa6c798e47E992d77c | attractive-merope |
+| ResultHandler (Implementation) | 0x5F11eD9E0de9a83e486de27C456B5aF865aC8cD8 | attractive-merope |
 | IMAProxy                       | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
-| ResultSender                   | 0x0C28A8881182591A62ea54F27F774bf254B78dbf | whispering-turais |
+| ResultSender                   | 0xE93C1C49Ed593CaA13027C3B8987A9DdB8fE35c7 | whispering-turais |
 | IMAProxy                       | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
 | ResultProxy (rinkeby)          | 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03 | whispering-turais |
 | ResultHandler                  | 0x10144adD7B8cB532BE580cf508837f155416D21A | Mainnet (rinkeby) |

@@ -6,14 +6,14 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgrad
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
-    uint16[] public activeCollectionIds;
-
     bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
     address public constant MESSAGE_PROXY_ADDRESS =
         0xd2AAa00100000000000000000000000000000000;
-    address public resultSender;
+
+    uint16[] public activeCollectionIds;
     bool public initialized;
     address public keygenAddress;
+    uint256 public lastUpdatedEpoch;
 
     function initialize(address _keygenAddress) public initializer {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -22,7 +22,6 @@ contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
     }
 
     struct Block {
-        uint32 requestId;
         bytes message;
         bytes signature;
     }
@@ -61,16 +60,20 @@ contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
             "invalid signature"
         );
 
-        Value[] memory values = abi.decode(tssBlock.message, (Value[])); // solhint-disable-line
+        (uint256 epoch, uint32 requestId, Value[] memory values) = abi.decode(
+            tssBlock.message,
+            (uint256, uint32, Value[])
+        );
         uint16[] memory ids = new uint16[](values.length);
 
-        blocks[tssBlock.requestId] = tssBlock;
+        blocks[requestId] = tssBlock;
         for (uint256 i; i < values.length; i++) {
             collectionResults[values[i].collectionId] = values[i];
             collectionIds[values[i].name] = values[i].collectionId;
             ids[i] = values[i].collectionId;
         }
         activeCollectionIds = ids;
+        lastUpdatedEpoch = epoch;
     }
 
     /**

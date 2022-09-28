@@ -11,9 +11,10 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
     uint16[] public activeCollectionIds;
     bool public initialized;
     address public keygenAddress;
+    uint256 public lastUpdatedEpoch;
+    uint256 public lastUpdatedTimestamp;
 
     struct Block {
-        uint32 requestId;
         bytes message;
         bytes signature;
     }
@@ -61,7 +62,10 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
         keygenAddress = _keygenAddress;
     }
 
-    function setBlock(Block memory tssBlock) public onlyInitialized {
+    function setBlock(Block memory tssBlock, uint256 timestamp)
+        public
+        onlyInitialized
+    {
         bytes32 messageHash = keccak256(tssBlock.message);
 
         require(
@@ -72,16 +76,21 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
             "invalid signature"
         );
 
-        Value[] memory values = abi.decode(tssBlock.message, (Value[])); // solhint-disable-line
-        uint16[] memory ids = new uint16[](values.length);
+        (uint256 epoch, uint32 requestId, Value[] memory values) = abi.decode(
+            tssBlock.message,
+            (uint256, uint32, Value[])
+        );
 
-        blocks[tssBlock.requestId] = tssBlock;
+        uint16[] memory ids = new uint16[](values.length);
+        blocks[requestId] = tssBlock;
         for (uint256 i; i < values.length; i++) {
             collectionResults[values[i].collectionId] = values[i];
             collectionIds[values[i].name] = values[i].collectionId;
             ids[i] = values[i].collectionId;
         }
         activeCollectionIds = ids;
+        lastUpdatedEpoch = epoch;
+        lastUpdatedTimestamp = timestamp;
     }
 
     /**
@@ -96,8 +105,11 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
         address sender,
         bytes calldata data
     ) external onlyInitialized onlyMessageProxy {
-        Block memory tssBlock = abi.decode(data, (Block));
-        setBlock(tssBlock);
+        (uint256 timestamp, Block memory tssBlock) = abi.decode(
+            data,
+            (uint256, Block)
+        );
+        setBlock(tssBlock, timestamp);
         emit DataReceived(schainHash, sender, data);
     }
 
