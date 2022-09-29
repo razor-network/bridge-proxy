@@ -49,6 +49,8 @@ export const zkSyncTestnet = {
   id: 280,
   name: "zkSync",
   network: "zkSync alpha testnet",
+  iconUrl:
+    "https://ipfs.io/ipfs/QmX4kiKSy4bBB8PXqj8ZM8gNNmra3Xh1NshiaF5TRk5c2C",
   iconBackground: "#fff",
   nativeCurrency: {
     decimals: 18,
