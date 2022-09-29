@@ -1,13 +1,13 @@
 const hre = require("hardhat");
 
 const destinationChainHash =
-  "0x8d646f556e5d9d6f1edcf7a39b77f5ac253776eb34efcfd688aacbee518efc26";
+  "0x44e247f49a9e6321f857375220890622a446abe945db7ed24b82fcbbbae07d12";
   
   // 0x8d646f556e5d9d6f1edcf7a39b77f5ac253776eb34efcfd688aacbee518efc26
-const RESULT_SENDER_ADDRESS = "0xfa6D7a3a902020561e1D9D098Bac444D3B7e15b6";
+const RESULT_SENDER_ADDRESS = "0x48F3E84e6Ffaf3f55D44D141144a424a424dB83c";
 
 const RESULT_HANDLER_PROXY_ADDRESS =
-  "0x665f152ee96c6c6448A81e1002BC99A70D4A29AD";
+  "0x801DdA93f02C0b30E7495bCC788D51271863Ec8c";
 
 async function main() {
   try{
