@@ -27,17 +27,18 @@ const Result = () => {
         ResultHandler.abi,
         signer
       );
-      const collectionsResult = await contract.getAllResult();
-      const [collectionIds, results, power, timestamp] = collectionsResult;
-
-      for (let i = 0; i < collectionIds.length; i++) {
+      const activeCollectionIds = await contract.getActiveCollections();
+      
+      for(let i = 0; i < activeCollectionIds.length; i++){
+        const result = await contract.getResultFromID(activeCollectionIds[i]);
         data.push({
-          id: collectionIds[i],
-          result: results[i].toNumber(),
-          power: power[i],
+          id: activeCollectionIds[i],
+          result: result[0].toNumber(),
+          power: result[1]
         });
       }
-      setLastUpdatedTimestamp(timestamp.toNumber());
+      const timestamp = await contract.lastUpdatedTimestamp();
+       setLastUpdatedTimestamp(timestamp.toNumber());
       setCollectionsData(data);
      } else if(currentChain?.id === 4){
       const contract = new ethers.Contract(
@@ -45,17 +46,18 @@ const Result = () => {
         ResultHandler.abi,
         signer
       );
-      const collectionsResult = await contract.getAllResult();
-      const [collectionIds, results, power, timestamp] = collectionsResult;
-
-      for (let i = 0; i < collectionIds.length; i++) {
+      const activeCollectionIds = await contract.getActiveCollections();
+      
+      for(let i = 0; i < activeCollectionIds.length; i++){
+        const result = await contract.getResultFromID(activeCollectionIds[i]);
         data.push({
-          id: collectionIds[i],
-          result: results[i].toNumber(),
-          power: power[i],
+          id: activeCollectionIds[i],
+          result: result[0].toNumber(),
+          power: result[1]
         });
       }
-      setLastUpdatedTimestamp(timestamp.toNumber());
+      const timestamp = await contract.lastUpdatedTimestamp();
+       setLastUpdatedTimestamp(timestamp.toNumber());
       setCollectionsData(data);
      }
     } catch (error) {

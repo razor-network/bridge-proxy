@@ -5,5 +5,5 @@ ResultHandler (proxy): 0xE5E77D25a53b801cA312aEBa6c798e47E992d77c
 ResultHandler (Implementation): 0x5F11eD9E0de9a83e486de27C456B5aF865aC8cD8
 
 Destination chain: rinkeby
-ResultHandler (proxy): 0xa812E03C4C1E7c286bb4EAAB41a5B4650AC33aB0
-ResultHandler (Implementation): 0x12Cbd31a8ECbCAf17Ff551C3b7a758E9A8f72f85
+ResultHandler (proxy): 0x665f152ee96c6c6448A81e1002BC99A70D4A29AD
+ResultHandler (Implementation): 0xE41CfA819999Ba9A9810830A55cc118de472855d
