@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 const RESULT_HANDLER_PROXY_ADDRESS =
-  "0x05468561345Ee7A401597232c5335ffF5c4deff8";
+  "0xE8d70335AE7fc0c145917EA303D507b18f3fE854";
 
 async function main() {
   const ResultHandlerProxy = await hre.ethers.getContractFactory(
@@ -38,9 +38,13 @@ async function main() {
   console.log(`collectionResult`);
   console.log(collectionsResult4);
 
-  const block = await resultHandlerProxy.blocks(1);
+  const block = await resultHandlerProxy.blocks(2);
   console.log("block");
   console.log(block);
+
+  const lastUpdatedTimestamp = await resultHandlerProxy.lastUpdatedTimestamp();
+  console.log("lastUpdatedTimestamp");
+  console.log(lastUpdatedTimestamp);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

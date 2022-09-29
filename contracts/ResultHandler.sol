@@ -61,10 +61,7 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
         keygenAddress = _keygenAddress;
     }
 
-    function setBlock(Block memory tssBlock, uint256 timestamp)
-        public
-        onlyInitialized
-    {
+    function setBlock(Block memory tssBlock) public onlyInitialized {
         bytes32 messageHash = keccak256(tssBlock.message);
 
         require(
@@ -75,10 +72,8 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
             "invalid signature"
         );
 
-        (, uint32 requestId, Value[] memory values) = abi.decode(
-            tssBlock.message,
-            (uint256, uint32, Value[])
-        );
+        (, uint32 requestId, uint256 timestamp, Value[] memory values) = abi
+            .decode(tssBlock.message, (uint256, uint32, uint256, Value[]));
 
         uint16[] memory ids = new uint16[](values.length);
         blocks[requestId] = tssBlock;
@@ -103,11 +98,8 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
         address sender,
         bytes calldata data
     ) external onlyInitialized onlyMessageProxy {
-        (uint256 timestamp, Block memory tssBlock) = abi.decode(
-            data,
-            (uint256, Block)
-        );
-        setBlock(tssBlock, timestamp);
+        Block memory tssBlock = abi.decode(data, (Block));
+        setBlock(tssBlock);
         emit DataReceived(schainHash, sender, data);
     }
 

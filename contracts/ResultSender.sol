@@ -70,11 +70,11 @@ contract ResultSender is AccessControlEnumerable {
         imaProxy = IMAProxy(_newProxyAddress);
     }
 
-    function getMessage(uint256 _epoch, uint32 _requestId)
-        public
-        view
-        returns (bytes memory)
-    {
+    function getMessage(
+        uint256 _epoch,
+        uint32 _requestId,
+        uint256 _timestamp
+    ) public view returns (bytes memory) {
         uint16[] memory activeCollections = delegator.getActiveCollections();
         Value[] memory values = new Value[](activeCollections.length);
 
@@ -90,7 +90,12 @@ contract ResultSender is AccessControlEnumerable {
             values[i] = Value(power, activeCollections[i], nameHash, value);
         }
 
-        bytes memory message = abi.encode(_epoch, _requestId, values);
+        bytes memory message = abi.encode(
+            _epoch,
+            _requestId,
+            _timestamp,
+            values
+        );
         return message;
     }
 
@@ -109,9 +114,9 @@ contract ResultSender is AccessControlEnumerable {
         lastUpdatedEpoch = _epoch;
         lastUPdatedTimestamp = _timestamp;
 
-        bytes memory message = getMessage(_epoch, _requestId);
+        bytes memory message = getMessage(_epoch, _requestId, _timestamp);
         Block memory tssBlock = Block(message, _signature);
-        bytes memory data = abi.encode(_timestamp, tssBlock);
+        bytes memory data = abi.encode(tssBlock);
 
         imaProxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }
