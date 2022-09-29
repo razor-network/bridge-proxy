@@ -1,5 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("@openzeppelin/hardhat-upgrades");
+require('hardhat-abi-exporter');
 /** @type import('hardhat/config').HardhatUserConfig */
 
 const {
@@ -19,19 +20,19 @@ module.exports = {
     sChainV2: {
       url: "https://staging-v2.skalenodes.com/v1/whispering-turais",
       accounts: [
-        "",
+        "0x11b0275c26eb8b6ce0fd130776faf5f7293e0cdbe63f6017b8b843906f60080f",
       ],
     },
     sChainV3: {
       url: "https://staging-v2.skalenodes.com/v1/attractive-merope",
       accounts: [
-        ""
+        "0x11b0275c26eb8b6ce0fd130776faf5f7293e0cdbe63f6017b8b843906f60080f"
       ],
     },
     rinkeby: {
-      url: RINKEBY_RPC || "",
+      url: RINKEBY_RPC || "https://eth-rinkeby.alchemyapi.io/v2/wp4eHsQ2qW3Trprn8IHWCi6bE4a_HcuC",
       accounts: [
-        ""
+        "0x11b0275c26eb8b6ce0fd130776faf5f7293e0cdbe63f6017b8b843906f60080f"
       ],
     },
   },

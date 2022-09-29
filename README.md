@@ -33,7 +33,7 @@ There are 2 contracts that are required to bridge collection result from skale c
 | ResultHandler (Proxy)          | 0xE5E77D25a53b801cA312aEBa6c798e47E992d77c | attractive-merope |
 | ResultHandler (Implementation) | 0x5F11eD9E0de9a83e486de27C456B5aF865aC8cD8 | attractive-merope |
 | IMAProxy                       | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
-| ResultHandler (rinkeby)          | 0xa812E03C4C1E7c286bb4EAAB41a5B4650AC33aB0 | rinkeby |
+| ResultHandler (Proxy)          | 0xa812E03C4C1E7c286bb4EAAB41a5B4650AC33aB0 | rinkeby |
 | ResultHandler (Implementation) | 0x12Cbd31a8ECbCAf17Ff551C3b7a758E9A8f72f85 | rinkeby |
 | IMAProxy                       | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | rinkeby |
 | ResultSender                   | 0xE93C1C49Ed593CaA13027C3B8987A9DdB8fE35c7 | whispering-turais |
