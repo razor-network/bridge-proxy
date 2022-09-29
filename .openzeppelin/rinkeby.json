@@ -1,20 +1,20 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0xe98e7ceA563fcC8b1522b15B12e5756d1866710c",
-    "txHash": "0x20a7ba341a46c05dfcc8ecc145feaa7a428b8b9a6fca40576bf2079dd16f4eb1"
+    "address": "0x49c245AAD47ad3ee5E5aF4A526eD6dC7152566C1",
+    "txHash": "0x387f7e674616259509905a761ec426d462eec5c2cc61650690c3e753dc21bacd"
   },
   "proxies": [
     {
-      "address": "0x665f152ee96c6c6448A81e1002BC99A70D4A29AD",
-      "txHash": "0x38844c44a63f6a1287008f1dd8143162efac7b9d53e3f76d8fc382797fa8def3",
+      "address": "0xc0Db5ff39A1a5dA7F3dE0eBc7BC838B79A259A75",
+      "txHash": "0x95b1164c29e297e2737aa7782ba63dc7c0a262032adab2da3ae5fd1e6ace1f62",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "58e20ada07a24687d974cf45905c47237cc435147c5691bfec0f71b9cf26d775": {
-      "address": "0xE41CfA819999Ba9A9810830A55cc118de472855d",
-      "txHash": "0x7c8e0a477125067292ca7962d127fc1e384fa7d676f29ff6b6ee17beaa392be9",
+    "adbe922cc8f5229eea9cfc04abe33d1f9fa15b20468d83c024e11d61fb8392d1": {
+      "address": "0x71e95956CdF9297D5C2575c5fA86330FcF582358",
+      "txHash": "0x5fe70051f09a9301a8895f9098dce05e8b3fea5bd32f83d4dd815c7ad43ade43",
       "layout": {
         "storage": [
           {
@@ -70,7 +70,7 @@
             "label": "_roleMembers",
             "offset": 0,
             "slot": "151",
-            "type": "t_mapping(t_bytes32,t_struct(AddressSet)1744_storage)",
+            "type": "t_mapping(t_bytes32,t_struct(AddressSet)1612_storage)",
             "contract": "AccessControlEnumerableUpgradeable",
             "src": "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol:22"
           },
@@ -88,7 +88,7 @@
             "slot": "201",
             "type": "t_array(t_uint16)dyn_storage",
             "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:11"
+            "src": "contracts/ResultHandler.sol:9"
           },
           {
             "label": "initialized",
@@ -96,7 +96,7 @@
             "slot": "202",
             "type": "t_bool",
             "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:12"
+            "src": "contracts/ResultHandler.sol:10"
           },
           {
             "label": "keygenAddress",
@@ -104,7 +104,7 @@
             "slot": "202",
             "type": "t_address",
             "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:13"
+            "src": "contracts/ResultHandler.sol:11"
           },
           {
             "label": "lastUpdatedTimestamp",
@@ -112,15 +112,15 @@
             "slot": "203",
             "type": "t_uint256",
             "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:14"
+            "src": "contracts/ResultHandler.sol:12"
           },
           {
             "label": "blocks",
             "offset": 0,
             "slot": "204",
-            "type": "t_mapping(t_uint32,t_struct(Block)3868_storage)",
+            "type": "t_mapping(t_uint32,t_struct(Block)2533_storage)",
             "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:29"
+            "src": "contracts/ResultHandler.sol:27"
           },
           {
             "label": "collectionIds",
@@ -128,15 +128,15 @@
             "slot": "205",
             "type": "t_mapping(t_bytes32,t_uint16)",
             "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:32"
+            "src": "contracts/ResultHandler.sol:30"
           },
           {
             "label": "collectionResults",
             "offset": 0,
             "slot": "206",
-            "type": "t_mapping(t_uint16,t_struct(Value)3877_storage)",
+            "type": "t_mapping(t_uint16,t_struct(Value)2542_storage)",
             "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:35"
+            "src": "contracts/ResultHandler.sol:33"
           }
         ],
         "types": {
@@ -180,7 +180,7 @@
             "label": "mapping(address => bool)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_bytes32,t_struct(AddressSet)1744_storage)": {
+          "t_mapping(t_bytes32,t_struct(AddressSet)1612_storage)": {
             "label": "mapping(bytes32 => struct EnumerableSetUpgradeable.AddressSet)",
             "numberOfBytes": "32"
           },
@@ -196,27 +196,27 @@
             "label": "mapping(bytes32 => uint256)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint16,t_struct(Value)3877_storage)": {
+          "t_mapping(t_uint16,t_struct(Value)2542_storage)": {
             "label": "mapping(uint16 => struct ResultHandler.Value)",
             "numberOfBytes": "32"
           },
-          "t_mapping(t_uint32,t_struct(Block)3868_storage)": {
+          "t_mapping(t_uint32,t_struct(Block)2533_storage)": {
             "label": "mapping(uint32 => struct ResultHandler.Block)",
             "numberOfBytes": "32"
           },
-          "t_struct(AddressSet)1744_storage": {
+          "t_struct(AddressSet)1612_storage": {
             "label": "struct EnumerableSetUpgradeable.AddressSet",
             "members": [
               {
                 "label": "_inner",
-                "type": "t_struct(Set)1443_storage",
+                "type": "t_struct(Set)1311_storage",
                 "offset": 0,
                 "slot": "0"
               }
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(Block)3868_storage": {
+          "t_struct(Block)2533_storage": {
             "label": "struct ResultHandler.Block",
             "members": [
               {
@@ -252,7 +252,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(Set)1443_storage": {
+          "t_struct(Set)1311_storage": {
             "label": "struct EnumerableSetUpgradeable.Set",
             "members": [
               {
@@ -270,7 +270,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(Value)3877_storage": {
+          "t_struct(Value)2542_storage": {
             "label": "struct ResultHandler.Value",
             "members": [
               {
