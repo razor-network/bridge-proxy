@@ -5,8 +5,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgrad
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract ResultHandler is AccessControlEnumerableUpgradeable {
-    address public constant IMA_PROXY_ADDRESS =
-        0xd2AAa00100000000000000000000000000000000;
 
     uint16[] public activeCollectionIds;
     bool public initialized;
@@ -36,10 +34,6 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
 
     event DataReceived(bytes32 schainHash, address sender, bytes data);
 
-    modifier onlyMessageProxy() {
-        require(msg.sender == IMA_PROXY_ADDRESS, "Not message proxy address");
-        _;
-    }
 
     modifier onlyInitialized() {
         require(initialized, "Contract should be initialized");
@@ -97,7 +91,7 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
         bytes32 schainHash,
         address sender,
         bytes calldata data
-    ) external onlyInitialized onlyMessageProxy {
+    ) external onlyInitialized {
         Block memory tssBlock = abi.decode(data, (Block));
         setBlock(tssBlock);
         emit DataReceived(schainHash, sender, data);
