@@ -8,17 +8,18 @@
 
 There are 2 contracts that are required to bridge collection result from skale chain to destination chain.
 
-1. `ResultProxy.sol` - To be deployed on skale chain (where Razor contracts are deployed).
+1. `ResultSender.sol` - To be deployed on skale chain (where Razor contracts are deployed).
 2. `ResultHandler.sol` - To be deployed on destination chain (where Skale IMA bridge is supported).
+   _NOTE_: `ResultHandler.sol` contract is deployed with OZ transparent proxy.
 
 ### How result will be updated?
 
-- Razor-go calls `publishResult()` of **ResultProxy** contract which fetches all the active collections and it's result and publish the data as bytes to `ResultHandler` on destination chain via Skale IMA bridge.
+- Razor-go calls `publishResult()` of **ResultSender** contract which fetches all the active collections and it's result and publish the data as bytes to `ResultHandler` on destination chain via Skale IMA bridge.
 - `ResultHandler` listens for `postMessage`, as soon as message is received bytes data is decoded and collection result is updated.
 
 ## Deployment
 
-1. Deploy ResultProxy contract on source chain.
+1. Deploy ResultSender contract on source chain.
 2. Whitelist the result proxy contract address on soruce chain using registerSchainContract.js script.
 3. Update RESULT_PROXY_ADDRESS in ResultHanlder.sol contract (since it's a constant).
 4. Deploy ResultHanlder contract on destination chain.
@@ -27,12 +28,13 @@ There are 2 contracts that are required to bridge collection result from skale c
 
 ## Contract Address
 
-| Contract              | Address                                    | Chain Name        |
-| --------------------- | ------------------------------------------ | ----------------- |
-| ResultHandler         | 0x70B2c30B048cE877DbFD5f43Dc8431aacD947747 | attractive-merope |
-| MessageProxy          | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
-| ResultProxy           | 0xee150054a6c201D3a55A31Cc16e52E55DeD195b5 | whispering-turais |
-| MessageProxy          | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
-| ResultProxy (rinkeby) | 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03 | whispering-turais |
-| ResultHandler         | 0x10144adD7B8cB532BE580cf508837f155416D21A | Mainnet (rinkeby) |
-| MessageProxy          | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | Mainnet (rinkeby) |
+| Contract                       | Address                                    | Chain Name        |
+| ------------------------------ | ------------------------------------------ | ----------------- |
+| ResultHandler (Proxy)          | 0xE5E77D25a53b801cA312aEBa6c798e47E992d77c | attractive-merope |
+| ResultHandler (Implementation) | 0x5F11eD9E0de9a83e486de27C456B5aF865aC8cD8 | attractive-merope |
+| IMAProxy                       | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
+| ResultSender                   | 0xE93C1C49Ed593CaA13027C3B8987A9DdB8fE35c7 | whispering-turais |
+| IMAProxy                       | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
+| ResultProxy (rinkeby)          | 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03 | whispering-turais |
+| ResultHandler                  | 0x10144adD7B8cB532BE580cf508837f155416D21A | Mainnet (rinkeby) |
+| IMAProxy                       | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | Mainnet (rinkeby) |

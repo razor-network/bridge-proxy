@@ -1,16 +1,44 @@
 const hre = require("hardhat");
 
 const destinationChainHash =
-  "0x8d646f556e5d9d6f1edcf7a39b77f5ac253776eb34efcfd688aacbee518efc26";
+  "0x44e247f49a9e6321f857375220890622a446abe945db7ed24b82fcbbbae07d12";
 
-const SCHAIN_RESULT_PROXY_ADDRESS =
-  "0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03";
+const RESULT_SENDER_ADDRESS = "0xfa6D7a3a902020561e1D9D098Bac444D3B7e15b6";
+
+const RESULT_HANDLER_PROXY_ADDRESS =
+  "0xE8d70335AE7fc0c145917EA303D507b18f3fE854";
 
 async function main() {
-  const ResultProxy = await hre.ethers.getContractFactory("ResultProxy");
-  const resultProxy = ResultProxy.attach(SCHAIN_RESULT_PROXY_ADDRESS);
+  const ResultSender = await hre.ethers.getContractFactory("ResultSender");
+  const resultSender = ResultSender.attach(RESULT_SENDER_ADDRESS);
 
-  const tx = await resultProxy.publishResult(destinationChainHash);
+  const lastRequestId = await resultSender.lastRequestId();
+  console.log("lastRequestId: ", lastRequestId);
+
+  const newRequestId = lastRequestId + 1;
+  const timesstamp = Math.floor(Date.now() / 1000);
+
+  const message = await resultSender.getMessage(1, newRequestId, timesstamp);
+
+  const signer = await hre.ethers.getSigner();
+
+  const messageHash = hre.ethers.utils.arrayify(
+    hre.ethers.utils.keccak256(message)
+  );
+
+  const signature = await signer.signMessage(messageHash);
+  console.log("signature");
+  console.log(signature);
+
+  const tx = await resultSender.publishResult(
+    destinationChainHash,
+    RESULT_HANDLER_PROXY_ADDRESS,
+    newRequestId,
+    1,
+    timesstamp,
+    signature
+  );
+
   await tx.wait();
   console.log("Transaction hash: ", tx.hash);
 }

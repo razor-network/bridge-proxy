@@ -1,17 +1,24 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-contract ResultHandler is AccessControlEnumerableUpgradeable {
-    address public constant IMA_PROXY_ADDRESS =
+contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
+    bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
+    address public constant MESSAGE_PROXY_ADDRESS =
         0xd2AAa00100000000000000000000000000000000;
 
     uint16[] public activeCollectionIds;
     bool public initialized;
     address public keygenAddress;
-    uint256 public lastUpdatedTimestamp;
+
+    function initialize(address _keygenAddress) public initializer {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        initialized = true;
+        keygenAddress = _keygenAddress;
+    }
 
     struct Block {
         bytes message;
@@ -34,31 +41,11 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
     /// @notice mapping for CollectionID -> Value Info
     mapping(uint16 => Value) public collectionResults;
 
-    event DataReceived(bytes32 schainHash, address sender, bytes data);
-
-    modifier onlyMessageProxy() {
-        require(msg.sender == IMA_PROXY_ADDRESS, "Not message proxy address");
-        _;
-    }
+    event DataReceived(bytes data);
 
     modifier onlyInitialized() {
         require(initialized, "Contract should be initialized");
         _;
-    }
-
-    function initialize(address _keygenAddress) public initializer {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        initialized = true;
-        keygenAddress = _keygenAddress;
-    }
-
-    function setKeygen(address _keygenAddress) external {
-        require(
-            msg.sender == keygenAddress ||
-                hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
-            "Invalid Caller"
-        );
-        keygenAddress = _keygenAddress;
     }
 
     function setBlock(Block memory tssBlock) public onlyInitialized {
@@ -72,10 +59,12 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
             "invalid signature"
         );
 
-        (, uint32 requestId, uint256 timestamp, Value[] memory values) = abi
-            .decode(tssBlock.message, (uint256, uint32, uint256, Value[]));
-
+        (, uint32 requestId, Value[] memory values) = abi.decode(
+            tssBlock.message,
+            (uint256, uint32, Value[])
+        );
         uint16[] memory ids = new uint16[](values.length);
+
         blocks[requestId] = tssBlock;
         for (uint256 i; i < values.length; i++) {
             collectionResults[values[i].collectionId] = values[i];
@@ -83,24 +72,15 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
             ids[i] = values[i].collectionId;
         }
         activeCollectionIds = ids;
-        lastUpdatedTimestamp = timestamp;
     }
 
     /**
      * @dev Receives source chain data through validators/IMA
-     * Requirements:
-     *
-     * - `msg.sender` should be IMA_PROXY_ADDRESS
-     * - sender should be resultSender
      */
-    function postMessage(
-        bytes32 schainHash,
-        address sender,
-        bytes calldata data
-    ) external onlyInitialized onlyMessageProxy {
+    function postMessage(address sender, bytes calldata data) external {
         Block memory tssBlock = abi.decode(data, (Block));
         setBlock(tssBlock);
-        emit DataReceived(schainHash, sender, data);
+        emit DataReceived(data);
     }
 
     /**
@@ -108,7 +88,7 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
      * @param _name bytes32 hash of the collection name
      * @return collection ID
      */
-    function getCollectionID(bytes32 _name) external view returns (uint16) {
+    function getCollectionID(bytes32 _name) public view returns (uint16) {
         return collectionIds[_name];
     }
 
@@ -117,7 +97,7 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
      * @param _name bytes32 hash of the collection name
      * @return result of the collection and its power
      */
-    function getResult(bytes32 _name) external view returns (uint256, int8) {
+    function getResult(bytes32 _name) public view returns (uint256, int8) {
         uint16 id = collectionIds[_name];
         return getResultFromID(id);
     }
@@ -141,7 +121,7 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
      * @param _id collection ID
      * @return status of the collection
      */
-    function getCollectionStatus(uint16 _id) external view returns (bool) {
+    function getCollectionStatus(uint16 _id) public view returns (bool) {
         bool isActive;
         for (uint256 i = 0; i < activeCollectionIds.length; i++) {
             if (activeCollectionIds[i] == _id) {

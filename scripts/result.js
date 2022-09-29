@@ -1,29 +1,50 @@
 const hre = require("hardhat");
 
-const MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS =
-  "0x10144adD7B8cB532BE580cf508837f155416D21A";
+const RESULT_HANDLER_PROXY_ADDRESS =
+  "0xE8d70335AE7fc0c145917EA303D507b18f3fE854";
 
 async function main() {
-  const ResultHandler = await hre.ethers.getContractFactory("ResultHandler");
-  const resultHandler = ResultHandler.attach(
-    MAINNET_RESULT_HANDLER_CONTRACT_ADDRESS
+  const ResultHandlerProxy = await hre.ethers.getContractFactory(
+    "ResultHandler"
+  );
+  const resultHandlerProxy = ResultHandlerProxy.attach(
+    RESULT_HANDLER_PROXY_ADDRESS
   );
 
-  const collectionsResult = await resultHandler.getAllResult();
-  console.log(`collectionResult`);
+  const keygenAddress = await resultHandlerProxy.keygenAddress();
+  console.log(`keygenAddress: ${keygenAddress}`);
+
+  const collectionsResult = await resultHandlerProxy.getResultFromID(1);
+  console.log(`getResultFromID`);
   console.log(collectionsResult);
 
-  const updatedCounter = await resultHandler.updatedCounter();
-  console.log(`updatedCounter`);
-  console.log(updatedCounter);
-  // for (let i = 1; i <= 5; i++) {
-  //   const result = await resultHandler.getResult(i);
-  //   console.log(
-  //     `CollectionID: ${i}\t Result: ${result[0].toNumber()}\t Power: ${
-  //       result[1]
-  //     }`
-  //   );
-  // }
+  const collectionsResult1 = await resultHandlerProxy.getResult(
+    "0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9"
+  );
+  console.log(`getResult`);
+  console.log(collectionsResult1);
+
+  const collectionsResult2 = await resultHandlerProxy.getCollectionID(
+    "0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9"
+  );
+  console.log(`getCollectionID`);
+  console.log(collectionsResult2);
+
+  const collectionsResult3 = await resultHandlerProxy.getActiveCollections();
+  console.log(`getActiveCollections`);
+  console.log(collectionsResult3);
+
+  const collectionsResult4 = await resultHandlerProxy.getCollectionStatus(1);
+  console.log(`collectionResult`);
+  console.log(collectionsResult4);
+
+  const block = await resultHandlerProxy.blocks(2);
+  console.log("block");
+  console.log(block);
+
+  const lastUpdatedTimestamp = await resultHandlerProxy.lastUpdatedTimestamp();
+  console.log("lastUpdatedTimestamp");
+  console.log(lastUpdatedTimestamp);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
