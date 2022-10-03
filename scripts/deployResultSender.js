@@ -5,7 +5,7 @@ const ProxySchainABI = require("../abis/proxySchainv2.json");
 const DELEGATOR_ADDRESS = "0x4535E7486c48Df8e1121be2A31b74aBb2b0a5B8b";
 const COLLECTION_MANAGER_ADDRESS = "0x4A6d18E64AF3dC24dAA7a0abbA00670476395A2c";
 
-const DESTINATION_CHAIN = "attractive-merope";
+const DESTINATION_CHAIN = "Mainnet";
 
 async function main() {
   const ResultSender = await hre.ethers.getContractFactory("ResultSender");

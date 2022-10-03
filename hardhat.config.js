@@ -1,5 +1,6 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("@openzeppelin/hardhat-upgrades");
+require('hardhat-abi-exporter');
 /** @type import('hardhat/config').HardhatUserConfig */
 
 const {

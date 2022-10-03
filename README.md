@@ -30,11 +30,11 @@ There are 2 contracts that are required to bridge collection result from skale c
 
 | Contract                       | Address                                    | Chain Name        |
 | ------------------------------ | ------------------------------------------ | ----------------- |
-| ResultHandler (Proxy)          | 0xE5E77D25a53b801cA312aEBa6c798e47E992d77c | attractive-merope |
-| ResultHandler (Implementation) | 0x5F11eD9E0de9a83e486de27C456B5aF865aC8cD8 | attractive-merope |
+| ResultHandler (Proxy)          | 0x801DdA93f02C0b30E7495bCC788D51271863Ec8c | attractive-merope |
+| ResultHandler (Implementation) | 0xA49c5C187c24c39BF99AeA75Db95599184D8FA14 | attractive-merope |
 | IMAProxy                       | 0xd2AAa00100000000000000000000000000000000 | attractive-merope |
-| ResultSender                   | 0xE93C1C49Ed593CaA13027C3B8987A9DdB8fE35c7 | whispering-turais |
+| ResultHandler (Proxy)          | 0xc0Db5ff39A1a5dA7F3dE0eBc7BC838B79A259A75 | rinkeby |
+| ResultHandler (Implementation) | 0x71e95956CdF9297D5C2575c5fA86330FcF582358 | rinkeby |
+| IMAProxy                       | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | rinkeby |
+| ResultSender                   | 0x48F3E84e6Ffaf3f55D44D141144a424a424dB83c | whispering-turais |
 | IMAProxy                       | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
-| ResultProxy (rinkeby)          | 0x54EB375F80f6feCA26BaA49A76dc7FB35bd04a03 | whispering-turais |
-| ResultHandler                  | 0x10144adD7B8cB532BE580cf508837f155416D21A | Mainnet (rinkeby) |
-| IMAProxy                       | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | Mainnet (rinkeby) |

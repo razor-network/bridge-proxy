@@ -21,43 +21,65 @@ const Result = () => {
     const data = [];
 
     try {
-     if(currentChain?.id === 1211818568165862){
-      const contract = new ethers.Contract(
-        config.RESULT_HANDLER_ADDRESS_SCHAINV3,
-        ResultHandler.abi,
-        signer
-      );
-      const collectionsResult = await contract.getAllResult();
-      const [collectionIds, results, power, timestamp] = collectionsResult;
+      if (currentChain?.id === 1211818568165862) {
+        const contract = new ethers.Contract(
+          config.RESULT_HANDLER_ADDRESS_SCHAINV3,
+          ResultHandler.abi,
+          signer
+        );
+        const activeCollectionIds = await contract.getActiveCollections();
 
-      for (let i = 0; i < collectionIds.length; i++) {
-        data.push({
-          id: collectionIds[i],
-          result: results[i].toNumber(),
-          power: power[i],
-        });
-      }
-      setLastUpdatedTimestamp(timestamp.toNumber());
-      setCollectionsData(data);
-     } else if(currentChain?.id === 4){
-      const contract = new ethers.Contract(
-        config.RESULT_HANDLER_ADDRESS_RINKEBY,
-        ResultHandler.abi,
-        signer
-      );
-      const collectionsResult = await contract.getAllResult();
-      const [collectionIds, results, power, timestamp] = collectionsResult;
+        for (let i = 0; i < activeCollectionIds.length; i++) {
+          const result = await contract.getResultFromID(activeCollectionIds[i]);
+          data.push({
+            id: activeCollectionIds[i],
+            result: result[0].toNumber(),
+            power: result[1],
+          });
+        }
+        const timestamp = await contract.lastUpdatedTimestamp();
+        setLastUpdatedTimestamp(timestamp.toNumber());
+        setCollectionsData(data);
+      } else if (currentChain?.id === 4) {
+        const contract = new ethers.Contract(
+          config.RESULT_HANDLER_ADDRESS_RINKEBY,
+          ResultHandler.abi,
+          signer
+        );
+        const activeCollectionIds = await contract.getActiveCollections();
 
-      for (let i = 0; i < collectionIds.length; i++) {
-        data.push({
-          id: collectionIds[i],
-          result: results[i].toNumber(),
-          power: power[i],
-        });
+        for (let i = 0; i < activeCollectionIds.length; i++) {
+          const result = await contract.getResultFromID(activeCollectionIds[i]);
+          data.push({
+            id: activeCollectionIds[i],
+            result: result[0].toNumber(),
+            power: result[1],
+          });
+        }
+        const timestamp = await contract.lastUpdatedTimestamp();
+        setLastUpdatedTimestamp(timestamp.toNumber());
+        setCollectionsData(data);
+      } else if (currentChain?.id === 280) {
+        const contract = new ethers.Contract(
+          config.RESULT_HANDLER_ADDRESS_ZKSYNC,
+          ResultHandler.abi,
+          signer
+        );
+
+        const activeCollectionIds = await contract.getActiveCollections();
+
+        for (let i = 0; i < activeCollectionIds.length; i++) {
+          const result = await contract.getResultFromID(activeCollectionIds[i]);
+          data.push({
+            id: activeCollectionIds[i],
+            result: result[0].toNumber(),
+            power: result[1],
+          });
+        }
+        const timestamp = await contract.lastUpdatedTimestamp();
+        setLastUpdatedTimestamp(timestamp.toNumber());
+        setCollectionsData(data);
       }
-      setLastUpdatedTimestamp(timestamp.toNumber());
-      setCollectionsData(data);
-     }
     } catch (error) {
       console.log("error occured while fetching data");
       console.log(error);
@@ -69,7 +91,6 @@ const Result = () => {
       fetchAllResult();
     }
   }, [signer]);
-
 
   return (
     <VStack>
