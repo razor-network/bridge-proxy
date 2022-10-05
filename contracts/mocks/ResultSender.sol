@@ -2,13 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "./ResultHandler.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+
+import "./ResultManager.sol";
 
 contract ResultSenderMock is AccessControlEnumerable {
+    address public signerAddress;
     uint256 public lastUpdatedEpoch;
-    uint32 public lastRequestId;
-
-    bytes32 public constant DISPATCHER_ROLE = keccak256("DISPATCHER_ROLE");
 
     struct Block {
         bytes message;
@@ -22,10 +22,26 @@ contract ResultSenderMock is AccessControlEnumerable {
         uint256 value;
     }
 
-    constructor() {
+    constructor(address _signerAddress) {
+        signerAddress = _signerAddress;
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(DISPATCHER_ROLE, msg.sender);
     }
+
+    /**
+     * @dev Allows admin to update signer address.
+     */
+    function updateSignerAddress(address _newSignerAddress) public {
+        require(
+            msg.sender == signerAddress ||
+                hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
+            "Invalid Caller"
+        );
+        signerAddress = _newSignerAddress;
+    }
+
+    /**
+     * @dev Used by daemon/signer to generate message
+     */
 
     function getMessage(
         int8[] memory power,
@@ -45,18 +61,33 @@ contract ResultSenderMock is AccessControlEnumerable {
     }
 
     /**
+     * @dev Used by daemon/signer to generate block from message and signature
+     */
+    function getBlock(bytes calldata message, bytes calldata signature)
+        public
+        pure
+        returns (Block memory)
+    {
+        return Block(message, signature);
+    }
+
+    /**
      * @dev publish collection result via delegator.
      */
-    function publishResult(
-        address _resultHandler,
-        bytes calldata _signature,
-        bytes calldata _message
-    ) public onlyRole(DISPATCHER_ROLE) {
-        Block memory tssBlock = Block(_message, _signature);
-        bytes memory data = abi.encode(tssBlock);
-        lastRequestId += 1;
+    function publishResult(address _resultHandler, Block calldata messageBlock)
+        public
+    {
+        bytes32 messageHash = keccak256(messageBlock.message);
+        require(
+            ECDSA.recover(
+                ECDSA.toEthSignedMessageHash(messageHash),
+                messageBlock.signature
+            ) == signerAddress,
+            "invalid signature"
+        );
+        bytes memory data = abi.encode(messageBlock);
 
-        ResultHandlerMock(_resultHandler).postMessage(address(this), data);
+        ResultManagerMock(_resultHandler).postMessage(address(this), data);
         // proxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }
 }

@@ -2,20 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./interface/IDelegator.sol";
 import "./interface/ICollectionManager.sol";
 import "./interface/IMAProxy.sol";
 
 contract ResultSender is AccessControlEnumerable {
-    uint256 public lastUpdatedEpoch;
-    uint256 public lastUPdatedTimestamp;
-    uint32 public lastRequestId;
+    address public signerAddress;
 
     IDelegator public delegator;
     ICollectionManager public collectionManager;
     IMAProxy public imaProxy;
 
-    bytes32 public constant DISPATCHER_ROLE = keccak256("DISPATCHER_ROLE");
     struct Block {
         bytes message;
         bytes signature;
@@ -31,13 +29,14 @@ contract ResultSender is AccessControlEnumerable {
     constructor(
         address _delegatorAddress,
         address _collectionManagerAddress,
-        address _imaProxyAddress
+        address _imaProxyAddress,
+        address _signerAddress
     ) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(DISPATCHER_ROLE, msg.sender);
         delegator = IDelegator(_delegatorAddress);
         collectionManager = ICollectionManager(_collectionManagerAddress);
         imaProxy = IMAProxy(_imaProxyAddress);
+        signerAddress = _signerAddress;
     }
 
     /**
@@ -70,6 +69,21 @@ contract ResultSender is AccessControlEnumerable {
         imaProxy = IMAProxy(_newProxyAddress);
     }
 
+    /**
+     * @dev Allows admin to update signer address.
+     */
+    function updateSignerAddress(address _newSignerAddress) public {
+        require(
+            msg.sender == signerAddress ||
+                hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
+            "Invalid Caller"
+        );
+        signerAddress = _newSignerAddress;
+    }
+
+    /**
+     * @dev Used by daemon/signer to generate message
+     */
     function getMessage(
         uint256 _epoch,
         uint32 _requestId,
@@ -100,24 +114,33 @@ contract ResultSender is AccessControlEnumerable {
     }
 
     /**
-     * @dev publish collection result via delegator.
+     * @dev Used by daemon/signer to generate block from message and signature
+     */
+    function getBlock(bytes calldata message, bytes calldata signature)
+        public
+        pure
+        returns (Block memory)
+    {
+        return Block(message, signature);
+    }
+
+    /**
+     * @dev verify the signature and post message through IMA
      */
     function publishResult(
         bytes32 _targetChainHash,
         address _resultHandler,
-        uint32 _requestId,
-        uint256 _epoch,
-        uint256 _timestamp,
-        bytes calldata _signature
-    ) public onlyRole(DISPATCHER_ROLE) {
-        lastRequestId = _requestId;
-        lastUpdatedEpoch = _epoch;
-        lastUPdatedTimestamp = _timestamp;
-
-        bytes memory message = getMessage(_epoch, _requestId, _timestamp);
-        Block memory tssBlock = Block(message, _signature);
-        bytes memory data = abi.encode(tssBlock);
-
+        Block calldata messageBlock
+    ) public {
+        bytes32 messageHash = keccak256(messageBlock.message);
+        require(
+            ECDSA.recover(
+                ECDSA.toEthSignedMessageHash(messageHash),
+                messageBlock.signature
+            ) == signerAddress,
+            "invalid signature"
+        );
+        bytes memory data = abi.encode(messageBlock);
         imaProxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
     }
 }
