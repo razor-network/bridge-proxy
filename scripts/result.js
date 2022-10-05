@@ -1,48 +1,48 @@
 const hre = require("hardhat");
 
-const RESULT_HANDLER_PROXY_ADDRESS =
-  "0x801DdA93f02C0b30E7495bCC788D51271863Ec8c";
+const RESULT_MANAGER_PROXY_ADDRESS =
+  "0xF2aE9Fd8141E774A08EE3007dA76Ad9d058e713C";
 
 async function main() {
-  const ResultHandlerProxy = await hre.ethers.getContractFactory(
-    "ResultHandler"
+  const ResultManagerProxy = await hre.ethers.getContractFactory(
+    "ResultManager"
   );
-  const resultHandlerProxy = ResultHandlerProxy.attach(
-    RESULT_HANDLER_PROXY_ADDRESS
+  const resultManagerProxy = ResultManagerProxy.attach(
+    RESULT_MANAGER_PROXY_ADDRESS
   );
 
-  const keygenAddress = await resultHandlerProxy.keygenAddress();
-  console.log(`keygenAddress: ${keygenAddress}`);
+  const signerAddress = await resultManagerProxy.signerAddress();
+  console.log(`signerAddress: ${signerAddress}`);
 
-  const collectionsResult = await resultHandlerProxy.getResultFromID(1);
+  const collectionsResult = await resultManagerProxy.getResultFromID(1);
   console.log(`getResultFromID`);
   console.log(collectionsResult);
 
-  const collectionsResult1 = await resultHandlerProxy.getResult(
+  const collectionsResult1 = await resultManagerProxy.getResult(
     "0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9"
   );
   console.log(`getResult`);
   console.log(collectionsResult1);
 
-  const collectionsResult2 = await resultHandlerProxy.getCollectionID(
+  const collectionsResult2 = await resultManagerProxy.getCollectionID(
     "0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9"
   );
   console.log(`getCollectionID`);
   console.log(collectionsResult2);
 
-  const collectionsResult3 = await resultHandlerProxy.getActiveCollections();
+  const collectionsResult3 = await resultManagerProxy.getActiveCollections();
   console.log(`getActiveCollections`);
   console.log(collectionsResult3);
 
-  const collectionsResult4 = await resultHandlerProxy.getCollectionStatus(1);
+  const collectionsResult4 = await resultManagerProxy.getCollectionStatus(1);
   console.log(`collectionResult`);
   console.log(collectionsResult4);
 
-  const block = await resultHandlerProxy.blocks(2);
+  const block = await resultManagerProxy.blocks(1);
   console.log("block");
   console.log(block);
 
-  const lastUpdatedTimestamp = await resultHandlerProxy.lastUpdatedTimestamp();
+  const lastUpdatedTimestamp = await resultManagerProxy.lastUpdatedTimestamp();
   console.log("lastUpdatedTimestamp");
   console.log(lastUpdatedTimestamp);
 }
