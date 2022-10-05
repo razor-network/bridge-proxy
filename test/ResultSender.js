@@ -13,11 +13,6 @@ const namesHash = [
   "0x0f5e947b204a798dd86405ac2f21fed0d109e748bcd057b913eb87b6ffe07c3e",
 ];
 
-const encodedData = hre.ethers.utils.defaultAbiCoder.encode(
-  ["uint16[]", "uint256[]", "int8[]", "bytes32[]"],
-  [ids, result, power, namesHash]
-);
-
 const getMessage = async (resultSender, epoch, requestId) => {
   const message = await resultSender.getMessage(
     power,
@@ -39,13 +34,18 @@ const getSignature = async (message, signer) => {
   return signature;
 };
 
-describe("ResultSender", () => {
+const getBlock = async (resultSender, message, signature) => {
+  const block = await resultSender.getBlock(message, signature);
+  return block;
+};
+
+describe("Data bridge tests", () => {
   let resultSender;
-  let resultHandler;
+  let resultManager;
   let signers;
-  let DISPATCHER_ROLE;
-  let KEYGEN_ADDRESS;
+  let SIGNER_ADDRESS;
   let epoch;
+  let requestId = 0;
 
   before(async () => {
     signers = await hre.ethers.getSigners();
@@ -53,122 +53,142 @@ describe("ResultSender", () => {
     const ResultSender = await hre.ethers.getContractFactory(
       "ResultSenderMock"
     );
-    resultSender = await ResultSender.deploy();
-    KEYGEN_ADDRESS = signers[0].address;
+    SIGNER_ADDRESS = signers[0].address;
+    resultSender = await ResultSender.deploy(SIGNER_ADDRESS);
 
-    const ResultHandler = await hre.ethers.getContractFactory(
-      "ResultHandlerMock"
+    const ResultManager = await hre.ethers.getContractFactory(
+      "ResultManagerMock"
     );
-    resultHandler = await hre.upgrades.deployProxy(ResultHandler, [
-      KEYGEN_ADDRESS,
+    resultManager = await hre.upgrades.deployProxy(ResultManager, [
+      SIGNER_ADDRESS,
     ]);
 
-    DISPATCHER_ROLE = await resultSender.DISPATCHER_ROLE();
     epoch = 1;
   });
 
-  it("Admin should have DEFAULT_ADMIN_ROLE", async () => {
-    const admin = signers[0].address;
-    const DEFAULT_ADMIN_ROLE = await resultSender.DEFAULT_ADMIN_ROLE();
-    const hasAdminRole = await resultSender.hasRole(DEFAULT_ADMIN_ROLE, admin);
+  describe("ResultSender tests", async () => {
+    it("Admin should have DEFAULT_ADMIN_ROLE", async () => {
+      const admin = signers[0].address;
+      const DEFAULT_ADMIN_ROLE = await resultSender.DEFAULT_ADMIN_ROLE();
+      const hasAdminRole = await resultSender.hasRole(
+        DEFAULT_ADMIN_ROLE,
+        admin
+      );
 
-    expect(hasAdminRole).to.be.true;
+      expect(hasAdminRole).to.be.true;
+    });
+
+    it("Signer address should be same as deployer address", async () => {
+      const signerAddress = await resultSender.signerAddress();
+      expect(signerAddress).to.be.equal(signers[0].address);
+    });
+
+    it("Admin/Signer should be able to update signer address", async () => {
+      const newSignerAddress = signers[1].address;
+
+      await resultSender.updateSignerAddress(newSignerAddress);
+      let signerAddress = await resultSender.signerAddress();
+      expect(signerAddress).to.be.equal(newSignerAddress);
+
+      await resultSender.updateSignerAddress(signers[0].address);
+      signerAddress = await resultSender.signerAddress();
+      expect(signerAddress).to.be.equal(signers[0].address);
+    });
+
+    it("updateSignerAddress should revert for non admin/signer accounts", async () => {
+      await expect(
+        resultSender.connect(signers[1]).updateSignerAddress(signers[0].address)
+      ).to.be.revertedWith("Invalid Caller");
+    });
+
+    it("publish result should fail if signature is invalid", async () => {
+      requestId++;
+      const message = await getMessage(resultSender, epoch, requestId);
+      const signature = await getSignature(message, signers[1]);
+      const block = await getBlock(resultSender, message, signature);
+
+      await expect(
+        resultSender.publishResult(resultManager.address, block)
+      ).to.be.revertedWith("invalid signature");
+    });
   });
 
-  it("Admin should have DISPATCHER_ROLE", async () => {
-    const hasDispatcherRole = await resultSender.hasRole(
-      DISPATCHER_ROLE,
-      signers[0].address
-    );
-    expect(hasDispatcherRole).to.be.true;
-  });
+  describe("ResultManager tests", async () => {
+    it("Admin should have DEFAULT_ADMIN_ROLE", async () => {
+      const admin = signers[0].address;
+      const DEFAULT_ADMIN_ROLE = await resultManager.DEFAULT_ADMIN_ROLE();
+      const hasAdminRole = await resultManager.hasRole(
+        DEFAULT_ADMIN_ROLE,
+        admin
+      );
 
-  it("Admin should be able to grant DISPATCHER_ROLE", async () => {
-    await resultSender.grantRole(DISPATCHER_ROLE, signers[2].address);
-    const hasDispatcherRole = await resultSender.hasRole(
-      DISPATCHER_ROLE,
-      signers[2].address
-    );
-    expect(hasDispatcherRole).to.be.true;
-  });
+      expect(hasAdminRole).to.be.true;
+    });
 
-  it("initialize should not be called more than once", async () => {
-    await expect(resultHandler.initialize(KEYGEN_ADDRESS)).to.be.revertedWith(
-      "Initializable: contract is already initialized"
-    );
-  });
+    it("initialize should not be called more than once", async () => {
+      await expect(resultManager.initialize(SIGNER_ADDRESS)).to.be.revertedWith(
+        "Initializable: contract is already initialized"
+      );
+    });
 
-  it("publishResult can be called only by address having DISPATCHER_ROLE", async () => {
-    resultSender = await resultSender.connect(signers[1]);
-    const DISPATCHER_ROLE = await resultSender.DISPATCHER_ROLE();
+    it("Admin/Signer should be able to update signer address", async () => {
+      const newSignerAddress = signers[1].address;
 
-    const message = await getMessage(resultSender, epoch, 1);
-    const signature = await getSignature(message, signers[0]);
+      await resultManager.updateSignerAddress(newSignerAddress);
+      let signerAddress = await resultManager.signerAddress();
+      expect(signerAddress).to.be.equal(newSignerAddress);
 
-    await expect(
-      resultSender.publishResult(resultHandler.address, signature, message)
-    ).to.be.revertedWith(
-      `AccessControl: account ${signers[1].address.toLowerCase()} is missing role ${DISPATCHER_ROLE.toLowerCase()}`
-    );
-    resultSender = await resultSender.connect(signers[0]);
-  });
+      await resultManager.updateSignerAddress(signers[0].address);
+      signerAddress = await resultManager.signerAddress();
+      expect(signerAddress).to.be.equal(signers[0].address);
+    });
 
-  it("publish result should fail if KEYGEN_ADDRESS is incorrect", async () => {
-    const message = await getMessage(resultSender, epoch, 1);
-    const signature = await getSignature(message, signers[1]);
+    it("Publish result should update collection results", async () => {
+      requestId++;
+      const message = await getMessage(resultSender, epoch, requestId);
+      const signature = await getSignature(message, signers[0]);
+      const block = await getBlock(resultSender, message, signature);
 
-    await expect(
-      resultSender.publishResult(resultHandler.address, signature, message)
-    ).to.be.revertedWith("invalid signature");
-  });
+      await resultSender.publishResult(resultManager.address, block);
 
-  it("Publish result should update collection results", async () => {
-    const lastRequestId = await resultSender.lastRequestId();
-    const currentRequestId = lastRequestId + 1;
+      for (let i = 0; i < ids.length; i++) {
+        // * test getCollectionID
+        const cId = await resultManager.getCollectionID(namesHash[i]);
+        expect(cId).to.be.equal(ids[i]);
 
-    const message = await getMessage(resultSender, epoch, currentRequestId);
-    const signature = await getSignature(message, signers[0]);
+        // * test getResult
+        let [cResult, cPower] = await resultManager.getResult(namesHash[i]);
+        expect(cPower).to.be.equal(power[i]);
+        expect(cResult.toNumber()).to.be.equal(result[i]);
 
-    await resultSender.publishResult(resultHandler.address, signature, message);
+        // * test getResultFromID
+        [cResult, cPower] = await resultManager.getResultFromID(ids[i]);
+        expect(cPower).to.be.equal(power[i]);
+        expect(cResult.toNumber()).to.be.equal(result[i]);
+      }
 
-    for (let i = 0; i < ids.length; i++) {
-      // * test getCollectionID
-      const cId = await resultHandler.getCollectionID(namesHash[i]);
-      expect(cId).to.be.equal(ids[i]);
+      // * test activeCollectionIds
+      const activeCollectionIds = await resultManager.getActiveCollections();
+      expect(activeCollectionIds).to.have.same.members(ids);
 
-      // * test getResult
-      let [cResult, cPower] = await resultHandler.getResult(namesHash[i]);
-      expect(cPower).to.be.equal(power[i]);
-      expect(cResult.toNumber()).to.be.equal(result[i]);
+      // * test getCollectionStatus
+      for (let i = 0; i < ids.length + 1; i++) {
+        const isActive = await resultManager.getCollectionStatus(i);
+        const isExist = ids.includes(i);
+        expect(isActive).to.be.equal(isExist);
+      }
+    });
 
-      // * test getResultFromID
-      [cResult, cPower] = await resultHandler.getResultFromID(ids[i]);
-      expect(cPower).to.be.equal(power[i]);
-      expect(cResult.toNumber()).to.be.equal(result[i]);
-    }
+    it("Publish result should create block with requestId", async () => {
+      requestId++;
+      const message = await getMessage(resultSender, epoch, requestId);
+      const signature = await getSignature(message, signers[0]);
+      const messageBlock = await getBlock(resultSender, message, signature);
 
-    // * test activeCollectionIds
-    const activeCollectionIds = await resultHandler.getActiveCollections();
-    expect(activeCollectionIds).to.have.same.members(ids);
+      await resultSender.publishResult(resultManager.address, messageBlock);
 
-    // * test getCollectionStatus
-    for (let i = 0; i < ids.length + 1; i++) {
-      const isActive = await resultHandler.getCollectionStatus(i);
-      const isExist = ids.includes(i);
-      expect(isActive).to.be.equal(isExist);
-    }
-  });
-
-  it("Publish result should create block with requestId", async () => {
-    const lastRequestId = await resultSender.lastRequestId();
-    const currentRequestId = lastRequestId + 1;
-
-    const message = await getMessage(resultSender, epoch, currentRequestId);
-    const signature = await getSignature(message, signers[0]);
-
-    await resultSender.publishResult(resultHandler.address, signature, message);
-
-    const block = await resultHandler.blocks(currentRequestId);
-    expect(block.message).to.be.not.equal("0x");
+      const block = await resultManager.blocks(requestId);
+      expect(block.message).to.be.not.equal("0x");
+    });
   });
 });

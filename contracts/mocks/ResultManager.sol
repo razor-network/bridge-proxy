@@ -5,20 +5,11 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
-    bytes32 public constant SOURCE_CHAIN_HASH = keccak256("whispering-turais");
-    address public constant MESSAGE_PROXY_ADDRESS =
-        0xd2AAa00100000000000000000000000000000000;
-
-    uint16[] public activeCollectionIds;
+contract ResultManagerMock is AccessControlEnumerableUpgradeable {
     bool public initialized;
-    address public keygenAddress;
-
-    function initialize(address _keygenAddress) public initializer {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        initialized = true;
-        keygenAddress = _keygenAddress;
-    }
+    address public signerAddress;
+    uint256 public lastUpdatedTimestamp;
+    uint16[] public activeCollectionIds;
 
     struct Block {
         bytes message;
@@ -41,13 +32,37 @@ contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
     /// @notice mapping for CollectionID -> Value Info
     mapping(uint16 => Value) public collectionResults;
 
-    event DataReceived(bytes data);
+    event DataReceived(address sender, bytes data);
 
     modifier onlyInitialized() {
         require(initialized, "Contract should be initialized");
         _;
     }
 
+    function initialize(address _signerAddress) public initializer {
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        initialized = true;
+        signerAddress = _signerAddress;
+    }
+
+    function updateSignerAddress(address _signerAddress)
+        external
+        onlyInitialized
+    {
+        require(
+            msg.sender == signerAddress ||
+                hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
+            "Invalid Caller"
+        );
+        signerAddress = _signerAddress;
+    }
+
+    /**
+     * @dev Verify the signature and update the results
+     * Requirements:
+     *
+     * - ecrecover(signature) should match with signerAddress
+     */
     function setBlock(Block memory tssBlock) public onlyInitialized {
         bytes32 messageHash = keccak256(tssBlock.message);
 
@@ -55,7 +70,7 @@ contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
             ECDSA.recover(
                 ECDSA.toEthSignedMessageHash(messageHash),
                 tssBlock.signature
-            ) == keygenAddress,
+            ) == signerAddress,
             "invalid signature"
         );
 
@@ -80,7 +95,7 @@ contract ResultHandlerMock is AccessControlEnumerableUpgradeable {
     function postMessage(address sender, bytes calldata data) external {
         Block memory tssBlock = abi.decode(data, (Block));
         setBlock(tssBlock);
-        emit DataReceived(data);
+        emit DataReceived(sender, data);
     }
 
     /**
