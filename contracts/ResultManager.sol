@@ -4,12 +4,11 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-contract ResultHandler is AccessControlEnumerableUpgradeable {
-
-    uint16[] public activeCollectionIds;
+contract ResultManager is AccessControlEnumerableUpgradeable {
     bool public initialized;
-    address public keygenAddress;
+    address public signerAddress;
     uint256 public lastUpdatedTimestamp;
+    uint16[] public activeCollectionIds;
 
     struct Block {
         bytes message;
@@ -34,43 +33,51 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
 
     event DataReceived(bytes32 schainHash, address sender, bytes data);
 
-
     modifier onlyInitialized() {
         require(initialized, "Contract should be initialized");
         _;
     }
 
-    function initialize(address _keygenAddress) public initializer {
+    function initialize(address _signerAddress) public initializer {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         initialized = true;
-        keygenAddress = _keygenAddress;
+        signerAddress = _signerAddress;
     }
 
-    function setKeygen(address _keygenAddress) external {
+    function updateSignerAddress(address _signerAddress)
+        external
+        onlyInitialized
+    {
         require(
-            msg.sender == keygenAddress ||
+            msg.sender == signerAddress ||
                 hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
             "Invalid Caller"
         );
-        keygenAddress = _keygenAddress;
+        signerAddress = _signerAddress;
     }
 
-    function setBlock(Block memory tssBlock) public onlyInitialized {
-        bytes32 messageHash = keccak256(tssBlock.message);
+    /**
+     * @dev Verify the signature and update the results
+     * Requirements:
+     *
+     * - ecrecover(signature) should match with signerAddress
+     */
+    function setBlock(Block memory messageBlock) public onlyInitialized {
+        bytes32 messageHash = keccak256(messageBlock.message);
 
         require(
             ECDSA.recover(
                 ECDSA.toEthSignedMessageHash(messageHash),
-                tssBlock.signature
-            ) == keygenAddress,
+                messageBlock.signature
+            ) == signerAddress,
             "invalid signature"
         );
 
         (, uint32 requestId, uint256 timestamp, Value[] memory values) = abi
-            .decode(tssBlock.message, (uint256, uint32, uint256, Value[]));
+            .decode(messageBlock.message, (uint256, uint32, uint256, Value[]));
 
         uint16[] memory ids = new uint16[](values.length);
-        blocks[requestId] = tssBlock;
+        blocks[requestId] = messageBlock;
         for (uint256 i; i < values.length; i++) {
             collectionResults[values[i].collectionId] = values[i];
             collectionIds[values[i].name] = values[i].collectionId;
@@ -92,8 +99,8 @@ contract ResultHandler is AccessControlEnumerableUpgradeable {
         address sender,
         bytes calldata data
     ) external onlyInitialized {
-        Block memory tssBlock = abi.decode(data, (Block));
-        setBlock(tssBlock);
+        Block memory messageBlock = abi.decode(data, (Block));
+        setBlock(messageBlock);
         emit DataReceived(schainHash, sender, data);
     }
 
