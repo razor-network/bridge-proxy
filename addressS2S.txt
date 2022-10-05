@@ -1,9 +1,0 @@
-Result Sender: 0xE93C1C49Ed593CaA13027C3B8987A9DdB8fE35c7
-
-Destination chain: attractive-merope
-ResultHandler (proxy): 0x801DdA93f02C0b30E7495bCC788D51271863Ec8c
-ResultHandler (Implementation): 0xA49c5C187c24c39BF99AeA75Db95599184D8FA14
-
-Destination chain: rinkeby
-ResultHandler (proxy): 0xc0Db5ff39A1a5dA7F3dE0eBc7BC838B79A259A75
-ResultHandler (Implementation): 0x71e95956CdF9297D5C2575c5fA86330FcF582358

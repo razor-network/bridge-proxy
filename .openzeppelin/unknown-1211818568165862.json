@@ -1,20 +1,20 @@
 {
   "manifestVersion": "3.2",
   "admin": {
-    "address": "0xeBAbbDcABCFadA08f171a0c1B876e34e1149EbFA",
-    "txHash": "0xcc927b736af5a3faf3d673d13d80a5a4c59ba51dee418341b552408a4e4941b7"
+    "address": "0x55C7Ee3D7fD6a8BD1d336BE477E5E68f49118F40",
+    "txHash": "0x7fb1c2ac36d57645e95bbd779b95e1d38ec8c8c5225618905e680f97e9f6026b"
   },
   "proxies": [
     {
-      "address": "0x801DdA93f02C0b30E7495bCC788D51271863Ec8c",
-      "txHash": "0x974bad356b811628d8f27ae157b704e5b592d1698d6dbda0f0810d25b3a7c2ca",
+      "address": "0xF2aE9Fd8141E774A08EE3007dA76Ad9d058e713C",
+      "txHash": "0xd73d0b32baff85fafc24a87589ad2ed527155f47981ec3c46f767d77b4be9cc2",
       "kind": "transparent"
     }
   ],
   "impls": {
-    "adbe922cc8f5229eea9cfc04abe33d1f9fa15b20468d83c024e11d61fb8392d1": {
-      "address": "0xA49c5C187c24c39BF99AeA75Db95599184D8FA14",
-      "txHash": "0x775d26e3d90cdb729e21cadf5988ab493f3046abed5abbd262fd6d2496718b49",
+    "bff872bfb4759eed2b64da314282dce2d6ac24fc5c13fd1744288801a3612aa3": {
+      "address": "0xA76EF1b69Bd552796aef2Af9417C94708eC018D0",
+      "txHash": "0xa2c5dfa09bfd34d9be38714cadc754cb15fc836a7eda6b77281370a4319e335d",
       "layout": {
         "storage": [
           {
@@ -83,60 +83,60 @@
             "src": "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol:76"
           },
           {
-            "label": "activeCollectionIds",
-            "offset": 0,
-            "slot": "201",
-            "type": "t_array(t_uint16)dyn_storage",
-            "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:9"
-          },
-          {
             "label": "initialized",
             "offset": 0,
-            "slot": "202",
+            "slot": "201",
             "type": "t_bool",
-            "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:10"
+            "contract": "ResultManager",
+            "src": "contracts/ResultManager.sol:8"
           },
           {
-            "label": "keygenAddress",
+            "label": "signerAddress",
             "offset": 1,
-            "slot": "202",
+            "slot": "201",
             "type": "t_address",
-            "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:11"
+            "contract": "ResultManager",
+            "src": "contracts/ResultManager.sol:9"
           },
           {
             "label": "lastUpdatedTimestamp",
             "offset": 0,
-            "slot": "203",
+            "slot": "202",
             "type": "t_uint256",
-            "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:12"
+            "contract": "ResultManager",
+            "src": "contracts/ResultManager.sol:10"
+          },
+          {
+            "label": "activeCollectionIds",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_array(t_uint16)dyn_storage",
+            "contract": "ResultManager",
+            "src": "contracts/ResultManager.sol:11"
           },
           {
             "label": "blocks",
             "offset": 0,
             "slot": "204",
             "type": "t_mapping(t_uint32,t_struct(Block)2533_storage)",
-            "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:27"
+            "contract": "ResultManager",
+            "src": "contracts/ResultManager.sol:26"
           },
           {
             "label": "collectionIds",
             "offset": 0,
             "slot": "205",
             "type": "t_mapping(t_bytes32,t_uint16)",
-            "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:30"
+            "contract": "ResultManager",
+            "src": "contracts/ResultManager.sol:29"
           },
           {
             "label": "collectionResults",
             "offset": 0,
             "slot": "206",
             "type": "t_mapping(t_uint16,t_struct(Value)2542_storage)",
-            "contract": "ResultHandler",
-            "src": "contracts/ResultHandler.sol:33"
+            "contract": "ResultManager",
+            "src": "contracts/ResultManager.sol:32"
           }
         ],
         "types": {
@@ -197,11 +197,11 @@
             "numberOfBytes": "32"
           },
           "t_mapping(t_uint16,t_struct(Value)2542_storage)": {
-            "label": "mapping(uint16 => struct ResultHandler.Value)",
+            "label": "mapping(uint16 => struct ResultManager.Value)",
             "numberOfBytes": "32"
           },
           "t_mapping(t_uint32,t_struct(Block)2533_storage)": {
-            "label": "mapping(uint32 => struct ResultHandler.Block)",
+            "label": "mapping(uint32 => struct ResultManager.Block)",
             "numberOfBytes": "32"
           },
           "t_struct(AddressSet)1612_storage": {
@@ -217,7 +217,7 @@
             "numberOfBytes": "64"
           },
           "t_struct(Block)2533_storage": {
-            "label": "struct ResultHandler.Block",
+            "label": "struct ResultManager.Block",
             "members": [
               {
                 "label": "message",
@@ -271,7 +271,7 @@
             "numberOfBytes": "64"
           },
           "t_struct(Value)2542_storage": {
-            "label": "struct ResultHandler.Value",
+            "label": "struct ResultManager.Value",
             "members": [
               {
                 "label": "power",
