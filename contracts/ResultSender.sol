@@ -134,7 +134,10 @@ contract ResultSender is AccessControlEnumerable {
     ) public {
         bytes32 messageHash = keccak256(messageBlock.message);
         require(
-            ECDSA.recover(messageHash, messageBlock.signature) == signerAddress,
+            ECDSA.recover(
+                ECDSA.toEthSignedMessageHash(messageHash),
+                messageBlock.signature
+            ) == signerAddress,
             "invalid signature"
         );
         bytes memory data = abi.encode(messageBlock);
