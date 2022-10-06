@@ -9,6 +9,7 @@ import "./interface/IMAProxy.sol";
 
 contract ResultSender is AccessControlEnumerable {
     address public signerAddress;
+    uint32 public numRequestsSent;
 
     IDelegator public delegator;
     ICollectionManager public collectionManager;
@@ -132,6 +133,14 @@ contract ResultSender is AccessControlEnumerable {
         address _resultHandler,
         Block calldata messageBlock
     ) public {
+        // Validate requestId
+        (, uint32 requestId, , ) = abi.decode(
+            messageBlock.message,
+            (uint256, uint32, uint256, Value[])
+        );
+        require(requestId == numRequestsSent + 1, "Invalid requestId");
+
+        // Validate signature with signerAddress
         bytes32 messageHash = keccak256(messageBlock.message);
         require(
             ECDSA.recover(
@@ -140,7 +149,10 @@ contract ResultSender is AccessControlEnumerable {
             ) == signerAddress,
             "invalid signature"
         );
+
         bytes memory data = abi.encode(messageBlock);
         imaProxy.postOutgoingMessage(_targetChainHash, _resultHandler, data);
+        // Increment numRequests on each message tranfer
+        numRequestsSent = numRequestsSent + 1;
     }
 }
