@@ -55,5 +55,5 @@ message
 | ResultHandler (Proxy)          | 0xbd13374e145Cb2704c101D6FC34470D0a667F35d | rinkeby           |
 | ResultHandler (Implementation) | 0xf7F8AC4653B6Ee69740e4A776796F9012fa6f675 | rinkeby           |
 | IMAProxy                       | 0x656fb12abab353FB1875a4e3Dc4D70179CB85BA4 | rinkeby           |
-| ResultSender                   | 0x68557306895C3E21d16B791e2AD9be5c54bd9c0c | whispering-turais |
+| ResultSender                   | 0xd59f8FcF5fC59F957DFe5855eC297f9c3d77ED99 | whispering-turais |
 | IMAProxy                       | 0xd2AAa00100000000000000000000000000000000 | whispering-turais |
