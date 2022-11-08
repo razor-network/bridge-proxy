@@ -59,7 +59,7 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
      *
      * - ecrecover(signature) should match with signerAddress
      */
-    function setBlock(Block memory messageBlock) public onlyInitialized {
+    function setBlock(Block memory messageBlock) external onlyInitialized {
         (, uint32 requestId, uint256 timestamp, Value[] memory values) = abi
             .decode(messageBlock.message, (uint256, uint32, uint256, Value[]));
         require(requestId == lastRequestId + 1, "Invalid requestId");
@@ -83,23 +83,6 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
         activeCollectionIds = ids;
         lastUpdatedTimestamp = timestamp;
         lastRequestId = lastRequestId + 1;
-    }
-
-    /**
-     * @dev Receives source chain data through validators/IMA
-     * Requirements:
-     *
-     * - `msg.sender` should be IMA_PROXY_ADDRESS
-     * - sender should be resultSender
-     */
-    function postMessage(
-        bytes32 schainHash,
-        address sender,
-        bytes calldata data
-    ) external onlyInitialized {
-        Block memory messageBlock = abi.decode(data, (Block));
-        setBlock(messageBlock);
-        emit DataReceived(schainHash, sender, data);
     }
 
     /**
