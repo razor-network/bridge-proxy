@@ -9,6 +9,7 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
     address public signerAddress;
     uint256 public lastUpdatedTimestamp;
     uint16[] public activeCollectionIds;
+    uint32 public lastRequestId;
 
     struct Block {
         bytes message;
@@ -48,11 +49,7 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
         external
         onlyInitialized
     {
-        require(
-            msg.sender == signerAddress ||
-                hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
-            "Invalid Caller"
-        );
+        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Not an admin");
         signerAddress = _signerAddress;
     }
 
@@ -63,8 +60,11 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
      * - ecrecover(signature) should match with signerAddress
      */
     function setBlock(Block memory messageBlock) public onlyInitialized {
-        bytes32 messageHash = keccak256(messageBlock.message);
+        (, uint32 requestId, uint256 timestamp, Value[] memory values) = abi
+            .decode(messageBlock.message, (uint256, uint32, uint256, Value[]));
+        require(requestId == lastRequestId + 1, "Invalid requestId");
 
+        bytes32 messageHash = keccak256(messageBlock.message);
         require(
             ECDSA.recover(
                 ECDSA.toEthSignedMessageHash(messageHash),
@@ -72,9 +72,6 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
             ) == signerAddress,
             "invalid signature"
         );
-
-        (, uint32 requestId, uint256 timestamp, Value[] memory values) = abi
-            .decode(messageBlock.message, (uint256, uint32, uint256, Value[]));
 
         uint16[] memory ids = new uint16[](values.length);
         blocks[requestId] = messageBlock;
@@ -85,6 +82,7 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
         }
         activeCollectionIds = ids;
         lastUpdatedTimestamp = timestamp;
+        lastRequestId = lastRequestId + 1;
     }
 
     /**
