@@ -1,3 +1,5 @@
+import { config } from "./config";
+
 export const sChainAttractiveMerope = {
   id: 1211818568165862,
   name: "attractive-merope",
@@ -19,6 +21,52 @@ export const sChainAttractiveMerope = {
     },
   },
   testnet: false,
+};
+
+export const sChainWhisperingTurais = {
+  id: 132333505628089,
+  name: "whispering-turais",
+  network: "Whispering Turais Schain",
+  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
+  iconBackground: "#fff",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ethereum",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: "https://staging-v2.skalenodes.com/v1/whispering-turais",
+  },
+  blockExplorers: {
+    default: {
+      name: "Whispering Turais",
+      url: "https://whispering-turais.explorer.staging-v2.skalenodes.com/",
+    },
+  },
+  testnet: true,
+};
+
+export const sCalypsoTestnet = {
+  id: 104734457,
+  name: "actual-secret-cebalraie",
+  network: "Actual Secret Cebalrai",
+  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
+  iconBackground: "#fff",
+  nativeCurrency: {
+    decimals: 18,
+    name: "Ethereum",
+    symbol: "ETH",
+  },
+  rpcUrls: {
+    default: "https://staging-v2.skalenodes.com/v1/actual-secret-cebalrai",
+  },
+  blockExplorers: {
+    default: {
+      name: "Actual Secret Cebalrai",
+      url: "https://actual-secret-cebalrai.explorer.staging-v2.skalenodes.com/",
+    },
+  },
+  testnet: true,
 };
 
 export const rinkebyMainnet = {
@@ -67,4 +115,12 @@ export const zkSyncTestnet = {
     },
   },
   testnet: false,
+};
+
+export const chainContracts = {
+  [sChainAttractiveMerope.id]: config.RESULT_HANDLER_ADDRESS_SCHAINV3,
+  [rinkebyMainnet.id]: config.RESULT_HANDLER_ADDRESS_RINKEBY,
+  [zkSyncTestnet.id]: config.RESULT_HANDLER_ADDRESS_ZKSYNC,
+  [sCalypsoTestnet.id]: config.RESULT_HANDLER_ADDRESS_CALYPSO_TESTNET,
+  [sChainWhisperingTurais.id]: config.RESULT_MANAGER_ADDRESS_SCHAINV2,
 };

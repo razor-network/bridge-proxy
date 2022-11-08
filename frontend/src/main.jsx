@@ -11,10 +11,19 @@ import {
   rinkebyMainnet,
   sChainAttractiveMerope,
   zkSyncTestnet,
+  sCalypsoTestnet,
+  sChainWhisperingTurais,
 } from "./utils/chains";
+import "./App.css";
 
 const { provider, chains } = configureChains(
-  [sChainAttractiveMerope, rinkebyMainnet, zkSyncTestnet],
+  [
+    sCalypsoTestnet,
+    sChainAttractiveMerope,
+    rinkebyMainnet,
+    sChainWhisperingTurais,
+    zkSyncTestnet,
+  ],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 
