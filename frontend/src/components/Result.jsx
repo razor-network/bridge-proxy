@@ -153,7 +153,6 @@ const Result = () => {
           Fetch Result
         </Button>
       </Tooltip>
-      <BlocksTable blocks={blocks} />
     </VStack>
   );
 };

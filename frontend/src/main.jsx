@@ -17,13 +17,7 @@ import {
 import "./App.css";
 
 const { provider, chains } = configureChains(
-  [
-    sCalypsoTestnet,
-    sChainAttractiveMerope,
-    rinkebyMainnet,
-    sChainWhisperingTurais,
-    zkSyncTestnet,
-  ],
+  [zkSyncTestnet],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 
