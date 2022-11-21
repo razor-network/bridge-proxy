@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-contract ResultManager is AccessControlEnumerableUpgradeable {
-    bool public initialized;
+contract ResultManager is AccessControlEnumerable {
     address public signerAddress;
     uint256 public lastUpdatedTimestamp;
     uint16[] public activeCollectionIds;
@@ -34,21 +33,12 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
 
     event DataReceived(bytes32 schainHash, address sender, bytes data);
 
-    modifier onlyInitialized() {
-        require(initialized, "Contract should be initialized");
-        _;
-    }
-
-    function initialize(address _signerAddress) public initializer {
+    constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        initialized = true;
         signerAddress = _signerAddress;
     }
 
-    function updateSignerAddress(address _signerAddress)
-        external
-        onlyInitialized
-    {
+    function updateSignerAddress(address _signerAddress) external {
         require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Not an admin");
         signerAddress = _signerAddress;
     }
@@ -59,7 +49,7 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
      *
      * - ecrecover(signature) should match with signerAddress
      */
-    function setBlock(Block memory messageBlock) external onlyInitialized {
+    function setBlock(Block memory messageBlock) external {
         (, uint32 requestId, uint256 timestamp, Value[] memory values) = abi
             .decode(messageBlock.message, (uint256, uint32, uint256, Value[]));
         require(requestId == lastRequestId + 1, "Invalid requestId");
