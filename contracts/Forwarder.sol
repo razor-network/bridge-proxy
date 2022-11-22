@@ -38,7 +38,7 @@ contract Forwarder is AccessControlEnumerable {
     function setCollectionPayload(
         bytes32 _collectionName,
         bytes memory _payload
-    ) public {
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         collectionPayload[_collectionName] = _payload;
     }
 
