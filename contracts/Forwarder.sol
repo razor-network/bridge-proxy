@@ -7,9 +7,9 @@ import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 contract Forwarder is AccessControlEnumerable {
     using Address for address;
 
+    bool public isWhitelistEnabled;
     address public resultManager;
     mapping(bytes32 => bytes) public collectionPayload;
-    // * NOTE: Here the mapping can be changed to (address => address) if there are chances of multiple result manager.
     mapping(address => bool) public permissionList;
 
     event PermissionSet(address sender);
@@ -18,6 +18,7 @@ contract Forwarder is AccessControlEnumerable {
     constructor(address _resultManager) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         resultManager = _resultManager;
+        isWhitelistEnabled = true;
     }
 
     /// @notice Set result manager contract address
@@ -58,13 +59,24 @@ contract Forwarder is AccessControlEnumerable {
         permissionList[sender] = false;
     }
 
+    function enableWhitelist() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        isWhitelistEnabled = true;
+    }
+
+    function disableWhitelist() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        isWhitelistEnabled = false;
+    }
+
     /// @notice get result by collection name
     function getResult(bytes32 collectionName)
         external
         view
         returns (uint256, int8)
     {
-        require(permissionList[msg.sender], "Missing permission");
+        require(
+            isWhitelistEnabled ? permissionList[msg.sender] : true,
+            "Missing permission"
+        );
         require(
             collectionPayload[collectionName].length > 0,
             "Invalid collection name"
@@ -73,14 +85,5 @@ contract Forwarder is AccessControlEnumerable {
             collectionPayload[collectionName]
         );
         return abi.decode(data, (uint256, int8));
-    }
-
-    /// @notice Utility function to construct payload
-    function getPayload(string memory functionSig, bytes32 collectionName)
-        public
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSignature(functionSig, collectionName);
     }
 }

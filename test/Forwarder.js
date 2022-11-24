@@ -86,6 +86,18 @@ describe("Forwarder tests", () => {
       await expect(
         forwarder.setResultManager(signers[1].address)
       ).to.be.rejectedWith("Not a contract address");
+
+      await expect(forwarder.setResultManager(resultManager.address)).to.be.not
+        .reverted;
+    });
+
+    it("Only admin should be able to grant/revoke whitelist permission", async () => {
+      await expect(
+        forwarder.connect(signers[1]).setPermission(signers[1].address)
+      ).to.be.reverted;
+      await expect(
+        forwarder.connect(signers[1]).removePermission(signers[1].address)
+      ).to.be.reverted;
     });
 
     it("getResult call should revert for unassigned collection payload", async () => {
@@ -103,10 +115,11 @@ describe("Forwarder tests", () => {
 
       await resultManager.setBlock(block);
 
-      const payload = await forwarder.getPayload(
-        "getResult(bytes32)",
-        namesHash[0]
-      );
+      const funcSignatureHash = "0xadd4c784";
+      const payload = hre.ethers.utils.hexConcat([
+        funcSignatureHash,
+        namesHash[0],
+      ]);
       await forwarder.setCollectionPayload(namesHash[0], payload);
 
       const [result, power] = await resultManager.getResult(namesHash[0]);
@@ -115,6 +128,19 @@ describe("Forwarder tests", () => {
       );
       expect(result).to.be.equal(forwarderResult);
       expect(power).to.be.equal(forwarderPower);
+    });
+
+    it("Account should be able to access if whitelist mode is disabled", async () => {
+      await forwarder.removePermission(signers[0].address);
+      await forwarder.disableWhitelist();
+      await expect(forwarder.getResult(namesHash[0])).to.be.not.reverted;
+    });
+
+    it("Account should be whitelisted to fetch result if whitelist mode is enabled", async () => {
+      await forwarder.enableWhitelist();
+      await expect(
+        forwarder.connect(signers[1]).getResult(namesHash[0])
+      ).to.be.revertedWith("Missing permission");
     });
   });
 });
