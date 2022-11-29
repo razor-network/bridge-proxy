@@ -63,7 +63,9 @@ describe("Forwarder tests", () => {
     resultSender = await ResultSender.deploy(signers[0].address);
 
     const Forwarder = await hre.ethers.getContractFactory("Forwarder");
-    forwarder = await Forwarder.deploy(resultManager.address);
+    forwarder = await hre.upgrades.deployProxy(Forwarder, [
+      resultManager.address,
+    ]);
 
     epoch = 1;
   });
@@ -120,6 +122,7 @@ describe("Forwarder tests", () => {
         funcSignatureHash,
         namesHash[0],
       ]);
+
       await forwarder.setCollectionPayload(namesHash[0], payload);
 
       const [result, power] = await resultManager.getResult(namesHash[0]);

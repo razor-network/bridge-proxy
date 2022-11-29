@@ -69,14 +69,14 @@ contract Forwarder is AccessControlEnumerableUpgradeable, PausableUpgradeable {
     }
 
     /// @notice get result by collection name
-    function getResult(bytes32 collectionName, address sender)
+    function getResult(bytes32 collectionName)
         external
         view
         whenNotPaused
         returns (uint256, int8)
     {
         require(
-            isWhitelistEnabled ? permissionList[sender] : true,
+            isWhitelistEnabled ? permissionList[msg.sender] : true,
             "Missing permission"
         );
         require(
