@@ -16,7 +16,7 @@ contract Forwarder is AccessControlEnumerableUpgradeable, PausableUpgradeable {
     event PermissionSet(address sender);
     event PermissionRemoved(address sender);
 
-    constructor(address _resultManager) {
+    function initialize(address _resultManager) public initializer {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         resultManager = _resultManager;
         isWhitelistEnabled = true;
