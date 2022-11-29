@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/utils/Address.sol";
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
 
-contract Forwarder is AccessControlEnumerable {
-    using Address for address;
+contract Forwarder is AccessControlEnumerableUpgradeable, PausableUpgradeable {
+    using AddressUpgradeable for address;
 
     bool public isWhitelistEnabled;
     address public resultManager;
@@ -68,13 +69,14 @@ contract Forwarder is AccessControlEnumerable {
     }
 
     /// @notice get result by collection name
-    function getResult(bytes32 collectionName)
+    function getResult(bytes32 collectionName, address sender)
         external
         view
+        whenNotPaused
         returns (uint256, int8)
     {
         require(
-            isWhitelistEnabled ? permissionList[msg.sender] : true,
+            isWhitelistEnabled ? permissionList[sender] : true,
             "Missing permission"
         );
         require(
