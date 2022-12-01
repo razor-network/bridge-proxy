@@ -1,22 +1,23 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
-contract Forwarder is AccessControlEnumerableUpgradeable, PausableUpgradeable {
-    using AddressUpgradeable for address;
+contract Forwarder is AccessControlEnumerable, Pausable {
+    using Address for address;
 
     bool public isWhitelistEnabled;
     address public resultManager;
+    address public transparentForwarder;
     mapping(bytes32 => bytes) public collectionPayload;
     mapping(address => bool) public permissionList;
 
     event PermissionSet(address sender);
     event PermissionRemoved(address sender);
 
-    function initialize(address _resultManager) public initializer {
+    constructor(address _resultManager) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         resultManager = _resultManager;
         isWhitelistEnabled = true;
@@ -70,6 +71,17 @@ contract Forwarder is AccessControlEnumerableUpgradeable, PausableUpgradeable {
         isWhitelistEnabled = false;
     }
 
+    function updateTransparentForwarder(address _transparentForwarder)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        transparentForwarder = _transparentForwarder;
+    }
+
+    function isWhiteListed(address caller) public view returns (bool) {
+        return isWhitelistEnabled ? permissionList[caller] : true;
+    }
+
     /// @notice get result by collection name
     function getResult(bytes32 collectionName)
         external
@@ -77,10 +89,7 @@ contract Forwarder is AccessControlEnumerableUpgradeable, PausableUpgradeable {
         whenNotPaused
         returns (uint256, int8)
     {
-        require(
-            isWhitelistEnabled ? permissionList[msg.sender] : true,
-            "Missing permission"
-        );
+        require(msg.sender == transparentForwarder, "Invalid caller");
         require(
             collectionPayload[collectionName].length > 0,
             "Invalid collection name"
