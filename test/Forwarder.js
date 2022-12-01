@@ -13,14 +13,32 @@ const namesHash = [
   "0x0f5e947b204a798dd86405ac2f21fed0d109e748bcd057b913eb87b6ffe07c3e",
 ];
 
-const getMessage = async (resultSender, epoch, requestId) => {
-  const message = await resultSender.getMessage(
-    power,
-    ids,
-    namesHash,
-    result,
-    epoch,
-    requestId
+const abiCoder = new hre.ethers.utils.AbiCoder();
+
+const getValues = () => {
+  let values = [];
+  for (let i = 0; i < ids.length; i++) {
+    const id = ids[i];
+    values.push({
+      power: power[i],
+      collectionId: id,
+      name: namesHash[i],
+      value: result[i],
+    });
+  }
+  return values;
+};
+
+const getMessage = (epoch) => {
+  const timestampBN = hre.ethers.BigNumber.from("1231231");
+  const values = getValues();
+  const message = abiCoder.encode(
+    [
+      "uint32",
+      "uint256",
+      "tuple[](int8 power, uint16 collectionId, bytes32 name, uint256 value)",
+    ],
+    [epoch, timestampBN, values]
   );
   return message;
 };
@@ -34,13 +52,16 @@ const getSignature = async (message, signer) => {
   return signature;
 };
 
-const getBlock = async (resultSender, message, signature) => {
-  const block = await resultSender.getBlock(message, signature);
-  return block;
+const getBlock = async (signer, epoch) => {
+  const message = getMessage(epoch);
+  const signature = await getSignature(message, signer);
+  return {
+    signature,
+    message,
+  };
 };
 
 describe("Forwarder tests", () => {
-  let resultSender;
   let resultManager;
   let signers;
   let epoch;
@@ -53,15 +74,8 @@ describe("Forwarder tests", () => {
   before(async () => {
     signers = await hre.ethers.getSigners();
 
-    const ResultManager = await hre.ethers.getContractFactory(
-      "ResultManagerMock"
-    );
+    const ResultManager = await hre.ethers.getContractFactory("ResultManager");
     resultManager = await ResultManager.deploy(signers[0].address);
-
-    const ResultSender = await hre.ethers.getContractFactory(
-      "ResultSenderMock"
-    );
-    resultSender = await ResultSender.deploy(signers[0].address);
 
     const Forwarder = await hre.ethers.getContractFactory("Forwarder");
     forwarder = await Forwarder.deploy(resultManager.address);
@@ -76,6 +90,9 @@ describe("Forwarder tests", () => {
 
     // * setting transparentForwarder address in forwarder
     await forwarder.setTransparentForwarder(transparentForwarder.address);
+
+    // * set the forwarder address in resultManager
+    await resultManager.updateForwarder(forwarder.address);
 
     // * Deploy client
     const Client = await hre.ethers.getContractFactory("Client");
@@ -138,9 +155,7 @@ describe("Forwarder tests", () => {
 
     it("Forwarder should return required result", async () => {
       requestId++;
-      const message = await getMessage(resultSender, epoch, requestId);
-      const signature = await getSignature(message, signers[0]);
-      const block = await getBlock(resultSender, message, signature);
+      const block = await getBlock(signers[0], epoch);
 
       await resultManager.setBlock(block);
 
@@ -152,10 +167,9 @@ describe("Forwarder tests", () => {
 
       await forwarder.setCollectionPayload(namesHash[0], payload);
 
-      const [result, power] = await resultManager.getResult(namesHash[0]);
       const [clientResult, clientPower] = await client.getResult(namesHash[0]);
-      expect(result).to.be.equal(clientResult);
-      expect(power).to.be.equal(clientPower);
+      expect(result[0]).to.be.equal(clientResult);
+      expect(power[0]).to.be.equal(clientPower);
     });
 
     it("Account should be able to access if whitelist mode is disabled", async () => {
