@@ -47,8 +47,8 @@ describe("Forwarder tests", () => {
   let requestId = 0;
   let forwarder;
   let transparentForwarder;
-  let transparentForwarderInterface;
   let client;
+  let transparentForwarderAsForwarder;
 
   before(async () => {
     signers = await hre.ethers.getSigners();
@@ -70,9 +70,12 @@ describe("Forwarder tests", () => {
       "TransparentForwarder"
     );
     transparentForwarder = await TransparentForwarder.deploy(forwarder.address);
+    transparentForwarderAsForwarder = Forwarder.attach(
+      transparentForwarder.address
+    );
 
     // * setting transparentForwarder address in forwarder
-    await forwarder.updateTransparentForwarder(transparentForwarder.address);
+    await forwarder.setTransparentForwarder(transparentForwarder.address);
 
     // * Deploy client
     const Client = await hre.ethers.getContractFactory("Client");
@@ -97,6 +100,12 @@ describe("Forwarder tests", () => {
     it("Only Admin should be able to update result manager address", async () => {
       await expect(
         forwarder.connect(signers[1]).setResultManager(resultManager.address)
+      ).to.be.reverted;
+    });
+
+    it("Only Admin should be able to update forwarder address in TF", async () => {
+      await expect(
+        transparentForwarder.connect(signers[1]).setForwarder(forwarder.address)
       ).to.be.reverted;
     });
 
@@ -153,6 +162,13 @@ describe("Forwarder tests", () => {
       await forwarder.removePermission(signers[0].address);
       await forwarder.disableWhitelist();
       await expect(client.getResult(namesHash[0])).to.be.not.reverted;
+      await forwarder.enableWhitelist();
+    });
+
+    it("Non whitelisted account should not be able to getResult", async () => {
+      await expect(
+        transparentForwarderAsForwarder.getResult(namesHash[0])
+      ).to.be.revertedWith("Not whitelisted");
     });
 
     it("Caller should be transparent Forwarder contract to getResult", async () => {

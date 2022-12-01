@@ -71,7 +71,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         isWhitelistEnabled = false;
     }
 
-    function updateTransparentForwarder(address _transparentForwarder)
+    function setTransparentForwarder(address _transparentForwarder)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
