@@ -38,8 +38,10 @@ contract ResultManager is AccessControlEnumerable {
         signerAddress = _signerAddress;
     }
 
-    function updateSignerAddress(address _signerAddress) external {
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Not an admin");
+    function updateSignerAddress(address _signerAddress)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         signerAddress = _signerAddress;
     }
 
