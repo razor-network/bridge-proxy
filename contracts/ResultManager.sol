@@ -6,9 +6,10 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract ResultManager is AccessControlEnumerable {
     address public signerAddress;
+    address public forwarder;
     uint256 public lastUpdatedTimestamp;
     uint16[] public activeCollectionIds;
-    uint32 public lastRequestId;
+    uint32 public latestEpoch;
 
     struct Block {
         bytes message;
@@ -22,7 +23,7 @@ contract ResultManager is AccessControlEnumerable {
         uint256 value;
     }
 
-    // requestId => Block
+    // epoch => Block
     mapping(uint32 => Block) public blocks;
 
     /// @notice mapping for name of collection in bytes32 -> collectionid
@@ -31,11 +32,18 @@ contract ResultManager is AccessControlEnumerable {
     /// @notice mapping for CollectionID -> Value Info
     mapping(uint16 => Value) public collectionResults;
 
-    event DataReceived(bytes32 schainHash, address sender, bytes data);
+    event BlockReceived(uint32 epoch, uint256 timestamp, Value[] values);
 
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         signerAddress = _signerAddress;
+    }
+
+    function updateForwarder(address _forwarder)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        forwarder = _forwarder;
     }
 
     function updateSignerAddress(address _signerAddress)
@@ -52,9 +60,14 @@ contract ResultManager is AccessControlEnumerable {
      * - ecrecover(signature) should match with signerAddress
      */
     function setBlock(Block memory messageBlock) external {
-        (, uint32 requestId, uint256 timestamp, Value[] memory values) = abi
-            .decode(messageBlock.message, (uint256, uint32, uint256, Value[]));
-        require(requestId == lastRequestId + 1, "Invalid requestId");
+        (uint32 epoch, uint256 timestamp, Value[] memory values) = abi.decode(
+            messageBlock.message,
+            (uint32, uint256, Value[])
+        );
+        require(
+            !(blocks[epoch].signature.length > 0),
+            "Block already set for the epoch"
+        );
 
         bytes32 messageHash = keccak256(messageBlock.message);
         require(
@@ -66,7 +79,7 @@ contract ResultManager is AccessControlEnumerable {
         );
 
         uint16[] memory ids = new uint16[](values.length);
-        blocks[requestId] = messageBlock;
+        blocks[epoch] = messageBlock;
         for (uint256 i; i < values.length; i++) {
             collectionResults[values[i].collectionId] = values[i];
             collectionIds[values[i].name] = values[i].collectionId;
@@ -74,16 +87,9 @@ contract ResultManager is AccessControlEnumerable {
         }
         activeCollectionIds = ids;
         lastUpdatedTimestamp = timestamp;
-        lastRequestId = lastRequestId + 1;
-    }
+        latestEpoch = epoch;
 
-    /**
-     * @dev using the hash of collection name, clients can query collection id with respect to its hash
-     * @param _name bytes32 hash of the collection name
-     * @return collection ID
-     */
-    function getCollectionID(bytes32 _name) external view returns (uint16) {
-        return collectionIds[_name];
+        emit BlockReceived(epoch, timestamp, values);
     }
 
     /**
@@ -92,6 +98,7 @@ contract ResultManager is AccessControlEnumerable {
      * @return result of the collection and its power
      */
     function getResult(bytes32 _name) external view returns (uint256, int8) {
+        require(msg.sender == forwarder, "Invalid caller");
         uint16 id = collectionIds[_name];
         return getResultFromID(id);
     }
@@ -99,30 +106,7 @@ contract ResultManager is AccessControlEnumerable {
     /**
      * @dev Returns collection result and power with collectionId as parameter
      */
-    function getResultFromID(uint16 _id) public view returns (uint256, int8) {
+    function getResultFromID(uint16 _id) internal view returns (uint256, int8) {
         return (collectionResults[_id].value, collectionResults[_id].power);
-    }
-
-    /**
-     * @return ids of active collections in the oracle
-     */
-    function getActiveCollections() external view returns (uint16[] memory) {
-        return activeCollectionIds;
-    }
-
-    /**
-     * @dev using the collection id, clients can query the status of collection
-     * @param _id collection ID
-     * @return status of the collection
-     */
-    function getCollectionStatus(uint16 _id) external view returns (bool) {
-        bool isActive;
-        for (uint256 i = 0; i < activeCollectionIds.length; i++) {
-            if (activeCollectionIds[i] == _id) {
-                isActive = true;
-                break;
-            }
-        }
-        return isActive;
     }
 }

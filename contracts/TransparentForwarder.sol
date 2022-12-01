@@ -34,7 +34,7 @@ contract TransparentForwarder is AccessControlEnumerable {
         return whitelisted;
     }
 
-    fallback() external payable {
+    fallback() external {
         require(isWhiteListed(), "Not whitelisted");
 
         address forwarderContract = getForwarder();
@@ -84,6 +84,8 @@ contract TransparentForwarder is AccessControlEnumerable {
             }
         }
     }
-
-    receive() external payable {}
 }
+
+// * Delegator: 0x4535E7486c48Df8e1121be2A31b74aBb2b0a5B8b
+// * ethCollectionMedian: 0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9
+// * payload: 0xadd4c7841bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9
