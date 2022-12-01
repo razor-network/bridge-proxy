@@ -46,6 +46,9 @@ describe("Forwarder tests", () => {
   let epoch;
   let requestId = 0;
   let forwarder;
+  let transparentForwarder;
+  let transparentForwarderInterface;
+  let client;
 
   before(async () => {
     signers = await hre.ethers.getSigners();
@@ -53,9 +56,7 @@ describe("Forwarder tests", () => {
     const ResultManager = await hre.ethers.getContractFactory(
       "ResultManagerMock"
     );
-    resultManager = await hre.upgrades.deployProxy(ResultManager, [
-      signers[0].address,
-    ]);
+    resultManager = await ResultManager.deploy(signers[0].address);
 
     const ResultSender = await hre.ethers.getContractFactory(
       "ResultSenderMock"
@@ -63,9 +64,19 @@ describe("Forwarder tests", () => {
     resultSender = await ResultSender.deploy(signers[0].address);
 
     const Forwarder = await hre.ethers.getContractFactory("Forwarder");
-    forwarder = await hre.upgrades.deployProxy(Forwarder, [
-      resultManager.address,
-    ]);
+    forwarder = await Forwarder.deploy(resultManager.address);
+
+    const TransparentForwarder = await hre.ethers.getContractFactory(
+      "TransparentForwarder"
+    );
+    transparentForwarder = await TransparentForwarder.deploy(forwarder.address);
+
+    // * setting transparentForwarder address in forwarder
+    await forwarder.updateTransparentForwarder(transparentForwarder.address);
+
+    // * Deploy client
+    const Client = await hre.ethers.getContractFactory("Client");
+    client = await Client.deploy(transparentForwarder.address);
 
     epoch = 1;
   });
@@ -75,7 +86,12 @@ describe("Forwarder tests", () => {
       const admin = signers[0].address;
       const DEFAULT_ADMIN_ROLE = await forwarder.DEFAULT_ADMIN_ROLE();
       const hasAdminRole = await forwarder.hasRole(DEFAULT_ADMIN_ROLE, admin);
+      const hasAdminRoleInTF = await transparentForwarder.hasRole(
+        DEFAULT_ADMIN_ROLE,
+        admin
+      );
       expect(hasAdminRole).to.be.true;
+      expect(hasAdminRoleInTF).to.be.true;
     });
 
     it("Only Admin should be able to update result manager address", async () => {
@@ -103,8 +119,10 @@ describe("Forwarder tests", () => {
     });
 
     it("getResult call should revert for unassigned collection payload", async () => {
-      await forwarder.setPermission(signers[0].address);
-      await expect(forwarder.getResult(namesHash[2])).to.be.rejectedWith(
+      // * Whitlist client address
+      await forwarder.setPermission(client.address);
+
+      await expect(client.getResult(namesHash[2])).to.be.rejectedWith(
         "Invalid collection name"
       );
     });
@@ -126,24 +144,22 @@ describe("Forwarder tests", () => {
       await forwarder.setCollectionPayload(namesHash[0], payload);
 
       const [result, power] = await resultManager.getResult(namesHash[0]);
-      const [forwarderResult, forwarderPower] = await forwarder.getResult(
-        namesHash[0]
-      );
-      expect(result).to.be.equal(forwarderResult);
-      expect(power).to.be.equal(forwarderPower);
+      const [clientResult, clientPower] = await client.getResult(namesHash[0]);
+      expect(result).to.be.equal(clientResult);
+      expect(power).to.be.equal(clientPower);
     });
 
     it("Account should be able to access if whitelist mode is disabled", async () => {
       await forwarder.removePermission(signers[0].address);
       await forwarder.disableWhitelist();
-      await expect(forwarder.getResult(namesHash[0])).to.be.not.reverted;
+      await expect(client.getResult(namesHash[0])).to.be.not.reverted;
     });
 
-    it("Account should be whitelisted to fetch result if whitelist mode is enabled", async () => {
+    it("Caller should be transparent Forwarder contract to getResult", async () => {
       await forwarder.enableWhitelist();
       await expect(
         forwarder.connect(signers[1]).getResult(namesHash[0])
-      ).to.be.revertedWith("Missing permission");
+      ).to.be.revertedWith("Invalid caller");
     });
   });
 });

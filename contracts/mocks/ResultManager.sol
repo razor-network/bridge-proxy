@@ -39,7 +39,7 @@ contract ResultManagerMock is AccessControlEnumerableUpgradeable {
         _;
     }
 
-    function initialize(address _signerAddress) public initializer {
+    constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         initialized = true;
         signerAddress = _signerAddress;

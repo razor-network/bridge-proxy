@@ -59,9 +59,7 @@ describe("Data bridge tests", () => {
     const ResultManager = await hre.ethers.getContractFactory(
       "ResultManagerMock"
     );
-    resultManager = await hre.upgrades.deployProxy(ResultManager, [
-      SIGNER_ADDRESS,
-    ]);
+    resultManager = await ResultManager.deploy(SIGNER_ADDRESS);
 
     epoch = 1;
   });
@@ -123,12 +121,6 @@ describe("Data bridge tests", () => {
       );
 
       expect(hasAdminRole).to.be.true;
-    });
-
-    it("initialize should not be called more than once", async () => {
-      await expect(resultManager.initialize(SIGNER_ADDRESS)).to.be.revertedWith(
-        "Initializable: contract is already initialized"
-      );
     });
 
     it("Admin/Signer should be able to update signer address", async () => {
