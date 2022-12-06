@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
 interface IStaking {
-    function isWhitelisted() external payable returns (bool);
+    function isWhitelisted(address caller) external payable returns (bool);
 }
 
 contract TransparentForwarder is AccessControlEnumerable {
@@ -36,7 +36,7 @@ contract TransparentForwarder is AccessControlEnumerable {
     }
 
     fallback() external payable {
-        bool isWhitelisted = staking.isWhitelisted();
+        bool isWhitelisted = staking.isWhitelisted(msg.sender);
         require(isWhitelisted, "Not whitelisted");
 
         address forwarderContract = getForwarder();

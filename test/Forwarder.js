@@ -168,18 +168,17 @@ describe("Forwarder tests", () => {
       expect(power[0]).to.be.equal(clientPower);
     });
 
-    // it("Account should be able to access if whitelist mode is disabled", async () => {
-    //   await forwarder.removePermission(signers[0].address);
-    //   await forwarder.disableWhitelist();
-    //   await expect(client.getResult(namesHash[0])).to.be.not.reverted;
-    //   await forwarder.enableWhitelist();
-    // });
+    it("Account should be able to access if whitelist mode is disabled", async () => {
+      await staking.disableWhitelist();
+      await expect(client.getResult(namesHash[0])).to.be.not.reverted;
+    });
 
-    // it("Non whitelisted account should not be able to getResult", async () => {
-    //   await expect(
-    //     transparentForwarderAsForwarder.getResult(namesHash[0])
-    //   ).to.be.revertedWith("Not whitelisted");
-    // });
+    it("Non whitelisted account should not be able to getResult", async () => {
+      await staking.enableWhitelist();
+      await expect(
+        transparentForwarderAsForwarder.getResult(namesHash[0])
+      ).to.be.revertedWith("Not whitelisted");
+    });
 
     it("Caller should be transparent Forwarder contract to getResult", async () => {
       await expect(
