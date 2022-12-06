@@ -65,11 +65,11 @@ describe("Forwarder tests", () => {
   let resultManager;
   let signers;
   let epoch;
-  let requestId = 0;
   let forwarder;
   let transparentForwarder;
   let client;
   let transparentForwarderAsForwarder;
+  let staking;
 
   before(async () => {
     signers = await hre.ethers.getSigners();
@@ -84,6 +84,13 @@ describe("Forwarder tests", () => {
       "TransparentForwarder"
     );
     transparentForwarder = await TransparentForwarder.deploy(forwarder.address);
+
+    const Staking = await hre.ethers.getContractFactory("Staking");
+    staking = await Staking.deploy(transparentForwarder.address);
+
+    // * Update staking address in transparentForwarder contract
+    await transparentForwarder.setStaking(staking.address);
+
     transparentForwarderAsForwarder = Forwarder.attach(
       transparentForwarder.address
     );
@@ -135,18 +142,8 @@ describe("Forwarder tests", () => {
         .reverted;
     });
 
-    it("Only admin should be able to grant/revoke whitelist permission", async () => {
-      await expect(
-        forwarder.connect(signers[1]).setPermission(signers[1].address)
-      ).to.be.reverted;
-      await expect(
-        forwarder.connect(signers[1]).removePermission(signers[1].address)
-      ).to.be.reverted;
-    });
-
     it("getResult call should revert for unassigned collection payload", async () => {
       // * Whitlist client address
-      await forwarder.setPermission(client.address);
 
       await expect(client.getResult(namesHash[2])).to.be.rejectedWith(
         "Invalid collection name"
@@ -154,7 +151,6 @@ describe("Forwarder tests", () => {
     });
 
     it("Forwarder should return required result", async () => {
-      requestId++;
       const block = await getBlock(signers[0], epoch);
 
       await resultManager.setBlock(block);
@@ -172,21 +168,20 @@ describe("Forwarder tests", () => {
       expect(power[0]).to.be.equal(clientPower);
     });
 
-    it("Account should be able to access if whitelist mode is disabled", async () => {
-      await forwarder.removePermission(signers[0].address);
-      await forwarder.disableWhitelist();
-      await expect(client.getResult(namesHash[0])).to.be.not.reverted;
-      await forwarder.enableWhitelist();
-    });
+    // it("Account should be able to access if whitelist mode is disabled", async () => {
+    //   await forwarder.removePermission(signers[0].address);
+    //   await forwarder.disableWhitelist();
+    //   await expect(client.getResult(namesHash[0])).to.be.not.reverted;
+    //   await forwarder.enableWhitelist();
+    // });
 
-    it("Non whitelisted account should not be able to getResult", async () => {
-      await expect(
-        transparentForwarderAsForwarder.getResult(namesHash[0])
-      ).to.be.revertedWith("Not whitelisted");
-    });
+    // it("Non whitelisted account should not be able to getResult", async () => {
+    //   await expect(
+    //     transparentForwarderAsForwarder.getResult(namesHash[0])
+    //   ).to.be.revertedWith("Not whitelisted");
+    // });
 
     it("Caller should be transparent Forwarder contract to getResult", async () => {
-      await forwarder.enableWhitelist();
       await expect(
         forwarder.connect(signers[1]).getResult(namesHash[0])
       ).to.be.revertedWith("Invalid caller");

@@ -8,11 +8,9 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 contract Forwarder is AccessControlEnumerable, Pausable {
     using Address for address;
 
-    bool public isWhitelistEnabled;
     address public resultManager;
     address public transparentForwarder;
     mapping(bytes32 => bytes) public collectionPayload;
-    mapping(address => bool) public permissionList;
 
     event PermissionSet(address sender);
     event PermissionRemoved(address sender);
@@ -20,7 +18,6 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     constructor(address _resultManager) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         resultManager = _resultManager;
-        isWhitelistEnabled = true;
     }
 
     /// @notice Set result manager contract address
@@ -45,41 +42,11 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         collectionPayload[_collectionName] = _payload;
     }
 
-    /// @notice Set permission of sender
-    function setPermission(address sender)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        permissionList[sender] = true;
-        emit PermissionSet(sender);
-    }
-
-    /// @notice Remove permission of sender
-    function removePermission(address sender)
-        external
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        permissionList[sender] = false;
-        emit PermissionRemoved(sender);
-    }
-
-    function enableWhitelist() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        isWhitelistEnabled = true;
-    }
-
-    function disableWhitelist() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        isWhitelistEnabled = false;
-    }
-
     function setTransparentForwarder(address _transparentForwarder)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         transparentForwarder = _transparentForwarder;
-    }
-
-    function isWhiteListed(address caller) public view returns (bool) {
-        return isWhitelistEnabled ? permissionList[caller] : true;
     }
 
     /// @notice get result by collection name

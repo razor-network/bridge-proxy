@@ -4,9 +4,13 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
+interface IStaking {
+    function isWhitelisted() external payable returns (bool);
+}
+
 contract TransparentForwarder is AccessControlEnumerable {
-    using Address for address;
     address public forwarder;
+    IStaking public staking;
 
     constructor(address _forwarder) {
         forwarder = _forwarder;
@@ -24,18 +28,16 @@ contract TransparentForwarder is AccessControlEnumerable {
         forwarder = _forwarder;
     }
 
-    function isWhiteListed() public view returns (bool) {
-        bytes memory payload = abi.encodeWithSignature(
-            "isWhiteListed(address)",
-            msg.sender
-        );
-        bytes memory data = forwarder.functionStaticCall(payload);
-        bool whitelisted = abi.decode(data, (bool));
-        return whitelisted;
+    function setStaking(address _staking)
+        external
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        staking = IStaking(_staking);
     }
 
-    fallback() external {
-        require(isWhiteListed(), "Not whitelisted");
+    fallback() external payable {
+        bool isWhitelisted = staking.isWhitelisted();
+        require(isWhitelisted, "Not whitelisted");
 
         address forwarderContract = getForwarder();
         // solhint-disable-next-line no-inline-assembly
@@ -84,8 +86,6 @@ contract TransparentForwarder is AccessControlEnumerable {
             }
         }
     }
-}
 
-// * Delegator: 0x4535E7486c48Df8e1121be2A31b74aBb2b0a5B8b
-// * ethCollectionMedian: 0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9
-// * payload: 0xadd4c7841bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9
+    receive() external payable {}
+}
