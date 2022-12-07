@@ -185,5 +185,11 @@ describe("Forwarder tests", () => {
         forwarder.connect(signers[1]).getResult(namesHash[0])
       ).to.be.revertedWith("Invalid caller");
     });
+
+    it("staking.isWhitelisted() should be only called my TF", async () => {
+      await expect(
+        staking.isWhitelisted(signers[0].address)
+      ).to.be.revertedWith("Staking: Invalid caller");
+    });
   });
 });
