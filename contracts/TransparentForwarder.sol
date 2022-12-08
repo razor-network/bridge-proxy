@@ -17,10 +17,6 @@ contract TransparentForwarder is AccessControlEnumerable {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function getForwarder() public view returns (address) {
-        return forwarder;
-    }
-
     function setForwarder(address _forwarder)
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
@@ -35,8 +31,14 @@ contract TransparentForwarder is AccessControlEnumerable {
         staking = IStaking(_staking);
     }
 
+    function getForwarder() public view returns (address) {
+        return forwarder;
+    }
+
     fallback() external payable {
-        bool isWhitelisted = staking.isWhitelisted(msg.sender);
+        bool isWhitelisted = staking.isWhitelisted{value: msg.value}(
+            msg.sender
+        );
         require(isWhitelisted, "Not whitelisted");
 
         address forwarderContract = getForwarder();

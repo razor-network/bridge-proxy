@@ -5,14 +5,8 @@ import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract ResultManager is AccessControlEnumerable {
-    address public signerAddress;
-    address public forwarder;
-    uint256 public lastUpdatedTimestamp;
-    uint16[] public activeCollectionIds;
-    uint32 public latestEpoch;
-
     struct Block {
-        bytes message;
+        bytes message; // epoch, timestamp, Value[]
         bytes signature;
     }
 
@@ -22,6 +16,12 @@ contract ResultManager is AccessControlEnumerable {
         bytes32 name;
         uint256 value;
     }
+
+    address public signerAddress;
+    address public forwarder;
+    uint256 public lastUpdatedTimestamp;
+    uint16[] public activeCollectionIds;
+    uint32 public latestEpoch;
 
     // epoch => Block
     mapping(uint32 => Block) public blocks;
@@ -100,13 +100,17 @@ contract ResultManager is AccessControlEnumerable {
     function getResult(bytes32 _name) external view returns (uint256, int8) {
         require(msg.sender == forwarder, "Invalid caller");
         uint16 id = collectionIds[_name];
-        return getResultFromID(id);
+        return _getResultFromID(id);
     }
 
     /**
      * @dev Returns collection result and power with collectionId as parameter
      */
-    function getResultFromID(uint16 _id) internal view returns (uint256, int8) {
+    function _getResultFromID(uint16 _id)
+        internal
+        view
+        returns (uint256, int8)
+    {
         return (collectionResults[_id].value, collectionResults[_id].power);
     }
 }

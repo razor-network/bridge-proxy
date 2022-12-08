@@ -24,7 +24,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     /// @dev Allows admin to update result manager
     /// @param _resultManager new result manager address
     function setResultManager(address _resultManager)
-        public
+        external
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         require(_resultManager.isContract(), "Not a contract address");
@@ -38,7 +38,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     function setCollectionPayload(
         bytes32 _collectionName,
         bytes memory _payload
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         collectionPayload[_collectionName] = _payload;
     }
 
