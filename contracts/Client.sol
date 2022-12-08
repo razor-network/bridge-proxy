@@ -14,6 +14,13 @@ interface IDelegator {
     ) external;
 
     /**
+     * @dev using the hash of collection name, clients can query the result of that collection
+     * @param _name bytes32 hash of the collection name
+     * @return result of the collection and its power
+     */
+    function getResult(bytes32 _name) external payable returns (uint256, int8);
+
+    /**
      * @notice Allows Client to register for random number
      * Per request a rquest id is generated, which is binded to one epoch
      * this epoch is current epoch if Protocol is in commit state, or epoch + 1 if in any other state
@@ -27,13 +34,6 @@ interface IDelegator {
      * @return collection ID
      */
     function getCollectionID(bytes32 _name) external view returns (uint16);
-
-    /**
-     * @dev using the hash of collection name, clients can query the result of that collection
-     * @param _name bytes32 hash of the collection name
-     * @return result of the collection and its power
-     */
-    function getResult(bytes32 _name) external view returns (uint256, int8);
 
     /**
      * @dev using the collection id, clients can query the result of the collection
@@ -83,6 +83,8 @@ interface IDelegator {
 
 contract Client {
     IDelegator public transparentForwarder;
+    uint256 public lastResult;
+    int8 public lastPower;
 
     constructor(address _transparentForwarder) {
         transparentForwarder = IDelegator(_transparentForwarder);
@@ -92,8 +94,13 @@ contract Client {
         transparentForwarder = IDelegator(_transparentForwarder);
     }
 
-    function getResult(bytes32 name) public view returns (uint256, int8) {
-        (uint256 result, int8 power) = transparentForwarder.getResult(name);
+    function getResult(bytes32 name) public payable returns (uint256, int8) {
+        (uint256 result, int8 power) = transparentForwarder.getResult{
+            value: msg.value
+        }(name);
+        // * Storing the result to test since values doesn't return in ethers for payable function
+        lastResult = result;
+        lastPower = power;
         return (result, power);
     }
 }

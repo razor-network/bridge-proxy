@@ -163,7 +163,9 @@ describe("Forwarder tests", () => {
 
       await forwarder.setCollectionPayload(namesHash[0], payload);
 
-      const [clientResult, clientPower] = await client.getResult(namesHash[0]);
+      expect(await client.getResult(namesHash[0])).to.be.not.reverted;
+      const clientResult = await client.lastResult();
+      const clientPower = await client.lastPower();
       expect(result[0]).to.be.equal(clientResult);
       expect(power[0]).to.be.equal(clientPower);
     });
@@ -190,6 +192,35 @@ describe("Forwarder tests", () => {
       await expect(
         staking.isWhitelisted(signers[0].address)
       ).to.be.revertedWith("Staking: Invalid caller");
+    });
+
+    it("Client should be able to transfer ether in getResult", async () => {
+      const transferAmount = hre.ethers.utils.parseEther("1");
+      await staking.setPermission(client.address);
+      await client.getResult(namesHash[0], {
+        value: transferAmount,
+      });
+
+      const stakingBalance = await hre.ethers.provider.getBalance(
+        staking.address
+      );
+
+      expect(stakingBalance).to.be.equal(transferAmount);
+    });
+
+    it("Admin should be withdraw funds from staking contract", async () => {
+      // * Non admin should not be allowed to withdraw
+      await expect(staking.connect(signers[1]).withdraw()).to.be.reverted;
+
+      const previousBalance = await hre.ethers.provider.getBalance(
+        signers[0].address
+      );
+      await expect(staking.connect(signers[0]).withdraw()).to.be.not.reverted;
+      const currentBalance = await hre.ethers.provider.getBalance(
+        signers[0].address
+      );
+
+      expect(currentBalance).to.be.greaterThan(previousBalance);
     });
   });
 });
