@@ -44,4 +44,10 @@ contract Staking is AccessControlEnumerable {
         require(msg.sender == transparentForwarder, "Staking: Invalid caller");
         return isWhitelistEnabled ? permissionList[caller] : true;
     }
+
+    function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        uint256 amount = address(this).balance;
+        (bool success, ) = payable(msg.sender).call{value: amount}("");
+        require(success, "failed to transfer ether");
+    }
 }
