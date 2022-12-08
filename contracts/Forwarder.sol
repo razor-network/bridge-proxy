@@ -52,7 +52,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     /// @notice get result by collection name
     function getResult(bytes32 collectionName)
         external
-        payable
+        view
         whenNotPaused
         returns (uint256, int8)
     {
