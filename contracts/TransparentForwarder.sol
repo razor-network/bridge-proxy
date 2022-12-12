@@ -9,24 +9,27 @@ interface IStaking {
 }
 
 contract TransparentForwarder is AccessControlEnumerable {
+    bytes32 public constant TRANSPARENT_FORWARDER_ADMIN_ROLE =
+        keccak256("TRANSPARENT_FORWARDER_ADMIN_ROLE");
     address public forwarder;
     IStaking public staking;
 
     constructor(address _forwarder) {
-        forwarder = _forwarder;
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(TRANSPARENT_FORWARDER_ADMIN_ROLE, msg.sender);
+        forwarder = _forwarder;
     }
 
     function setForwarder(address _forwarder)
         external
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(TRANSPARENT_FORWARDER_ADMIN_ROLE)
     {
         forwarder = _forwarder;
     }
 
     function setStaking(address _staking)
         external
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(TRANSPARENT_FORWARDER_ADMIN_ROLE)
     {
         staking = IStaking(_staking);
     }
@@ -88,6 +91,4 @@ contract TransparentForwarder is AccessControlEnumerable {
             }
         }
     }
-
-    receive() external payable {}
 }

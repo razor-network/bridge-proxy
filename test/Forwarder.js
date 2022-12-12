@@ -133,6 +133,24 @@ describe("Forwarder tests", () => {
       ).to.be.reverted;
     });
 
+    it("only admin should be able to grant and revoke required role", async () => {
+      const FORWARDER_ADMIN_ROLE = await forwarder.FORWARDER_ADMIN_ROLE();
+
+      expect(
+        forwarder
+          .connect(signers[1])
+          .grantRole(FORWARDER_ADMIN_ROLE, signers[2].address)
+      ).to.be.reverted;
+
+      await expect(
+        forwarder.grantRole(FORWARDER_ADMIN_ROLE, signers[1].address)
+      ).to.be.not.reverted;
+
+      await expect(
+        forwarder.revokeRole(FORWARDER_ADMIN_ROLE, signers[1].address)
+      ).to.be.not.reverted;
+    });
+
     it("setting resultManager address for non contract address should revert", async () => {
       await expect(
         forwarder.setResultManager(signers[1].address)
@@ -221,6 +239,23 @@ describe("Forwarder tests", () => {
       );
 
       expect(currentBalance).to.be.greaterThan(previousBalance);
+    });
+
+    it("Transferring funds accidentally to TF and Staking should revert", async () => {
+      await staking.disableWhitelist();
+      await expect(
+        signers[0].sendTransaction({
+          to: transparentForwarder.address,
+          value: hre.ethers.utils.parseEther("1.0"),
+        })
+      ).to.be.reverted;
+
+      await expect(
+        signers[0].sendTransaction({
+          to: staking.address,
+          value: hre.ethers.utils.parseEther("1.0"),
+        })
+      ).to.be.reverted;
     });
   });
 });

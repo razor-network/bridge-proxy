@@ -8,6 +8,8 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 contract Forwarder is AccessControlEnumerable, Pausable {
     using Address for address;
 
+    bytes32 public constant FORWARDER_ADMIN_ROLE =
+        keccak256("FORWARDER_ADMIN_ROLE");
     address public resultManager;
     address public transparentForwarder;
     mapping(bytes32 => bytes) public collectionPayload;
@@ -17,6 +19,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
 
     constructor(address _resultManager) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(FORWARDER_ADMIN_ROLE, msg.sender);
         resultManager = _resultManager;
     }
 
@@ -25,7 +28,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     /// @param _resultManager new result manager address
     function setResultManager(address _resultManager)
         external
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(FORWARDER_ADMIN_ROLE)
     {
         require(_resultManager.isContract(), "Not a contract address");
         resultManager = _resultManager;
@@ -38,13 +41,13 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     function setCollectionPayload(
         bytes32 _collectionName,
         bytes memory _payload
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(FORWARDER_ADMIN_ROLE) {
         collectionPayload[_collectionName] = _payload;
     }
 
     function setTransparentForwarder(address _transparentForwarder)
         external
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(FORWARDER_ADMIN_ROLE)
     {
         transparentForwarder = _transparentForwarder;
     }

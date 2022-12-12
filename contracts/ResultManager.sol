@@ -17,6 +17,8 @@ contract ResultManager is AccessControlEnumerable {
         uint256 value;
     }
 
+    bytes32 public constant RESULT_MANAGER_ADMIN_ROLE =
+        keccak256("RESULT_MANAGER_ADMIN_ROLE");
     address public signerAddress;
     address public forwarder;
     uint256 public lastUpdatedTimestamp;
@@ -36,19 +38,20 @@ contract ResultManager is AccessControlEnumerable {
 
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(RESULT_MANAGER_ADMIN_ROLE, msg.sender);
         signerAddress = _signerAddress;
     }
 
     function updateForwarder(address _forwarder)
         external
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(RESULT_MANAGER_ADMIN_ROLE)
     {
         forwarder = _forwarder;
     }
 
     function updateSignerAddress(address _signerAddress)
         external
-        onlyRole(DEFAULT_ADMIN_ROLE)
+        onlyRole(RESULT_MANAGER_ADMIN_ROLE)
     {
         signerAddress = _signerAddress;
     }
