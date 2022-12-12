@@ -32,7 +32,7 @@ contract ResultManager is AccessControlEnumerable {
     mapping(bytes32 => uint16) public collectionIds;
 
     /// @notice mapping for CollectionID -> Value Info
-    mapping(uint16 => Value) public collectionResults;
+    mapping(uint16 => Value) private _collectionResults;
 
     event BlockReceived(uint32 epoch, uint256 timestamp, Value[] values);
 
@@ -84,7 +84,7 @@ contract ResultManager is AccessControlEnumerable {
         uint16[] memory ids = new uint16[](values.length);
         blocks[epoch] = messageBlock;
         for (uint256 i; i < values.length; i++) {
-            collectionResults[values[i].collectionId] = values[i];
+            _collectionResults[values[i].collectionId] = values[i];
             collectionIds[values[i].name] = values[i].collectionId;
             ids[i] = values[i].collectionId;
         }
@@ -114,6 +114,6 @@ contract ResultManager is AccessControlEnumerable {
         view
         returns (uint256, int8)
     {
-        return (collectionResults[_id].value, collectionResults[_id].power);
+        return (_collectionResults[_id].value, _collectionResults[_id].power);
     }
 }
