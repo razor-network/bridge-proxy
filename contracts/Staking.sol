@@ -12,9 +12,6 @@ contract Staking is AccessControlEnumerable {
     address public transparentForwarder;
     bool public isWhitelistEnabled;
 
-    event PermissionSet(address sender);
-    event PermissionRemoved(address sender);
-
     constructor(address _transparentForwarder) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(STAKING_ADMIN_ROLE, msg.sender);
@@ -27,7 +24,6 @@ contract Staking is AccessControlEnumerable {
         onlyRole(STAKING_ADMIN_ROLE)
     {
         grantRole(WHITELISTED_ROLE, sender);
-        emit PermissionSet(sender);
     }
 
     function removePermission(address sender)
@@ -35,7 +31,6 @@ contract Staking is AccessControlEnumerable {
         onlyRole(STAKING_ADMIN_ROLE)
     {
         revokeRole(WHITELISTED_ROLE, sender);
-        emit PermissionRemoved(sender);
     }
 
     function enableWhitelist() external onlyRole(STAKING_ADMIN_ROLE) {
