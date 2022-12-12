@@ -11,7 +11,6 @@ contract Staking is AccessControlEnumerable {
 
     address public transparentForwarder;
     bool public isWhitelistEnabled;
-    mapping(address => bool) public permissionList;
 
     event PermissionSet(address sender);
     event PermissionRemoved(address sender);
