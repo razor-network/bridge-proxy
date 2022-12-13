@@ -207,15 +207,14 @@ describe("Forwarder tests", () => {
     });
 
     it("Caller should have TRANSPARENT_FORWARDER_ROLE role to getResult", async () => {
-      await expect(
-        forwarder.connect(signers[1]).getResult(namesHash[0])
-      ).to.be.revertedWith("Forwarder: Invalid caller");
+      await expect(forwarder.connect(signers[1]).getResult(namesHash[0])).to.be
+        .reverted;
     });
 
-    it("staking.isWhitelisted() should be only called my TF", async () => {
+    it("staking.isWhitelisted() should be only called my address with TRANSPARENT_FORWARDER_ROLE", async () => {
       await expect(
-        staking.isWhitelisted(signers[0].address)
-      ).to.be.revertedWith("Staking: Invalid caller");
+        staking.connect(signers[1]).isWhitelisted(signers[0].address)
+      ).to.be.reverted;
     });
 
     it("Client should be able to transfer ether in getResult", async () => {
