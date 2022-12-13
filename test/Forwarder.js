@@ -96,10 +96,16 @@ describe("Forwarder tests", () => {
     );
 
     // * setting transparentForwarder address in forwarder
-    await forwarder.setTransparentForwarder(transparentForwarder.address);
+    const TRANSPARENT_FORWARDER_ROLE =
+      await forwarder.TRANSPARENT_FORWARDER_ROLE();
+    await forwarder.grantRole(
+      TRANSPARENT_FORWARDER_ROLE,
+      transparentForwarder.address
+    );
 
+    const FORWARDER_ROLE = await resultManager.FORWARDER_ROLE();
     // * set the forwarder address in resultManager
-    await resultManager.updateForwarder(forwarder.address);
+    await resultManager.grantRole(FORWARDER_ROLE, forwarder.address);
 
     // * Deploy client
     const Client = await hre.ethers.getContractFactory("Client");
@@ -200,10 +206,10 @@ describe("Forwarder tests", () => {
       ).to.be.revertedWith("Not whitelisted");
     });
 
-    it("Caller should be transparent Forwarder contract to getResult", async () => {
+    it("Caller should have TRANSPARENT_FORWARDER_ROLE role to getResult", async () => {
       await expect(
         forwarder.connect(signers[1]).getResult(namesHash[0])
-      ).to.be.revertedWith("Invalid caller");
+      ).to.be.revertedWith("Forwarder: Invalid caller");
     });
 
     it("staking.isWhitelisted() should be only called my TF", async () => {

@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 
-const RESULT_MANAGER_ADDRESS = "0x4535E7486c48Df8e1121be2A31b74aBb2b0a5B8b";
+const RESULT_MANAGER_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 
 async function main() {
   console.log("Deploying forwarder contract");
@@ -30,8 +30,12 @@ async function main() {
   await tx.wait();
   console.log("Transaction hash: ", tx.hash);
 
+  const TRANSPARENT_FORWARDER_ROLE =
+    await forwarder.TRANSPARENT_FORWARDER_ROLE();
+
   console.log("Setting TransparentForwarder address in Forwarder");
-  const tx1 = await forwarder.setTransparentForwarder(
+  const tx1 = await forwarder.grantRole(
+    TRANSPARENT_FORWARDER_ROLE,
     transparentForwarder.address
   );
   await tx1.wait();

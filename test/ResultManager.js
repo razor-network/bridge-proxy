@@ -116,9 +116,10 @@ describe("Result Manager tests", async () => {
   });
 
   it("getResult should be only accessed by forwarder", async () => {
-    await resultManager.updateForwarder(signers[1].address);
+    const FORWARDER_ROLE = await resultManager.FORWARDER_ROLE();
+    await resultManager.grantRole(FORWARDER_ROLE, signers[1].address);
     await expect(resultManager.getResult(namesHash[0])).to.be.revertedWith(
-      "Invalid caller"
+      "ResultManager: Invalid caller"
     );
     await expect(resultManager.connect(signers[1]).getResult(namesHash[0])).not
       .be.reverted;

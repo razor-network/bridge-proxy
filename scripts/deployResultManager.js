@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 
-const SIGNER_ADDRESS = "0x5eED350E394a2ab53023E8A4D706B4FC5117f401";
+const SIGNER_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 
 async function main() {
   const ResultManager = await hre.ethers.getContractFactory("ResultManager");
