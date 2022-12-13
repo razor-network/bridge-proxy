@@ -62,10 +62,7 @@ contract ResultManager is AccessControlEnumerable {
             messageBlock.message,
             (uint32, uint256, Value[])
         );
-        require(
-            !(blocks[epoch].signature.length > 0),
-            "Block already set for the epoch"
-        );
+        require(epoch > latestEpoch, "epoch must be > latestEpoch");
 
         bytes32 messageHash = keccak256(messageBlock.message);
         require(
