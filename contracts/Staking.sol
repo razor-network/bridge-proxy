@@ -8,15 +8,17 @@ contract Staking is AccessControlEnumerable {
         keccak256("STAKING_ADMIN_ROLE");
     bytes32 public constant ESCAPE_HATCH_ROLE = keccak256("ESCAPE_HATCH_ROLE");
     bytes32 public constant WHITELISTED_ROLE = keccak256("WHITELISTED_ROLE");
+    bytes32 public constant TRANSPARENT_FORWARDER_ROLE =
+        keccak256("TRANSPARENT_FORWARDER_ROLE");
 
-    address public transparentForwarder;
     bool public isWhitelistEnabled;
 
     constructor(address _transparentForwarder) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(STAKING_ADMIN_ROLE, msg.sender);
         _setupRole(ESCAPE_HATCH_ROLE, msg.sender);
-        transparentForwarder = _transparentForwarder;
+        _setupRole(TRANSPARENT_FORWARDER_ROLE, msg.sender);
+        _setupRole(TRANSPARENT_FORWARDER_ROLE, _transparentForwarder);
     }
 
     function setPermission(address sender)
@@ -41,15 +43,11 @@ contract Staking is AccessControlEnumerable {
         isWhitelistEnabled = false;
     }
 
-    function setTransparentForwarder(address _transparentForwarder)
-        external
-        onlyRole(STAKING_ADMIN_ROLE)
-    {
-        transparentForwarder = _transparentForwarder;
-    }
-
     function isWhitelisted(address caller) external payable returns (bool) {
-        require(msg.sender == transparentForwarder, "Staking: Invalid caller");
+        require(
+            hasRole(TRANSPARENT_FORWARDER_ROLE, msg.sender),
+            "Staking: Invalid caller"
+        );
         return isWhitelistEnabled ? hasRole(WHITELISTED_ROLE, caller) : true;
     }
 

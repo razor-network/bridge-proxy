@@ -19,8 +19,9 @@ contract ResultManager is AccessControlEnumerable {
 
     bytes32 public constant RESULT_MANAGER_ADMIN_ROLE =
         keccak256("RESULT_MANAGER_ADMIN_ROLE");
+    bytes32 public constant FORWARDER_ROLE = keccak256("FORWARDER_ROLE");
+
     address public signerAddress;
-    address public forwarder;
     uint256 public lastUpdatedTimestamp;
     uint16[] public activeCollectionIds;
     uint32 public latestEpoch;
@@ -39,14 +40,8 @@ contract ResultManager is AccessControlEnumerable {
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(RESULT_MANAGER_ADMIN_ROLE, msg.sender);
+        _setupRole(FORWARDER_ROLE, msg.sender);
         signerAddress = _signerAddress;
-    }
-
-    function updateForwarder(address _forwarder)
-        external
-        onlyRole(RESULT_MANAGER_ADMIN_ROLE)
-    {
-        forwarder = _forwarder;
     }
 
     function updateSignerAddress(address _signerAddress)
@@ -101,7 +96,10 @@ contract ResultManager is AccessControlEnumerable {
      * @return result of the collection and its power
      */
     function getResult(bytes32 _name) external view returns (uint256, int8) {
-        require(msg.sender == forwarder, "Invalid caller");
+        require(
+            hasRole(FORWARDER_ROLE, msg.sender),
+            "ResultManager: Invalid caller"
+        );
         uint16 id = collectionIds[_name];
         return _getResultFromID(id);
     }

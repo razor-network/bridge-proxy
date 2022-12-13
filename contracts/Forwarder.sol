@@ -10,8 +10,10 @@ contract Forwarder is AccessControlEnumerable, Pausable {
 
     bytes32 public constant FORWARDER_ADMIN_ROLE =
         keccak256("FORWARDER_ADMIN_ROLE");
+    bytes32 public constant TRANSPARENT_FORWARDER_ROLE =
+        keccak256("TRANSPARENT_FORWARDER_ROLE");
+
     address public resultManager;
-    address public transparentForwarder;
     mapping(bytes32 => bytes) public collectionPayload;
 
     event PermissionSet(address sender);
@@ -20,6 +22,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     constructor(address _resultManager) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(FORWARDER_ADMIN_ROLE, msg.sender);
+        _setupRole(TRANSPARENT_FORWARDER_ROLE, msg.sender);
         resultManager = _resultManager;
     }
 
@@ -45,13 +48,6 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         collectionPayload[_collectionName] = _payload;
     }
 
-    function setTransparentForwarder(address _transparentForwarder)
-        external
-        onlyRole(FORWARDER_ADMIN_ROLE)
-    {
-        transparentForwarder = _transparentForwarder;
-    }
-
     /// @notice get result by collection name
     function getResult(bytes32 collectionName)
         external
@@ -59,7 +55,10 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         whenNotPaused
         returns (uint256, int8)
     {
-        require(msg.sender == transparentForwarder, "Invalid caller");
+        require(
+            hasRole(TRANSPARENT_FORWARDER_ROLE, msg.sender),
+            "Forwarder: Invalid caller"
+        );
         require(
             collectionPayload[collectionName].length > 0,
             "Invalid collection name"
