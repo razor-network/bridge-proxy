@@ -43,11 +43,12 @@ contract Staking is AccessControlEnumerable {
         isWhitelistEnabled = false;
     }
 
-    function isWhitelisted(address caller) external payable returns (bool) {
-        require(
-            hasRole(TRANSPARENT_FORWARDER_ROLE, msg.sender),
-            "Staking: Invalid caller"
-        );
+    function isWhitelisted(address caller)
+        external
+        payable
+        onlyRole(TRANSPARENT_FORWARDER_ROLE)
+        returns (bool)
+    {
         return isWhitelistEnabled ? hasRole(WHITELISTED_ROLE, caller) : true;
     }
 

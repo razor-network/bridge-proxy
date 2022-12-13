@@ -95,11 +95,12 @@ contract ResultManager is AccessControlEnumerable {
      * @param _name bytes32 hash of the collection name
      * @return result of the collection and its power
      */
-    function getResult(bytes32 _name) external view returns (uint256, int8) {
-        require(
-            hasRole(FORWARDER_ROLE, msg.sender),
-            "ResultManager: Invalid caller"
-        );
+    function getResult(bytes32 _name)
+        external
+        view
+        onlyRole(FORWARDER_ROLE)
+        returns (uint256, int8)
+    {
         uint16 id = collectionIds[_name];
         return _getResultFromID(id);
     }

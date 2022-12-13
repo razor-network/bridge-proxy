@@ -53,12 +53,9 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         external
         view
         whenNotPaused
+        onlyRole(TRANSPARENT_FORWARDER_ROLE)
         returns (uint256, int8)
     {
-        require(
-            hasRole(TRANSPARENT_FORWARDER_ROLE, msg.sender),
-            "Forwarder: Invalid caller"
-        );
         require(
             collectionPayload[collectionName].length > 0,
             "Invalid collection name"
