@@ -1,17 +1,12 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-contract ResultManager is AccessControlEnumerableUpgradeable {
-    bool public initialized;
-    address public signerAddress;
-    uint256 public lastUpdatedTimestamp;
-    uint16[] public activeCollectionIds;
-
+contract ResultManager is AccessControlEnumerable {
     struct Block {
-        bytes message;
+        bytes message; // epoch, timestamp, Value[]
         bytes signature;
     }
 
@@ -22,37 +17,37 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
         uint256 value;
     }
 
-    // requestId => Block
+    bytes32 public constant RESULT_MANAGER_ADMIN_ROLE =
+        keccak256("RESULT_MANAGER_ADMIN_ROLE");
+    bytes32 public constant FORWARDER_ROLE = keccak256("FORWARDER_ROLE");
+
+    address public signerAddress;
+    uint256 public lastUpdatedTimestamp;
+    uint16[] public activeCollectionIds;
+    uint32 public latestEpoch;
+
+    // epoch => Block
     mapping(uint32 => Block) public blocks;
 
     /// @notice mapping for name of collection in bytes32 -> collectionid
     mapping(bytes32 => uint16) public collectionIds;
 
     /// @notice mapping for CollectionID -> Value Info
-    mapping(uint16 => Value) public collectionResults;
+    mapping(uint16 => Value) private _collectionResults;
 
-    event DataReceived(bytes32 schainHash, address sender, bytes data);
+    event BlockReceived(uint32 epoch, uint256 timestamp, Value[] values);
 
-    modifier onlyInitialized() {
-        require(initialized, "Contract should be initialized");
-        _;
-    }
-
-    function initialize(address _signerAddress) public initializer {
+    constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        initialized = true;
+        _setupRole(RESULT_MANAGER_ADMIN_ROLE, msg.sender);
+        _setupRole(FORWARDER_ROLE, msg.sender);
         signerAddress = _signerAddress;
     }
 
     function updateSignerAddress(address _signerAddress)
         external
-        onlyInitialized
+        onlyRole(RESULT_MANAGER_ADMIN_ROLE)
     {
-        require(
-            msg.sender == signerAddress ||
-                hasRole(DEFAULT_ADMIN_ROLE, msg.sender),
-            "Invalid Caller"
-        );
         signerAddress = _signerAddress;
     }
 
@@ -62,9 +57,14 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
      *
      * - ecrecover(signature) should match with signerAddress
      */
-    function setBlock(Block memory messageBlock) public onlyInitialized {
-        bytes32 messageHash = keccak256(messageBlock.message);
+    function setBlock(Block memory messageBlock) external {
+        (uint32 epoch, uint256 timestamp, Value[] memory values) = abi.decode(
+            messageBlock.message,
+            (uint32, uint256, Value[])
+        );
+        require(epoch > latestEpoch, "epoch must be > latestEpoch");
 
+        bytes32 messageHash = keccak256(messageBlock.message);
         require(
             ECDSA.recover(
                 ECDSA.toEthSignedMessageHash(messageHash),
@@ -73,44 +73,18 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
             "invalid signature"
         );
 
-        (, uint32 requestId, uint256 timestamp, Value[] memory values) = abi
-            .decode(messageBlock.message, (uint256, uint32, uint256, Value[]));
-
         uint16[] memory ids = new uint16[](values.length);
-        blocks[requestId] = messageBlock;
+        blocks[epoch] = messageBlock;
         for (uint256 i; i < values.length; i++) {
-            collectionResults[values[i].collectionId] = values[i];
+            _collectionResults[values[i].collectionId] = values[i];
             collectionIds[values[i].name] = values[i].collectionId;
             ids[i] = values[i].collectionId;
         }
         activeCollectionIds = ids;
         lastUpdatedTimestamp = timestamp;
-    }
+        latestEpoch = epoch;
 
-    /**
-     * @dev Receives source chain data through validators/IMA
-     * Requirements:
-     *
-     * - `msg.sender` should be IMA_PROXY_ADDRESS
-     * - sender should be resultSender
-     */
-    function postMessage(
-        bytes32 schainHash,
-        address sender,
-        bytes calldata data
-    ) external onlyInitialized {
-        Block memory messageBlock = abi.decode(data, (Block));
-        setBlock(messageBlock);
-        emit DataReceived(schainHash, sender, data);
-    }
-
-    /**
-     * @dev using the hash of collection name, clients can query collection id with respect to its hash
-     * @param _name bytes32 hash of the collection name
-     * @return collection ID
-     */
-    function getCollectionID(bytes32 _name) external view returns (uint16) {
-        return collectionIds[_name];
+        emit BlockReceived(epoch, timestamp, values);
     }
 
     /**
@@ -118,38 +92,24 @@ contract ResultManager is AccessControlEnumerableUpgradeable {
      * @param _name bytes32 hash of the collection name
      * @return result of the collection and its power
      */
-    function getResult(bytes32 _name) external view returns (uint256, int8) {
+    function getResult(bytes32 _name)
+        external
+        view
+        onlyRole(FORWARDER_ROLE)
+        returns (uint256, int8)
+    {
         uint16 id = collectionIds[_name];
-        return getResultFromID(id);
+        return _getResultFromID(id);
     }
 
     /**
      * @dev Returns collection result and power with collectionId as parameter
      */
-    function getResultFromID(uint16 _id) public view returns (uint256, int8) {
-        return (collectionResults[_id].value, collectionResults[_id].power);
-    }
-
-    /**
-     * @return ids of active collections in the oracle
-     */
-    function getActiveCollections() external view returns (uint16[] memory) {
-        return activeCollectionIds;
-    }
-
-    /**
-     * @dev using the collection id, clients can query the status of collection
-     * @param _id collection ID
-     * @return status of the collection
-     */
-    function getCollectionStatus(uint16 _id) external view returns (bool) {
-        bool isActive;
-        for (uint256 i = 0; i < activeCollectionIds.length; i++) {
-            if (activeCollectionIds[i] == _id) {
-                isActive = true;
-                break;
-            }
-        }
-        return isActive;
+    function _getResultFromID(uint16 _id)
+        internal
+        view
+        returns (uint256, int8)
+    {
+        return (_collectionResults[_id].value, _collectionResults[_id].power);
     }
 }
