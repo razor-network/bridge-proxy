@@ -8,22 +8,15 @@ import "@rainbow-me/rainbowkit/styles.css";
 
 import App from "./App";
 import {
-  rinkebyMainnet,
-  sChainAttractiveMerope,
   zkSyncTestnet,
   sCalypsoTestnet,
-  sChainWhisperingTurais,
+  polygonMumbai,
+  moonbaseAlpha,
 } from "./utils/chains";
 import "./App.css";
 
 const { provider, chains } = configureChains(
-  [
-    sCalypsoTestnet,
-    sChainAttractiveMerope,
-    rinkebyMainnet,
-    sChainWhisperingTurais,
-    zkSyncTestnet,
-  ],
+  [sCalypsoTestnet, polygonMumbai, moonbaseAlpha, zkSyncTestnet],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 
