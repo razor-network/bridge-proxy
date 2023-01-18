@@ -11,6 +11,7 @@ import {
   moonbaseAlpha,
   polygonMumbai,
   sCalypsoTestnet,
+  sEuropaTestnet,
 } from "../utils/chains";
 import { config } from "../utils/config";
 import { dummyTableData } from "../utils/data";
@@ -54,7 +55,8 @@ const Result = () => {
       } else if (
         currentChain?.id === sCalypsoTestnet.id ||
         currentChain?.id === polygonMumbai.id ||
-        currentChain?.id === moonbaseAlpha.id
+        currentChain?.id === moonbaseAlpha.id ||
+        currentChain?.id === sEuropaTestnet.id
       ) {
         setBlocks(null);
         let data = [];

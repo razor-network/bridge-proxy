@@ -8,8 +8,8 @@ export const sCalypsoTestnet = {
   iconBackground: "#fff",
   nativeCurrency: {
     decimals: 18,
-    name: "Ethereum",
-    symbol: "ETH",
+    name: "sFUEL",
+    symbol: "sFUEL",
   },
   rpcUrls: {
     default: "https://staging-v3.skalenodes.com/v1/staging-utter-unripe-menkar",
@@ -18,6 +18,29 @@ export const sCalypsoTestnet = {
     default: {
       name: "Staging utter unripe menkar",
       url: "https://staging-utter-unripe-menkar.explorer.staging-v3.skalenodes.com/",
+    },
+  },
+  testnet: true,
+};
+
+export const sEuropaTestnet = {
+  id: 476158412,
+  name: "staging-legal-crazy-castor",
+  network: "Staging legal crazy castor",
+  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
+  iconBackground: "#fff",
+  nativeCurrency: {
+    decimals: 18,
+    name: "sFUEL",
+    symbol: "sFUEL",
+  },
+  rpcUrls: {
+    default: "https://staging-v3.skalenodes.com/v1/staging-legal-crazy-castor",
+  },
+  blockExplorers: {
+    default: {
+      name: "Staging legal crazy castor",
+      url: "https://staging-legal-crazy-castor.explorer.staging-v3.skalenodes.com/",
     },
   },
   testnet: true,
@@ -98,4 +121,5 @@ export const chainContracts = {
   [polygonMumbai.id]: config.RESULT_HANDLER_ADDRESS_POLYGON_MUMBAI,
   [moonbaseAlpha.id]: config.RESULT_HANDLER_ADDRESS_MOONBASE_ALPHA,
   [sCalypsoTestnet.id]: config.RESULT_HANDLER_ADDRESS_CALYPSO_TESTNET,
+  [sEuropaTestnet.id]: config.RESULT_HANDLER_ADDRESS_EUROPA_TESTNET,
 };

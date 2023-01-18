@@ -12,11 +12,18 @@ import {
   sCalypsoTestnet,
   polygonMumbai,
   moonbaseAlpha,
+  sEuropaTestnet,
 } from "./utils/chains";
 import "./App.css";
 
 const { provider, chains } = configureChains(
-  [sCalypsoTestnet, polygonMumbai, moonbaseAlpha, zkSyncTestnet],
+  [
+    sCalypsoTestnet,
+    sEuropaTestnet,
+    polygonMumbai,
+    moonbaseAlpha,
+    zkSyncTestnet,
+  ],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 
