@@ -12,6 +12,7 @@ import {
   polygonMumbai,
   sCalypsoTestnet,
   sEuropaTestnet,
+  zkSyncTestnet,
 } from "../utils/chains";
 import { config } from "../utils/config";
 import { dummyTableData } from "../utils/data";
@@ -31,32 +32,12 @@ const Result = () => {
     const data = [];
 
     try {
-      if (currentChain?.id === 280) {
-        setBlocks(null);
-        const contract = new ethers.Contract(
-          config.RESULT_HANDLER_ADDRESS_ZKSYNC,
-          ResultHandler.abi,
-          signer
-        );
-
-        const activeCollectionIds = await contract.getActiveCollections();
-
-        for (let i = 0; i < activeCollectionIds.length; i++) {
-          const result = await contract.getResultFromID(activeCollectionIds[i]);
-          data.push({
-            id: activeCollectionIds[i],
-            result: result[0].toNumber(),
-            power: result[1],
-          });
-        }
-        const timestamp = await contract.lastUpdatedTimestamp();
-        setLastUpdatedTimestamp(timestamp.toNumber());
-        setCollectionsData(data);
-      } else if (
+      if (
         currentChain?.id === sCalypsoTestnet.id ||
         currentChain?.id === polygonMumbai.id ||
         currentChain?.id === moonbaseAlpha.id ||
-        currentChain?.id === sEuropaTestnet.id
+        currentChain?.id === sEuropaTestnet.id ||
+        currentChain?.id === zkSyncTestnet.id
       ) {
         setBlocks(null);
         let data = [];

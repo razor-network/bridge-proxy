@@ -117,9 +117,9 @@ export const zkSyncTestnet = {
 };
 
 export const chainContracts = {
-  [zkSyncTestnet.id]: config.RESULT_HANDLER_ADDRESS_ZKSYNC,
-  [polygonMumbai.id]: config.RESULT_HANDLER_ADDRESS_POLYGON_MUMBAI,
-  [moonbaseAlpha.id]: config.RESULT_HANDLER_ADDRESS_MOONBASE_ALPHA,
-  [sCalypsoTestnet.id]: config.RESULT_HANDLER_ADDRESS_CALYPSO_TESTNET,
-  [sEuropaTestnet.id]: config.RESULT_HANDLER_ADDRESS_EUROPA_TESTNET,
+  [zkSyncTestnet.id]: config.RESULT_MANAGER_ADDRESS_ZKSYNC,
+  [polygonMumbai.id]: config.RESULT_MANAGER_ADDRESS_POLYGON_MUMBAI,
+  [moonbaseAlpha.id]: config.RESULT_MANAGER_ADDRESS_MOONBASE_ALPHA,
+  [sCalypsoTestnet.id]: config.RESULT_MANAGER_ADDRESS_CALYPSO_TESTNET,
+  [sEuropaTestnet.id]: config.RESULT_MANAGER_ADDRESS_EUROPA_TESTNET,
 };
