@@ -1,96 +1,95 @@
 import { config } from "./config";
 
-export const sChainAttractiveMerope = {
-  id: 1211818568165862,
-  name: "attractive-merope",
-  network: "Skale Dappnet",
-  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
-  iconBackground: "#fff",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Ethereum",
-    symbol: "ETH",
-  },
-  rpcUrls: {
-    default: "https://staging-v2.skalenodes.com/v1/attractive-merope",
-  },
-  blockExplorers: {
-    default: {
-      name: "Attractive Merope",
-      url: "https://attractive-merope.explorer.staging-v2.skalenodes.com/",
-    },
-  },
-  testnet: false,
-};
-
-export const sChainWhisperingTurais = {
-  id: 132333505628089,
-  name: "whispering-turais",
-  network: "Whispering Turais Schain",
-  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
-  iconBackground: "#fff",
-  nativeCurrency: {
-    decimals: 18,
-    name: "Ethereum",
-    symbol: "ETH",
-  },
-  rpcUrls: {
-    default: "https://staging-v2.skalenodes.com/v1/whispering-turais",
-  },
-  blockExplorers: {
-    default: {
-      name: "Whispering Turais",
-      url: "https://whispering-turais.explorer.staging-v2.skalenodes.com/",
-    },
-  },
-  testnet: true,
-};
-
 export const sCalypsoTestnet = {
-  id: 104734457,
-  name: "actual-secret-cebalraie",
-  network: "Actual Secret Cebalrai",
+  id: 344106930,
+  name: "staging-utter-unripe-menkar",
+  network: "Staging utter unripe menkar",
   iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
   iconBackground: "#fff",
   nativeCurrency: {
     decimals: 18,
-    name: "Ethereum",
-    symbol: "ETH",
+    name: "sFUEL",
+    symbol: "sFUEL",
   },
   rpcUrls: {
-    default: "https://staging-v2.skalenodes.com/v1/actual-secret-cebalrai",
+    default: "https://staging-v3.skalenodes.com/v1/staging-utter-unripe-menkar",
   },
   blockExplorers: {
     default: {
-      name: "Actual Secret Cebalrai",
-      url: "https://actual-secret-cebalrai.explorer.staging-v2.skalenodes.com/",
+      name: "Staging utter unripe menkar",
+      url: "https://staging-utter-unripe-menkar.explorer.staging-v3.skalenodes.com/",
     },
   },
   testnet: true,
 };
 
-export const rinkebyMainnet = {
-  id: 4,
-  name: "Rinkeby",
-  network: "Rinkeby",
-  iconUrl:
-    "https://d33wubrfki0l68.cloudfront.net/f9bf7321ed7d9045fac8e374993c9420fe730b45/121d3/static/6b935ac0e6194247347855dc3d328e83/13c43/eth-diamond-black.png",
+export const sEuropaTestnet = {
+  id: 476158412,
+  name: "staging-legal-crazy-castor",
+  network: "Staging legal crazy castor",
+  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
   iconBackground: "#fff",
   nativeCurrency: {
     decimals: 18,
-    name: "Ethereum",
-    symbol: "ETH",
+    name: "sFUEL",
+    symbol: "sFUEL",
   },
   rpcUrls: {
-    default: import.meta.env.VITE_RINKEBY_RPC,
+    default: "https://staging-v3.skalenodes.com/v1/staging-legal-crazy-castor",
   },
   blockExplorers: {
     default: {
-      name: "Rinkeby",
-      url: "https://rinkeby.etherscan.io/",
+      name: "Staging legal crazy castor",
+      url: "https://staging-legal-crazy-castor.explorer.staging-v3.skalenodes.com/",
     },
   },
-  testnet: false,
+  testnet: true,
+};
+
+export const polygonMumbai = {
+  id: 80001,
+  name: "Polygon Mumbai",
+  network: "Polygon Mumbai",
+  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/3890.png",
+  iconBackground: "#fff",
+  nativeCurrency: {
+    decimals: 18,
+    name: "MATIC",
+    symbol: "MATIC",
+  },
+  rpcUrls: {
+    default: "https://rpc-mumbai.maticvigil.com",
+  },
+  blockExplorers: {
+    default: {
+      name: "Polygon Mumbai",
+      url: "https://mumbai.polygonscan.com/",
+    },
+  },
+  testnet: true,
+};
+
+export const moonbaseAlpha = {
+  id: 1287,
+  name: "Moonbase Alpha",
+  network: "Moonbase Alpha",
+  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/6836.png",
+  iconBackground: "#fff",
+  nativeCurrency: {
+    decimals: 18,
+    name: "DEV",
+    symbol: "DEV",
+  },
+  rpcUrls: {
+    default: "https://rpc.api.moonbase.moonbeam.network",
+  },
+  blockExplorers: {
+    default: {
+      name: "Moonbase Alpha",
+      url: "https://mumbai.polygonscan.com/",
+    },
+  },
+  testnet: true,
 };
 
 export const zkSyncTestnet = {
@@ -118,9 +117,9 @@ export const zkSyncTestnet = {
 };
 
 export const chainContracts = {
-  [sChainAttractiveMerope.id]: config.RESULT_HANDLER_ADDRESS_SCHAINV3,
-  [rinkebyMainnet.id]: config.RESULT_HANDLER_ADDRESS_RINKEBY,
-  [zkSyncTestnet.id]: config.RESULT_HANDLER_ADDRESS_ZKSYNC,
-  [sCalypsoTestnet.id]: config.RESULT_HANDLER_ADDRESS_CALYPSO_TESTNET,
-  [sChainWhisperingTurais.id]: config.RESULT_MANAGER_ADDRESS_SCHAINV2,
+  [zkSyncTestnet.id]: config.RESULT_MANAGER_ADDRESS_ZKSYNC,
+  [polygonMumbai.id]: config.RESULT_MANAGER_ADDRESS_POLYGON_MUMBAI,
+  [moonbaseAlpha.id]: config.RESULT_MANAGER_ADDRESS_MOONBASE_ALPHA,
+  [sCalypsoTestnet.id]: config.RESULT_MANAGER_ADDRESS_CALYPSO_TESTNET,
+  [sEuropaTestnet.id]: config.RESULT_MANAGER_ADDRESS_EUROPA_TESTNET,
 };

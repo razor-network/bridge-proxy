@@ -25,30 +25,30 @@ const BlocksTable = ({ blocks }) => {
     if (blocks && blocks.length > 0) {
       let blocksData = [];
       blocks.map(({ message, signature }) => {
-        const [epoch, requestId, timestamp, values] = abiCoder.decode(
-          [
-            "uint256",
-            "uint32",
-            "uint256",
-            "tuple[](int8 power, uint16 collectionId, bytes32 name, uint256 value)",
-          ],
-          message
-        );
+        if (message !== "0x") {
+          const [epoch, timestamp, values] = abiCoder.decode(
+            [
+              "uint32",
+              "uint256",
+              "tuple[](int8 power, uint16 collectionId, bytes32 name, uint256 value)",
+            ],
+            message
+          );
 
-        let ids = values.map(({ collectionId }) => collectionId);
-        let results = values.map(({ value }) => value.toNumber());
-        let power = values.map(({ power }) => power);
+          let ids = values.map(({ collectionId }) => collectionId);
+          let results = values.map(({ value }) => value.toNumber());
+          let power = values.map(({ power }) => power);
 
-        blocksData.push({
-          epoch: epoch.toNumber(),
-          requestId,
-          timestamp: timestamp.toNumber(),
-          message,
-          signature,
-          ids,
-          results,
-          power,
-        });
+          blocksData.push({
+            epoch: epoch,
+            timestamp: timestamp.toNumber(),
+            message,
+            signature,
+            ids,
+            results,
+            power,
+          });
+        }
       });
       setBlocksData(blocksData);
     } else {
@@ -59,7 +59,7 @@ const BlocksTable = ({ blocks }) => {
   return (
     <VStack>
       <Heading size="xl" mt="5">
-        Last finalised blocks
+        Latest finalised blocks
       </Heading>
 
       <Box
@@ -76,7 +76,6 @@ const BlocksTable = ({ blocks }) => {
             <Thead>
               <Tr>
                 <Th>Epoch</Th>
-                <Th>Request Id</Th>
                 <Th>Timestamp</Th>
                 <Th>Collection Ids</Th>
                 <Th>Values</Th>
@@ -90,7 +89,6 @@ const BlocksTable = ({ blocks }) => {
                 return (
                   <Tr key={index + 1}>
                     <Td>{row.epoch}</Td>
-                    <Td>{row.requestId}</Td>
                     <Td>
                       <Tag>{moment(row.timestamp * 1000).fromNow() || ""}</Tag>
                     </Td>

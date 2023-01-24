@@ -128,7 +128,7 @@ describe("Result Manager tests", async () => {
     const block = await getBlock(signers[0], epoch);
     await expect(resultManager.setBlock(block)).to.be.not.reverted;
     await expect(resultManager.setBlock(block)).to.be.rejectedWith(
-      "Block already set for the epoch"
+      "epoch must be > latestEpoch"
     );
     epoch++;
   });

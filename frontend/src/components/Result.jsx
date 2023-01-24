@@ -5,6 +5,15 @@ import { useEffect } from "react";
 import { useAccount, useSigner, useNetwork } from "wagmi";
 
 import ResultHandler from "../abis/ResultHandler.json";
+import ResultManagerABI from "../abis/ResultManager.json";
+import {
+  chainContracts,
+  moonbaseAlpha,
+  polygonMumbai,
+  sCalypsoTestnet,
+  sEuropaTestnet,
+  zkSyncTestnet,
+} from "../utils/chains";
 import { config } from "../utils/config";
 import { dummyTableData } from "../utils/data";
 import BlocksTable from "./BlocksTable";
@@ -23,94 +32,60 @@ const Result = () => {
     const data = [];
 
     try {
-      if (currentChain?.id === 1211818568165862) {
+      if (
+        currentChain?.id === sCalypsoTestnet.id ||
+        currentChain?.id === polygonMumbai.id ||
+        currentChain?.id === moonbaseAlpha.id ||
+        currentChain?.id === sEuropaTestnet.id ||
+        currentChain?.id === zkSyncTestnet.id
+      ) {
         setBlocks(null);
+        let data = [];
+        let resultManagerAddress = chainContracts[currentChain.id];
         const contract = new ethers.Contract(
-          config.RESULT_HANDLER_ADDRESS_SCHAINV3,
-          ResultHandler.abi,
-          signer
-        );
-        const activeCollectionIds = await contract.getActiveCollections();
-
-        for (let i = 0; i < activeCollectionIds.length; i++) {
-          const result = await contract.getResultFromID(activeCollectionIds[i]);
-          data.push({
-            id: activeCollectionIds[i],
-            result: result[0].toNumber(),
-            power: result[1],
-          });
-        }
-        const timestamp = await contract.lastUpdatedTimestamp();
-        setLastUpdatedTimestamp(timestamp.toNumber());
-        setCollectionsData(data);
-      } else if (currentChain?.id === 4) {
-        setBlocks(null);
-        const contract = new ethers.Contract(
-          config.RESULT_HANDLER_ADDRESS_RINKEBY,
-          ResultHandler.abi,
-          signer
-        );
-        const activeCollectionIds = await contract.getActiveCollections();
-
-        for (let i = 0; i < activeCollectionIds.length; i++) {
-          const result = await contract.getResultFromID(activeCollectionIds[i]);
-          data.push({
-            id: activeCollectionIds[i],
-            result: result[0].toNumber(),
-            power: result[1],
-          });
-        }
-        const timestamp = await contract.lastUpdatedTimestamp();
-        setLastUpdatedTimestamp(timestamp.toNumber());
-        setCollectionsData(data);
-      } else if (currentChain?.id === 280) {
-        setBlocks(null);
-        const contract = new ethers.Contract(
-          config.RESULT_HANDLER_ADDRESS_ZKSYNC,
-          ResultHandler.abi,
+          resultManagerAddress,
+          ResultManagerABI,
           signer
         );
 
-        const activeCollectionIds = await contract.getActiveCollections();
-
-        for (let i = 0; i < activeCollectionIds.length; i++) {
-          const result = await contract.getResultFromID(activeCollectionIds[i]);
-          data.push({
-            id: activeCollectionIds[i],
-            result: result[0].toNumber(),
-            power: result[1],
-          });
-        }
+        const latestEpoch = await contract.latestEpoch();
+        console.log({
+          latestEpoch,
+        });
         const timestamp = await contract.lastUpdatedTimestamp();
         setLastUpdatedTimestamp(timestamp.toNumber());
-        setCollectionsData(data);
-      } else if (currentChain?.id === 132333505628089) {
-        const contract = new ethers.Contract(
-          config.RESULT_MANAGER_ADDRESS_SCHAINV2,
-          ResultHandler.abi,
-          signer
+
+        // * Fetching data from last block
+        const lastBlock = await contract.blocks(latestEpoch);
+        const { message } = lastBlock;
+        const abiCoder = new ethers.utils.AbiCoder();
+        const [epoch, _, values] = abiCoder.decode(
+          [
+            "uint32",
+            "uint256",
+            "tuple[](int8 power, uint16 collectionId, bytes32 name, uint256 value)",
+          ],
+          message
         );
+        let ids = values.map(({ collectionId }) => collectionId);
+        let results = values.map(({ value }) => value.toNumber());
+        let power = values.map(({ power }) => power);
 
-        const activeCollectionIds = await contract.getActiveCollections();
-
-        for (let i = 0; i < activeCollectionIds.length; i++) {
-          const result = await contract.getResultFromID(activeCollectionIds[i]);
+        for (let i = 0; i < ids.length; i++) {
           data.push({
-            id: activeCollectionIds[i],
-            result: result[0].toNumber(),
-            power: result[1],
+            id: ids[i],
+            result: results[i],
+            power: power[i],
           });
         }
-        const timestamp = await contract.lastUpdatedTimestamp();
-        setLastUpdatedTimestamp(timestamp.toNumber());
         setCollectionsData(data);
 
-        const lastRequestId = await contract.lastRequestId();
+        // * fetching last numBlocks data
         let numBlocks = 10;
         let baseRequestId =
-          lastRequestId - numBlocks >= 1 ? lastRequestId - numBlocks : 1;
+          latestEpoch - numBlocks >= 1 ? latestEpoch - numBlocks : 1;
         let blocksData = [];
-        for (let i = lastRequestId; i > baseRequestId; i--) {
+        for (let i = latestEpoch; i > baseRequestId; i--) {
           const block = await contract.blocks(i);
           blocksData.push({
             message: block.message,
