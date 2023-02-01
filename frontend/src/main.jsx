@@ -13,6 +13,7 @@ import {
   polygonMumbai,
   moonbaseAlpha,
   sEuropaTestnet,
+  sCalypsoMainnet,
 } from "./utils/chains";
 import "./App.css";
 
@@ -23,6 +24,7 @@ const { provider, chains } = configureChains(
     polygonMumbai,
     moonbaseAlpha,
     zkSyncTestnet,
+    sCalypsoMainnet,
   ],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
