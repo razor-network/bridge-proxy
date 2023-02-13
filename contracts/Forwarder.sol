@@ -12,6 +12,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         keccak256("FORWARDER_ADMIN_ROLE");
     bytes32 public constant TRANSPARENT_FORWARDER_ROLE =
         keccak256("TRANSPARENT_FORWARDER_ROLE");
+    bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
 
     address public resultManager;
     mapping(bytes32 => bytes) public collectionPayload;
@@ -46,6 +47,14 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         bytes memory _payload
     ) external onlyRole(FORWARDER_ADMIN_ROLE) {
         collectionPayload[_collectionName] = _payload;
+    }
+
+    function pause() external onlyRole(PAUSE_ROLE) {
+        Pausable._pause();
+    }
+
+    function unpause() external onlyRole(PAUSE_ROLE) {
+        Pausable._unpause();
     }
 
     /// @notice get result by collection name
