@@ -24,7 +24,6 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setupRole(FORWARDER_ADMIN_ROLE, msg.sender);
         _setupRole(TRANSPARENT_FORWARDER_ROLE, msg.sender);
-        _setupRole(PAUSE_ROLE, msg.sender);
         resultManager = _resultManager;
     }
 
