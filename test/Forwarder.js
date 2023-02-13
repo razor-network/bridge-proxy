@@ -266,8 +266,10 @@ describe("Forwarder tests", () => {
     it("Only accounts having PAUSE_ROLE can pause/unpause forwarder contract", async () => {
       await expect(forwarder.connect(signers[1]).pause()).to.be.reverted;
       await expect(forwarder.connect(signers[1]).unpause()).to.be.reverted;
+      const PAUSE_ROLE = await forwarder.PAUSE_ROLE();
 
-      // * address with PAUSE_ROLE role
+      // * grant PAUSE_ROLE
+      await forwarder.grantRole(PAUSE_ROLE, signers[0].address);
       await expect(forwarder.connect(signers[0]).pause()).not.to.be.reverted;
       await expect(forwarder.connect(signers[0]).unpause()).not.to.be.reverted;
     });
