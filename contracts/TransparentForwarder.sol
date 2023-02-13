@@ -16,7 +16,6 @@ contract TransparentForwarder is AccessControlEnumerable {
 
     constructor(address _forwarder) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(TRANSPARENT_FORWARDER_ADMIN_ROLE, msg.sender);
         forwarder = _forwarder;
     }
 
