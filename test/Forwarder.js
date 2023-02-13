@@ -262,5 +262,25 @@ describe("Forwarder tests", () => {
         })
       ).to.be.reverted;
     });
+
+    it("Only accounts having PAUSE_ROLE can pause/unpause forwarder contract", async () => {
+      await expect(forwarder.connect(signers[1]).pause()).to.be.reverted;
+      await expect(forwarder.connect(signers[1]).unpause()).to.be.reverted;
+
+      // * address with PAUSE_ROLE role
+      await expect(forwarder.connect(signers[0]).pause()).not.to.be.reverted;
+      await expect(forwarder.connect(signers[0]).unpause()).not.to.be.reverted;
+    });
+
+    it("Client should not be able to fetch result if forwarder contract is paused", async () => {
+      await forwarder.connect(signers[0]).pause();
+      await expect(client.getResult(namesHash[0])).to.be.revertedWith(
+        "Pausable: paused"
+      );
+
+      // * unpause and fetch result from client
+      await forwarder.connect(signers[0]).unpause();
+      await expect(client.getResult(namesHash[0])).to.be.not.reverted;
+    });
   });
 });
