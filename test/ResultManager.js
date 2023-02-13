@@ -74,6 +74,14 @@ describe("Result Manager tests", async () => {
     const ResultManager = await hre.ethers.getContractFactory("ResultManager");
     resultManager = await ResultManager.deploy(SIGNER_ADDRESS);
 
+    // * Grant RESULT_MANAGER_ADMIN_ROLE to admin
+    const RESULT_MANAGER_ADMIN_ROLE =
+      await resultManager.RESULT_MANAGER_ADMIN_ROLE();
+    await resultManager.grantRole(
+      RESULT_MANAGER_ADMIN_ROLE,
+      signers[0].address
+    );
+
     epoch = 1;
   });
 
