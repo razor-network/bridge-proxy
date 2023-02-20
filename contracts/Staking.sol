@@ -15,10 +15,6 @@ contract Staking is AccessControlEnumerable {
 
     constructor(address _transparentForwarder) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(STAKING_ADMIN_ROLE, msg.sender);
-        _setupRole(ESCAPE_HATCH_ROLE, msg.sender);
-        _setupRole(TRANSPARENT_FORWARDER_ROLE, msg.sender);
-        _setupRole(TRANSPARENT_FORWARDER_ROLE, _transparentForwarder);
     }
 
     function setPermission(address sender)

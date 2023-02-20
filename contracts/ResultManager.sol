@@ -39,8 +39,6 @@ contract ResultManager is AccessControlEnumerable {
 
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(RESULT_MANAGER_ADMIN_ROLE, msg.sender);
-        _setupRole(FORWARDER_ROLE, msg.sender);
         signerAddress = _signerAddress;
     }
 
