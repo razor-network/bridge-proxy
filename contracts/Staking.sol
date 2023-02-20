@@ -13,7 +13,7 @@ contract Staking is AccessControlEnumerable {
 
     bool public isWhitelistEnabled;
 
-    constructor(address _transparentForwarder) {
+    constructor() {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
