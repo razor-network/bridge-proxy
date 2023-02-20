@@ -98,7 +98,7 @@ describe("Forwarder tests", () => {
     );
 
     const Staking = await hre.ethers.getContractFactory("Staking");
-    staking = await Staking.deploy(transparentForwarder.address);
+    staking = await Staking.deploy();
 
     // * Grant STAKING_ADMIN_ROLE and ESCAPE_HATCH_ROLE to admin
     const STAKING_ADMIN_ROLE = await staking.STAKING_ADMIN_ROLE();
@@ -106,6 +106,13 @@ describe("Forwarder tests", () => {
 
     const ESCAPE_HATCH_ROLE = await staking.ESCAPE_HATCH_ROLE();
     await staking.grantRole(ESCAPE_HATCH_ROLE, signers[0].address);
+
+    const TRANSPARENT_FORWARDER_ROLE =
+      await forwarder.TRANSPARENT_FORWARDER_ROLE();
+    await staking.grantRole(
+      TRANSPARENT_FORWARDER_ROLE,
+      transparentForwarder.address
+    );
 
     // * Update staking address in transparentForwarder contract
     await transparentForwarder.setStaking(staking.address);
@@ -115,8 +122,6 @@ describe("Forwarder tests", () => {
     );
 
     // * setting transparentForwarder address in forwarder
-    const TRANSPARENT_FORWARDER_ROLE =
-      await forwarder.TRANSPARENT_FORWARDER_ROLE();
     await forwarder.grantRole(
       TRANSPARENT_FORWARDER_ROLE,
       transparentForwarder.address
