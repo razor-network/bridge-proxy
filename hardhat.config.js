@@ -4,9 +4,7 @@ require("hardhat-abi-exporter");
 require("solidity-coverage");
 /** @type import('hardhat/config').HardhatUserConfig */
 
-const {
-  RINKEBY_RPC,
-} = process.env;
+const { RINKEBY_RPC } = process.env;
 
 module.exports = {
   solidity: "0.8.9",
@@ -21,20 +19,25 @@ module.exports = {
     sChainV2: {
       url: "https://staging-v2.skalenodes.com/v1/whispering-turais",
       accounts: [
-        "",
+        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
       ],
     },
     sChainV3: {
       url: "https://staging-v2.skalenodes.com/v1/attractive-merope",
       accounts: [
-        ""
+        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
       ],
     },
     rinkeby: {
       url: RINKEBY_RPC || "",
       accounts: [
-        ""
+        "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
       ],
+    },
+    calypsoMainnet: {
+      chainId: 1564830818,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000, // this is important, because otherwise the request can time out before you've reviewed and confirmed your transaction on the Ledger
     },
   },
 };
