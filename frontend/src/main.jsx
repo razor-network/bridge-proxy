@@ -7,23 +7,11 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import App from "./App";
-import {
-  zkSyncTestnet,
-  sCalypsoTestnet,
-  polygonMumbai,
-  moonbaseAlpha,
-  sEuropaTestnet,
-} from "./utils/chains";
+import { sCalypsoMainnet } from "./utils/chains";
 import "./App.css";
 
 const { provider, chains } = configureChains(
-  [
-    sCalypsoTestnet,
-    sEuropaTestnet,
-    polygonMumbai,
-    moonbaseAlpha,
-    zkSyncTestnet,
-  ],
+  [sCalypsoMainnet],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 

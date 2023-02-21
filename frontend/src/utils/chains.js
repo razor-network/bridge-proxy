@@ -1,5 +1,28 @@
 import { config } from "./config";
 
+export const sCalypsoMainnet = {
+  id: 1564830818,
+  name: "honorable-steel-rasalhague",
+  network: "Honorable steel rasalhague",
+  iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
+  iconBackground: "#fff",
+  nativeCurrency: {
+    decimals: 18,
+    name: "sFUEL",
+    symbol: "sFUEL",
+  },
+  rpcUrls: {
+    default: "https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague",
+  },
+  blockExplorers: {
+    default: {
+      name: "Honorable steel rasalhague",
+      url: "https://honorable-steel-rasalhague.explorer.mainnet.skalenodes.com/",
+    },
+  },
+  testnet: false,
+};
+
 export const sCalypsoTestnet = {
   id: 344106930,
   name: "staging-utter-unripe-menkar",
@@ -117,6 +140,7 @@ export const zkSyncTestnet = {
 };
 
 export const chainContracts = {
+  [sCalypsoMainnet.id]: config.RESULT_MANAGER_ADDRESS_CALYPSO_MAINNET,
   [zkSyncTestnet.id]: config.RESULT_MANAGER_ADDRESS_ZKSYNC,
   [polygonMumbai.id]: config.RESULT_MANAGER_ADDRESS_POLYGON_MUMBAI,
   [moonbaseAlpha.id]: config.RESULT_MANAGER_ADDRESS_MOONBASE_ALPHA,

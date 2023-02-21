@@ -10,6 +10,7 @@ import {
   chainContracts,
   moonbaseAlpha,
   polygonMumbai,
+  sCalypsoMainnet,
   sCalypsoTestnet,
   sEuropaTestnet,
   zkSyncTestnet,
@@ -33,11 +34,12 @@ const Result = () => {
 
     try {
       if (
-        currentChain?.id === sCalypsoTestnet.id ||
-        currentChain?.id === polygonMumbai.id ||
-        currentChain?.id === moonbaseAlpha.id ||
-        currentChain?.id === sEuropaTestnet.id ||
-        currentChain?.id === zkSyncTestnet.id
+        currentChain?.id === sCalypsoMainnet.id
+        // currentChain?.id === sCalypsoTestnet.id ||
+        // currentChain?.id === polygonMumbai.id ||
+        // currentChain?.id === moonbaseAlpha.id ||
+        // currentChain?.id === sEuropaTestnet.id ||
+        // currentChain?.id === zkSyncTestnet.id
       ) {
         setBlocks(null);
         let data = [];
