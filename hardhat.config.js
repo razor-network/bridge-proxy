@@ -39,5 +39,20 @@ module.exports = {
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
       timeout: 60000, // this is important, because otherwise the request can time out before you've reviewed and confirmed your transaction on the Ledger
     },
+    nebulaMainnet: {
+      chainId: 1482601649,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
+    titanMainnet: {
+      chainId: 1350216234,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
+    nebulaTestnet: {
+      chainId: 503129905,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
   },
 };
