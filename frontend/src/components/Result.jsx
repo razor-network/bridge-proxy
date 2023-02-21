@@ -13,6 +13,7 @@ import {
   sCalypsoMainnet,
   sCalypsoTestnet,
   sEuropaTestnet,
+  sNebulaMainnet,
   zkSyncTestnet,
 } from "../utils/chains";
 import { config } from "../utils/config";
@@ -34,7 +35,8 @@ const Result = () => {
 
     try {
       if (
-        currentChain?.id === sCalypsoMainnet.id
+        currentChain?.id === sCalypsoMainnet.id ||
+        currentChain?.id === sNebulaMainnet.id
         // currentChain?.id === sCalypsoTestnet.id ||
         // currentChain?.id === polygonMumbai.id ||
         // currentChain?.id === moonbaseAlpha.id ||

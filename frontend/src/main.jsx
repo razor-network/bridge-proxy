@@ -7,11 +7,11 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import App from "./App";
-import { sCalypsoMainnet } from "./utils/chains";
+import { sCalypsoMainnet, sNebulaMainnet } from "./utils/chains";
 import "./App.css";
 
 const { provider, chains } = configureChains(
-  [sCalypsoMainnet],
+  [sCalypsoMainnet, sNebulaMainnet],
   [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
 );
 
