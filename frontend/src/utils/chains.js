@@ -171,3 +171,16 @@ export const chainContracts = {
   [sCalypsoTestnet.id]: config.RESULT_MANAGER_ADDRESS_CALYPSO_TESTNET,
   [sEuropaTestnet.id]: config.RESULT_MANAGER_ADDRESS_EUROPA_TESTNET,
 };
+
+export const mainnetChains = [sCalypsoMainnet, sNebulaMainnet];
+
+export const testnetChains = [
+  sCalypsoTestnet,
+  sEuropaTestnet,
+  polygonMumbai,
+  moonbaseAlpha,
+  zkSyncTestnet,
+];
+
+export const supportedChains =
+  import.meta.env.VITE_CHAIN === "mainnet" ? mainnetChains : testnetChains;

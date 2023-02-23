@@ -4,19 +4,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { useAccount, useSigner, useNetwork } from "wagmi";
 
-import ResultHandler from "../abis/ResultHandler.json";
 import ResultManagerABI from "../abis/ResultManager.json";
-import {
-  chainContracts,
-  moonbaseAlpha,
-  polygonMumbai,
-  sCalypsoMainnet,
-  sCalypsoTestnet,
-  sEuropaTestnet,
-  sNebulaMainnet,
-  zkSyncTestnet,
-} from "../utils/chains";
-import { config } from "../utils/config";
+import { chainContracts, supportedChains } from "../utils/chains";
 import { dummyTableData } from "../utils/data";
 import BlocksTable from "./BlocksTable";
 import ResultTable from "./ResultTable";
@@ -29,20 +18,14 @@ const Result = () => {
   const [blocks, setBlocks] = useState(null);
   const { chain: currentChain } = useNetwork();
 
+  const supportedChainIds = supportedChains.map((chain) => chain.id);
+
   const fetchAllResult = async () => {
     console.log("Fetching collection result");
     const data = [];
 
     try {
-      if (
-        currentChain?.id === sCalypsoMainnet.id ||
-        currentChain?.id === sNebulaMainnet.id
-        // currentChain?.id === sCalypsoTestnet.id ||
-        // currentChain?.id === polygonMumbai.id ||
-        // currentChain?.id === moonbaseAlpha.id ||
-        // currentChain?.id === sEuropaTestnet.id ||
-        // currentChain?.id === zkSyncTestnet.id
-      ) {
+      if (supportedChainIds.includes(currentChain?.id)) {
         setBlocks(null);
         let data = [];
         let resultManagerAddress = chainContracts[currentChain.id];
