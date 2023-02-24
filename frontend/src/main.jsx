@@ -7,25 +7,12 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import "@rainbow-me/rainbowkit/styles.css";
 
 import App from "./App";
-import {
-  zkSyncTestnet,
-  sCalypsoTestnet,
-  polygonMumbai,
-  moonbaseAlpha,
-  sEuropaTestnet,
-} from "./utils/chains";
+import { supportedChains } from "./utils/chains";
 import "./App.css";
 
-const { provider, chains } = configureChains(
-  [
-    sCalypsoTestnet,
-    sEuropaTestnet,
-    polygonMumbai,
-    moonbaseAlpha,
-    zkSyncTestnet,
-  ],
-  [jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) })]
-);
+const { provider, chains } = configureChains(supportedChains, [
+  jsonRpcProvider({ rpc: (chain) => ({ http: chain.rpcUrls.default }) }),
+]);
 
 const { connectors } = getDefaultWallets({
   appName: "My RainbowKit App",
