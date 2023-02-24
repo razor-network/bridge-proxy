@@ -48,7 +48,7 @@ export const sNebulaMainnet = {
 
 export const sCalypsoTestnet = {
   id: 344106930,
-  name: "staging-utter-unripe-menkar",
+  name: "Calypso Testnet",
   network: "Staging utter unripe menkar",
   iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
   iconBackground: "#fff",
@@ -71,7 +71,7 @@ export const sCalypsoTestnet = {
 
 export const sEuropaTestnet = {
   id: 476158412,
-  name: "staging-legal-crazy-castor",
+  name: "Europa Testnet",
   network: "Staging legal crazy castor",
   iconUrl: "https://s2.coinmarketcap.com/static/img/coins/64x64/5691.png",
   iconBackground: "#fff",
