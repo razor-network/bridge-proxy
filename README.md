@@ -34,7 +34,7 @@ message
 
 ## Deployment
 
-Deploy centralised bridge on destination chain using `deployBridge.js` script.
+Deploy bridge on destination chain using `deployBridge.js` script.
 Run: `npx hardhat run scripts/deployBridge.js --network [NETWORK]`
 The above script will perform following operation:
 
