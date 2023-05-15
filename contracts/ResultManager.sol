@@ -23,11 +23,7 @@ contract ResultManager is AccessControlEnumerable {
 
     address public signerAddress;
     uint256 public lastUpdatedTimestamp;
-    uint16[] public activeCollectionIds;
     uint32 public latestEpoch;
-
-    // epoch => Block
-    mapping(uint32 => Block) public blocks;
 
     /// @notice mapping for name of collection in bytes32 -> collectionid
     mapping(bytes32 => uint16) public collectionIds;
@@ -35,17 +31,16 @@ contract ResultManager is AccessControlEnumerable {
     /// @notice mapping for CollectionID -> Value Info
     mapping(uint16 => Value) private _collectionResults;
 
-    event BlockReceived(uint32 epoch, uint256 timestamp, Value[] values);
+    event BlockReceived(Block messageBlock);
 
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         signerAddress = _signerAddress;
     }
 
-    function updateSignerAddress(address _signerAddress)
-        external
-        onlyRole(RESULT_MANAGER_ADMIN_ROLE)
-    {
+    function updateSignerAddress(
+        address _signerAddress
+    ) external onlyRole(RESULT_MANAGER_ADMIN_ROLE) {
         signerAddress = _signerAddress;
     }
 
@@ -72,17 +67,15 @@ contract ResultManager is AccessControlEnumerable {
         );
 
         uint16[] memory ids = new uint16[](values.length);
-        blocks[epoch] = messageBlock;
         for (uint256 i; i < values.length; i++) {
             _collectionResults[values[i].collectionId] = values[i];
             collectionIds[values[i].name] = values[i].collectionId;
             ids[i] = values[i].collectionId;
         }
-        activeCollectionIds = ids;
         lastUpdatedTimestamp = timestamp;
         latestEpoch = epoch;
 
-        emit BlockReceived(epoch, timestamp, values);
+        emit BlockReceived(messageBlock);
     }
 
     /**
@@ -90,12 +83,9 @@ contract ResultManager is AccessControlEnumerable {
      * @param _name bytes32 hash of the collection name
      * @return result of the collection and its power
      */
-    function getResult(bytes32 _name)
-        external
-        view
-        onlyRole(FORWARDER_ROLE)
-        returns (uint256, int8)
-    {
+    function getResult(
+        bytes32 _name
+    ) external view onlyRole(FORWARDER_ROLE) returns (uint256, int8) {
         uint16 id = collectionIds[_name];
         return _getResultFromID(id);
     }
@@ -103,11 +93,9 @@ contract ResultManager is AccessControlEnumerable {
     /**
      * @dev Returns collection result and power with collectionId as parameter
      */
-    function _getResultFromID(uint16 _id)
-        internal
-        view
-        returns (uint256, int8)
-    {
+    function _getResultFromID(
+        uint16 _id
+    ) internal view returns (uint256, int8) {
         return (_collectionResults[_id].value, _collectionResults[_id].power);
     }
 }
