@@ -55,4 +55,10 @@ module.exports = {
       timeout: 60000,
     },
   },
+  gasReporter: {
+    enabled: true,
+    outputFile: "gas-report.txt",
+    noColors: true, // Colors on terminal corrupts the output.
+    currency: "USD",
+  },
 };
