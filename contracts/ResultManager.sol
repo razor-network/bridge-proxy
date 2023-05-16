@@ -66,11 +66,9 @@ contract ResultManager is AccessControlEnumerable {
             "invalid signature"
         );
 
-        uint16[] memory ids = new uint16[](values.length);
         for (uint256 i; i < values.length; i++) {
             _collectionResults[values[i].collectionId] = values[i];
             collectionIds[values[i].name] = values[i].collectionId;
-            ids[i] = values[i].collectionId;
         }
         lastUpdatedTimestamp = timestamp;
         latestEpoch = epoch;
