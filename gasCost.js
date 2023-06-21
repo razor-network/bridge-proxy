@@ -3,7 +3,7 @@ const fs = require("fs");
 
 const ethGasApi = "https://ethgasstation.info/api/ethgasAPI";
 const ethPriceApi = "https://api.gemini.com/v1/pubticker/ethusd";
-const maticGasApi = "https://gasstation-mainnet.matic.network/";
+const maticGasApi = "https://gasstation.polygon.technology/v2";
 const maticPriceApi = "https://api.gemini.com/v1/pubticker/maticusd";
 
 const getFileData = () => {
@@ -53,7 +53,7 @@ const main = async () => {
     // * Polygon
     console.log("\n----------------- POLYGON -------------------------");
     let maticGasPrice = await axios.get(maticGasApi);
-    maticGasPrice = Number(maticGasPrice.data.standard);
+    maticGasPrice = Number(maticGasPrice.data.standard.maxFee);
     let maticPrice = await axios.get(maticPriceApi);
     maticPrice = Number(maticPrice.data.last);
 
