@@ -267,9 +267,11 @@ describe("Forwarder tests", () => {
     });
 
     it("Client shouldn't be allowed to getResult if stake is less than minStake", async () => {
-      // * unstake
       const minStake = await staking.minStake();
-      await expect(staking.unstake(minStake)).to.be.not.reverted;
+
+      // * unstake
+      await expect(staking.unstake(client.address, minStake)).to.be.not
+        .reverted;
 
       await expect(client.getResult(namesHash[0])).to.be.revertedWith(
         "Not whitelisted"

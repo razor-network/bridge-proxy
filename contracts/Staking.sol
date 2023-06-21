@@ -5,10 +5,6 @@ import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract Staking is AccessControlEnumerable {
-    struct Stake {
-        uint256 amount;
-        address client;
-    }
     bytes32 public constant STAKING_ADMIN_ROLE =
         keccak256("STAKING_ADMIN_ROLE");
     bytes32 public constant ESCAPE_HATCH_ROLE = keccak256("ESCAPE_HATCH_ROLE");
@@ -19,7 +15,9 @@ contract Staking is AccessControlEnumerable {
     bool public isWhitelistEnabled;
     uint256 public minStake = 1_000_000 * (10 ** 18);
 
-    mapping(address => Stake) public stakers;
+    mapping(address => mapping(address => uint256))
+        public stakersStakePerClient; // staker stake per client
+    mapping(address => address[]) public stakersClients; // clients that staker has staked
     mapping(address => uint256) public clientStake;
 
     event Staked(
@@ -72,14 +70,11 @@ contract Staking is AccessControlEnumerable {
     }
 
     function stake(address client, uint256 amount) public {
-        require(
-            stakers[msg.sender].client == address(0) ||
-                stakers[msg.sender].client == client,
-            "staked for another client"
-        );
+        if (stakersStakePerClient[msg.sender][client] == 0) {
+            stakersClients[msg.sender].push(client);
+        }
 
-        stakers[msg.sender].client = client;
-        stakers[msg.sender].amount += amount;
+        stakersStakePerClient[msg.sender][client] += amount;
         clientStake[client] += amount;
 
         require(
@@ -89,28 +84,47 @@ contract Staking is AccessControlEnumerable {
         emit Staked(
             msg.sender,
             client,
-            stakers[msg.sender].amount,
+            stakersStakePerClient[msg.sender][client],
             clientStake[client]
         );
     }
 
-    function unstake(uint256 amount) public {
+    function unstake(address client, uint256 amount) public {
         require(amount > 0, "amount must be > 0");
         require(
-            stakers[msg.sender].amount >= amount,
+            stakersStakePerClient[msg.sender][client] >= amount,
             "amount must be <= staked amount"
         );
 
-        address client = stakers[msg.sender].client;
-        stakers[msg.sender].amount -= amount;
+        stakersStakePerClient[msg.sender][client] -= amount;
         clientStake[client] -= amount;
+
+        // * remove the client address from stakersClients if amount staked == 0
+        if (stakersStakePerClient[msg.sender][client] == 0) {
+            uint length = stakersClients[msg.sender].length;
+
+            for (uint i = 0; i < length; i++) {
+                if (stakersClients[msg.sender][i] == client) {
+                    stakersClients[msg.sender][i] = stakersClients[msg.sender][
+                        length - 1
+                    ];
+                    stakersClients[msg.sender].pop();
+                }
+            }
+        }
 
         require(token.transfer(msg.sender, amount), "token transfer failed");
         emit Unstaked(
             msg.sender,
             client,
-            stakers[msg.sender].amount,
+            stakersStakePerClient[msg.sender][client],
             clientStake[client]
         );
+    }
+
+    function getStakersClient(
+        address staker
+    ) public view returns (address[] memory) {
+        return stakersClients[staker];
     }
 }
