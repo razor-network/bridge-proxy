@@ -109,6 +109,7 @@ contract Staking is AccessControlEnumerable {
                         length - 1
                     ];
                     stakersClients[msg.sender].pop();
+                    break;
                 }
             }
         }

@@ -278,6 +278,25 @@ describe("Forwarder tests", () => {
       );
     });
 
+    it("Updating minStake should change whitelisting logic", async () => {
+      const minStake = await staking.minStake();
+
+      await token.approve(staking.address, minStake);
+      await expect(staking.stake(client.address, minStake)).to.be.not.reverted;
+
+      // * whitelisted because minStake == clientStake
+      await expect(client.getResult(namesHash[0])).to.be.not.reverted;
+
+      // * update minStake
+      const newMinStake = minStake.mul(2);
+      await staking.updateMinStake(newMinStake);
+
+      // * client should not be whitelisted because minStake > clientStake
+      await expect(client.getResult(namesHash[0])).to.be.revertedWith(
+        "Not whitelisted"
+      );
+    });
+
     it("Admin should be withdraw funds from staking contract", async () => {
       // * Non admin should not be allowed to withdraw
       await expect(staking.connect(signers[1]).withdraw()).to.be.reverted;
