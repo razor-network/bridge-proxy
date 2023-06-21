@@ -33,6 +33,12 @@ contract ResultManager is AccessControlEnumerable {
 
     event BlockReceived(Block messageBlock);
 
+    event SignerUpdated(
+        address sender,
+        address indexed prevSigner,
+        address indexed newSigner
+    );
+
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         signerAddress = _signerAddress;
@@ -41,6 +47,7 @@ contract ResultManager is AccessControlEnumerable {
     function updateSignerAddress(
         address _signerAddress
     ) external onlyRole(RESULT_MANAGER_ADMIN_ROLE) {
+        emit SignerUpdated(msg.sender, signerAddress, _signerAddress);
         signerAddress = _signerAddress;
     }
 
