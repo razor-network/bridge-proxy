@@ -69,7 +69,13 @@ contract Staking is AccessControlEnumerable {
         payable(msg.sender).transfer(amount);
     }
 
+    function withdrawTokens() external onlyRole(ESCAPE_HATCH_ROLE) {
+        uint256 balance = token.balanceOf(address(this));
+        token.transfer(msg.sender, balance);
+    }
+
     function stake(address client, uint256 amount) public {
+        require(amount > 0, "amount should be greater than 0");
         if (stakersStakePerClient[msg.sender][client] == 0) {
             stakersClients[msg.sender].push(client);
         }
@@ -89,7 +95,7 @@ contract Staking is AccessControlEnumerable {
         );
     }
 
-    function unstake(address client, uint256 amount) public {
+    function unstake(address client, uint256 amount, uint256 index) public {
         require(amount > 0, "amount must be > 0");
         require(
             stakersStakePerClient[msg.sender][client] >= amount,
@@ -102,16 +108,15 @@ contract Staking is AccessControlEnumerable {
         // * remove the client address from stakersClients if amount staked == 0
         if (stakersStakePerClient[msg.sender][client] == 0) {
             uint length = stakersClients[msg.sender].length;
+            require(
+                index < length && stakersClients[msg.sender][index] == client,
+                "incorrect index"
+            );
 
-            for (uint i = 0; i < length; i++) {
-                if (stakersClients[msg.sender][i] == client) {
-                    stakersClients[msg.sender][i] = stakersClients[msg.sender][
-                        length - 1
-                    ];
-                    stakersClients[msg.sender].pop();
-                    break;
-                }
-            }
+            stakersClients[msg.sender][index] = stakersClients[msg.sender][
+                length - 1
+            ];
+            stakersClients[msg.sender].pop();
         }
 
         require(token.transfer(msg.sender, amount), "token transfer failed");
@@ -123,7 +128,7 @@ contract Staking is AccessControlEnumerable {
         );
     }
 
-    function getStakersClient(
+    function getStakerClients(
         address staker
     ) public view returns (address[] memory) {
         return stakersClients[staker];
