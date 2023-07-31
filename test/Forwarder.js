@@ -269,8 +269,10 @@ describe("Forwarder tests", () => {
     it("Client shouldn't be allowed to getResult if stake is less than minStake", async () => {
       const minStake = await staking.minStake();
 
+      const stakersClients = await staking.getStakerClients(signers[0].address);
+      const index = stakersClients.indexOf(client.address);
       // * unstake
-      await expect(staking.unstake(client.address, minStake)).to.be.not
+      await expect(staking.unstake(client.address, minStake, index)).to.be.not
         .reverted;
 
       await expect(client.getResult(namesHash[0])).to.be.revertedWith(

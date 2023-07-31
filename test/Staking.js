@@ -106,6 +106,10 @@ describe("Staking tests", () => {
   });
 
   it("Stake tests", async () => {
+    await expect(staking.stake(clientAddresses[0], 0)).to.be.rejectedWith(
+      "amount should be greater than 0"
+    );
+
     await token.approve(staking.address, defaultMinStake);
     await expect(staking.stake(clientAddresses[0], defaultMinStake)).to.be.not
       .reverted;
@@ -136,19 +140,24 @@ describe("Staking tests", () => {
 
   it("Unstake tests", async () => {
     // * amount should be greater than 0
-    await expect(staking.unstake(signers[0].address, 0)).to.be.revertedWith(
-      "amount must be > 0"
-    );
+    let stakerClients = await staking.getStakerClients(signers[0].address);
+    let index = await stakerClients.indexOf(clientAddresses[0]);
+    await expect(
+      staking.unstake(signers[0].address, 0, index)
+    ).to.be.revertedWith("amount must be > 0");
 
     // * cannot unstake more than staked amount
     let stakedAmount = await staking.stakersStakePerClient(
       signers[0].address,
       clientAddresses[0]
     );
+    stakerClients = await staking.getStakerClients(signers[0].address);
+    index = await stakerClients.indexOf(clientAddresses[0]);
     await expect(
       staking.unstake(
         clientAddresses[0],
-        stakedAmount.add(ethers.utils.parseEther("1"))
+        stakedAmount.add(ethers.utils.parseEther("1")),
+        index
       )
     ).to.be.revertedWith("amount must be <= staked amount");
 
@@ -158,8 +167,10 @@ describe("Staking tests", () => {
     const clientStakeBeforeUnstake = await staking.clientStake(
       clientAddresses[0]
     );
-    await expect(staking.unstake(clientAddresses[0], stakedAmount)).to.be.not
-      .reverted;
+    stakerClients = await staking.getStakerClients(signers[0].address);
+    index = await stakerClients.indexOf(clientAddresses[0]);
+    await expect(staking.unstake(clientAddresses[0], stakedAmount, index)).to.be
+      .not.reverted;
 
     // * verify staker token balance
     const tokenBalanceAfterUnstake = await token.balanceOf(signers[0].address);
@@ -183,7 +194,7 @@ describe("Staking tests", () => {
   });
 
   it("Verify client address is push/pop from stakersClients", async () => {
-    let signer1Clients = await staking.getStakersClient(signers[1].address);
+    let signer1Clients = await staking.getStakerClients(signers[1].address);
 
     // * if the staker has no clients
     expect(signer1Clients).to.be.an("array").that.is.empty;
@@ -196,7 +207,7 @@ describe("Staking tests", () => {
     await expect(
       staking.connect(signers[1]).stake(clientAddresses[0], defaultMinStake)
     ).to.be.not.reverted;
-    signer1Clients = await staking.getStakersClient(signers[1].address);
+    signer1Clients = await staking.getStakerClients(signers[1].address);
 
     expect(signer1Clients).to.be.deep.equal([clientAddresses[0]]);
 
@@ -205,7 +216,7 @@ describe("Staking tests", () => {
     await expect(
       staking.connect(signers[1]).stake(clientAddresses[0], defaultMinStake)
     ).to.be.not.reverted;
-    signer1Clients = await staking.getStakersClient(signers[1].address);
+    signer1Clients = await staking.getStakerClients(signers[1].address);
 
     expect(signer1Clients).to.be.deep.equal([clientAddresses[0]]);
 
@@ -214,13 +225,15 @@ describe("Staking tests", () => {
       signers[1].address,
       clientAddresses[0]
     );
+    signer1Clients = await staking.getStakerClients(signers[1].address);
+    let index = await signer1Clients.indexOf(clientAddresses[0]);
     await expect(
       staking
         .connect(signers[1])
-        .unstake(clientAddresses[0], stakedAmount.sub(defaultMinStake))
+        .unstake(clientAddresses[0], stakedAmount.sub(defaultMinStake), index)
     ).to.be.not.reverted;
 
-    signer1Clients = await staking.getStakersClient(signers[1].address);
+    signer1Clients = await staking.getStakerClients(signers[1].address);
     expect(signer1Clients).to.be.deep.equal([clientAddresses[0]]);
 
     // * during full unstake, client address is popped from stakersClients
@@ -228,11 +241,15 @@ describe("Staking tests", () => {
       signers[1].address,
       clientAddresses[0]
     );
+    signer1Clients = await staking.getStakerClients(signers[1].address);
+    index = signer1Clients.indexOf(clientAddresses[0]);
     await expect(
-      staking.connect(signers[1]).unstake(clientAddresses[0], stakedAmount)
+      staking
+        .connect(signers[1])
+        .unstake(clientAddresses[0], stakedAmount, index)
     ).to.be.not.reverted;
 
-    signer1Clients = await staking.getStakersClient(signers[1].address);
+    signer1Clients = await staking.getStakerClients(signers[1].address);
     expect(signer1Clients).to.be.an("array").that.is.empty;
 
     // * try staking to same client again
@@ -240,8 +257,79 @@ describe("Staking tests", () => {
     await expect(
       staking.connect(signers[1]).stake(clientAddresses[0], defaultMinStake)
     ).to.be.not.reverted;
-    signer1Clients = await staking.getStakersClient(signers[1].address);
+    signer1Clients = await staking.getStakerClients(signers[1].address);
 
     expect(signer1Clients).to.be.deep.equal([clientAddresses[0]]);
+  });
+
+  it("Test incorrect index for unstake", async () => {
+    await token.transfer(signers[2].address, defaultMinStake.mul(4));
+    await token
+      .connect(signers[2])
+      .approve(staking.address, defaultMinStake.mul(4));
+
+    // * stake to all clientAddresses
+    for (let i = 0; i < 4; i++) {
+      await expect(
+        staking.connect(signers[2]).stake(clientAddresses[i], defaultMinStake)
+      ).to.be.not.reverted;
+    }
+
+    // * check for expected stakerClients
+    let stakerClients = await staking.getStakerClients(signers[2].address);
+    expect(stakerClients).to.be.deep.equal(clientAddresses);
+
+    // * try to unstake with index > stakerClients.length
+    await expect(
+      staking
+        .connect(signers[2])
+        .unstake(clientAddresses[0], defaultMinStake, stakerClients.length + 1)
+    ).to.be.revertedWith("incorrect index");
+
+    // * try to unstake with wrong index
+    let index = await stakerClients.indexOf(clientAddresses[0]);
+    await expect(
+      staking
+        .connect(signers[2])
+        .unstake(clientAddresses[0], defaultMinStake, index + 1)
+    ).to.be.revertedWith("incorrect index");
+
+    await expect(
+      staking
+        .connect(signers[2])
+        .unstake(clientAddresses[0], defaultMinStake, index)
+    ).to.be.not.reverted;
+
+    stakerClients = await staking.getStakerClients(signers[2].address);
+    expect(stakerClients).to.have.all.members(clientAddresses.slice(1));
+  });
+
+  it("Only ESCAPE_HATCH_ROLE addresses can withdraw tokens", async () => {
+    const ESCAPE_HATCH_ROLE = await staking.ESCAPE_HATCH_ROLE();
+    const escapeHatchSigner = signers[2];
+    await expect(staking.connect(escapeHatchSigner).withdrawTokens()).to.be
+      .reverted;
+
+    // * grant ESCAPE_HATCH_ROLE and withdraw token from escapeHatchSigner
+    await staking.grantRole(ESCAPE_HATCH_ROLE, escapeHatchSigner.address);
+
+    const stakeManagerBalanceBeforeWithdraw = await token.balanceOf(
+      staking.address
+    );
+    const tokenBalanceBeforeWithdraw = await token.balanceOf(
+      escapeHatchSigner.address
+    );
+    await expect(staking.connect(escapeHatchSigner).withdrawTokens()).to.be.not
+      .reverted;
+    const stakeManagerBalanceAfterWithdraw = await token.balanceOf(
+      staking.address
+    );
+    const tokenBalanceAfterWithdraw = await token.balanceOf(
+      escapeHatchSigner.address
+    );
+    expect(stakeManagerBalanceAfterWithdraw).to.be.equal(0);
+    expect(tokenBalanceAfterWithdraw).to.be.equal(
+      tokenBalanceBeforeWithdraw.add(stakeManagerBalanceBeforeWithdraw)
+    );
   });
 });
