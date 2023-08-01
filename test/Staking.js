@@ -320,11 +320,17 @@ describe("Staking tests", () => {
   it("Only ESCAPE_HATCH_ROLE addresses can withdraw tokens", async () => {
     const ESCAPE_HATCH_ROLE = await staking.ESCAPE_HATCH_ROLE();
     const escapeHatchSigner = signers[2];
-    await expect(staking.connect(escapeHatchSigner).withdrawTokens()).to.be
-      .reverted;
+    await expect(
+      staking.connect(escapeHatchSigner).escape(escapeHatchSigner.address)
+    ).to.be.reverted;
 
-    // * grant ESCAPE_HATCH_ROLE and withdraw token from escapeHatchSigner
+    // * grant ESCAPE_HATCH_ROLE, pause and withdraw token from escapeHatchSigner
     await staking.grantRole(ESCAPE_HATCH_ROLE, escapeHatchSigner.address);
+
+    // pause the contract
+    const PAUSE_ROLE = await staking.PAUSE_ROLE();
+    await staking.grantRole(PAUSE_ROLE, signers[0].address);
+    await expect(staking.pause()).to.be.not.reverted;
 
     const stakeManagerBalanceBeforeWithdraw = await token.balanceOf(
       staking.address
@@ -332,8 +338,9 @@ describe("Staking tests", () => {
     const tokenBalanceBeforeWithdraw = await token.balanceOf(
       escapeHatchSigner.address
     );
-    await expect(staking.connect(escapeHatchSigner).withdrawTokens()).to.be.not
-      .reverted;
+    await expect(
+      staking.connect(escapeHatchSigner).escape(escapeHatchSigner.address)
+    ).to.be.not.reverted;
     const stakeManagerBalanceAfterWithdraw = await token.balanceOf(
       staking.address
     );
@@ -344,6 +351,25 @@ describe("Staking tests", () => {
     expect(tokenBalanceAfterWithdraw).to.be.equal(
       tokenBalanceBeforeWithdraw.add(stakeManagerBalanceBeforeWithdraw)
     );
+    await staking.unpause();
+  });
+
+  it("Once escapeHatch is disabled, withdrawing tokens should be reverted", async () => {
+    const ESCAPE_HATCH_ROLE = await staking.ESCAPE_HATCH_ROLE();
+    await staking.grantRole(ESCAPE_HATCH_ROLE, signers[0].address);
+
+    await expect(staking.disableEscapeHatch()).to.be.not.reverted;
+
+    // pause the contract
+    const PAUSE_ROLE = await staking.PAUSE_ROLE();
+    await staking.grantRole(PAUSE_ROLE, signers[0].address);
+    await expect(staking.pause()).to.be.not.reverted;
+
+    await expect(
+      staking.connect(signers[0]).escape(signers[0].address)
+    ).to.be.revertedWith("escape hatch is disabled");
+
+    await staking.unpause();
   });
 
   it("stake/unstake should be reverted if paused", async () => {
@@ -364,5 +390,7 @@ describe("Staking tests", () => {
     await expect(
       staking.unstake(clientAddresses[0], defaultMinStake, 0)
     ).to.be.revertedWith("Pausable: paused");
+
+    await expect(staking.connect(signers[1]).unpause()).to.be.not.reverted;
   });
 });

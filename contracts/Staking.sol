@@ -16,6 +16,7 @@ contract Staking is AccessControlEnumerable, Pausable {
     IERC20 public token;
     bool public isWhitelistEnabled;
     uint256 public minStake = 1_000_000 * (10 ** 18);
+    bool public escapeHatchEnabled = true;
 
     mapping(address => mapping(address => uint256))
         public stakersStakePerClient; // staker stake per client
@@ -68,6 +69,10 @@ contract Staking is AccessControlEnumerable, Pausable {
         Pausable._unpause();
     }
 
+    function disableEscapeHatch() external onlyRole(ESCAPE_HATCH_ROLE) {
+        escapeHatchEnabled = false;
+    }
+
     function isWhitelisted(
         address caller
     ) external payable onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (bool) {
@@ -79,9 +84,17 @@ contract Staking is AccessControlEnumerable, Pausable {
         payable(msg.sender).transfer(amount);
     }
 
-    function withdrawTokens() external onlyRole(ESCAPE_HATCH_ROLE) {
-        uint256 balance = token.balanceOf(address(this));
-        token.transfer(msg.sender, balance);
+    function escape(
+        address _address
+    ) external onlyRole(ESCAPE_HATCH_ROLE) whenPaused {
+        if (escapeHatchEnabled) {
+            require(
+                token.transfer(_address, token.balanceOf(address(this))),
+                "token transfer failed"
+            );
+        } else {
+            revert("escape hatch is disabled");
+        }
     }
 
     function stake(address client, uint256 amount) external whenNotPaused {
