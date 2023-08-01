@@ -74,7 +74,7 @@ contract Staking is AccessControlEnumerable {
         token.transfer(msg.sender, balance);
     }
 
-    function stake(address client, uint256 amount) public {
+    function stake(address client, uint256 amount) external {
         require(amount > 0, "amount should be greater than 0");
         if (stakersStakePerClient[msg.sender][client] == 0) {
             stakersClients[msg.sender].push(client);
@@ -95,7 +95,7 @@ contract Staking is AccessControlEnumerable {
         );
     }
 
-    function unstake(address client, uint256 amount, uint256 index) public {
+    function unstake(address client, uint256 amount, uint256 index) external {
         require(amount > 0, "amount must be > 0");
         require(
             stakersStakePerClient[msg.sender][client] >= amount,
