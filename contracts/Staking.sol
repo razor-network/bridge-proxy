@@ -3,13 +3,15 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
-contract Staking is AccessControlEnumerable {
+contract Staking is AccessControlEnumerable, Pausable {
     bytes32 public constant STAKING_ADMIN_ROLE =
         keccak256("STAKING_ADMIN_ROLE");
     bytes32 public constant ESCAPE_HATCH_ROLE = keccak256("ESCAPE_HATCH_ROLE");
     bytes32 public constant TRANSPARENT_FORWARDER_ROLE =
         keccak256("TRANSPARENT_FORWARDER_ROLE");
+    bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
 
     IERC20 public token;
     bool public isWhitelistEnabled;
@@ -58,6 +60,14 @@ contract Staking is AccessControlEnumerable {
         isWhitelistEnabled = false;
     }
 
+    function pause() external onlyRole(PAUSE_ROLE) {
+        Pausable._pause();
+    }
+
+    function unpause() external onlyRole(PAUSE_ROLE) {
+        Pausable._unpause();
+    }
+
     function isWhitelisted(
         address caller
     ) external payable onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (bool) {
@@ -74,7 +84,7 @@ contract Staking is AccessControlEnumerable {
         token.transfer(msg.sender, balance);
     }
 
-    function stake(address client, uint256 amount) external {
+    function stake(address client, uint256 amount) external whenNotPaused {
         require(amount > 0, "amount should be greater than 0");
         if (stakersStakePerClient[msg.sender][client] == 0) {
             stakersClients[msg.sender].push(client);
@@ -95,7 +105,11 @@ contract Staking is AccessControlEnumerable {
         );
     }
 
-    function unstake(address client, uint256 amount, uint256 index) external {
+    function unstake(
+        address client,
+        uint256 amount,
+        uint256 index
+    ) external whenNotPaused {
         require(amount > 0, "amount must be > 0");
         require(
             stakersStakePerClient[msg.sender][client] >= amount,

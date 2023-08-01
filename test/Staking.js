@@ -105,6 +105,19 @@ describe("Staking tests", () => {
     await staking.revokeRole(STAKING_ADMIN_ROLE, signers[1].address);
   });
 
+  it("Only PAUSE_ROLE can pause/unpause", async () => {
+    const PAUSE_ROLE = await staking.PAUSE_ROLE();
+
+    await expect(staking.connect(signers[1]).pause()).to.be.reverted;
+    await expect(staking.connect(signers[1]).unpause()).to.be.reverted;
+
+    await staking.grantRole(PAUSE_ROLE, signers[1].address);
+    await expect(staking.connect(signers[1]).pause()).to.be.not.reverted;
+    await expect(staking.connect(signers[1]).unpause()).to.be.not.reverted;
+
+    await staking.revokeRole(PAUSE_ROLE, signers[1].address);
+  });
+
   it("Stake tests", async () => {
     await expect(staking.stake(clientAddresses[0], 0)).to.be.rejectedWith(
       "amount should be greater than 0"
@@ -331,5 +344,25 @@ describe("Staking tests", () => {
     expect(tokenBalanceAfterWithdraw).to.be.equal(
       tokenBalanceBeforeWithdraw.add(stakeManagerBalanceBeforeWithdraw)
     );
+  });
+
+  it("stake/unstake should be reverted if paused", async () => {
+    // * unpaused initially
+    let isPaused = await staking.paused();
+    expect(isPaused).to.be.equal(false);
+
+    // * pause
+    const PAUSE_ROLE = await staking.PAUSE_ROLE();
+    await expect(staking.grantRole(PAUSE_ROLE, signers[1].address)).to.be.not
+      .reverted;
+    await expect(staking.connect(signers[1]).pause()).to.be.not.reverted;
+
+    // * stake/unstake should be reverted if paused
+    await expect(
+      staking.stake(clientAddresses[0], defaultMinStake)
+    ).to.be.revertedWith("Pausable: paused");
+    await expect(
+      staking.unstake(clientAddresses[0], defaultMinStake, 0)
+    ).to.be.revertedWith("Pausable: paused");
   });
 });
