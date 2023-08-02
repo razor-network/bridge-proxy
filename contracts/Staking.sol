@@ -69,7 +69,7 @@ contract Staking is AccessControlEnumerable, Pausable {
         Pausable._unpause();
     }
 
-    function disableEscapeHatch() external onlyRole(ESCAPE_HATCH_ROLE) {
+    function disableEscapeHatch() external onlyRole(DEFAULT_ADMIN_ROLE) {
         escapeHatchEnabled = false;
     }
 
@@ -98,7 +98,7 @@ contract Staking is AccessControlEnumerable, Pausable {
     }
 
     function stake(address client, uint256 amount) external whenNotPaused {
-        require(amount > 0, "amount should be greater than 0");
+        require(amount > 0, "amount must be greater than 0");
         if (stakersStakePerClient[msg.sender][client] == 0) {
             stakersClients[msg.sender].push(client);
         }
@@ -106,15 +106,15 @@ contract Staking is AccessControlEnumerable, Pausable {
         stakersStakePerClient[msg.sender][client] += amount;
         clientStake[client] += amount;
 
-        require(
-            token.transferFrom(msg.sender, address(this), amount),
-            "token transfer failed"
-        );
         emit Staked(
             msg.sender,
             client,
             stakersStakePerClient[msg.sender][client],
             clientStake[client]
+        );
+        require(
+            token.transferFrom(msg.sender, address(this), amount),
+            "token transfer failed"
         );
     }
 
@@ -123,7 +123,7 @@ contract Staking is AccessControlEnumerable, Pausable {
         uint256 amount,
         uint256 index
     ) external whenNotPaused {
-        require(amount > 0, "amount must be > 0");
+        require(amount > 0, "amount must be greater than 0");
         require(
             stakersStakePerClient[msg.sender][client] >= amount,
             "amount must be <= staked amount"
@@ -146,13 +146,13 @@ contract Staking is AccessControlEnumerable, Pausable {
             stakersClients[msg.sender].pop();
         }
 
-        require(token.transfer(msg.sender, amount), "token transfer failed");
         emit Unstaked(
             msg.sender,
             client,
             stakersStakePerClient[msg.sender][client],
             clientStake[client]
         );
+        require(token.transfer(msg.sender, amount), "token transfer failed");
     }
 
     function getStakerClients(

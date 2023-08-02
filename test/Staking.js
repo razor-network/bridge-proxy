@@ -120,7 +120,7 @@ describe("Staking tests", () => {
 
   it("Stake tests", async () => {
     await expect(staking.stake(clientAddresses[0], 0)).to.be.rejectedWith(
-      "amount should be greater than 0"
+      "amount must be greater than 0"
     );
 
     await token.approve(staking.address, defaultMinStake);
@@ -152,12 +152,12 @@ describe("Staking tests", () => {
   });
 
   it("Unstake tests", async () => {
-    // * amount should be greater than 0
+    // * amount must be greater than 0
     let stakerClients = await staking.getStakerClients(signers[0].address);
     let index = await stakerClients.indexOf(clientAddresses[0]);
     await expect(
       staking.unstake(signers[0].address, 0, index)
-    ).to.be.revertedWith("amount must be > 0");
+    ).to.be.revertedWith("amount must be greater than 0");
 
     // * cannot unstake more than staked amount
     let stakedAmount = await staking.stakersStakePerClient(
