@@ -28,14 +28,16 @@ contract Staking is AccessControlEnumerable, Pausable {
         address indexed client,
         uint256 newStakerStake,
         uint256 newClientStake,
-        uint256 amount
+        uint256 amount,
+        uint256 timestamp
     );
     event Unstaked(
         address indexed staker,
         address indexed client,
         uint256 newStakerStake,
         uint256 newClientStake,
-        uint256 amount
+        uint256 amount,
+        uint256 timestamp
     );
 
     constructor(address _tokenAddress) {
@@ -113,7 +115,8 @@ contract Staking is AccessControlEnumerable, Pausable {
             client,
             stakersStakePerClient[msg.sender][client],
             clientStake[client],
-            amount
+            amount,
+            block.timestamp
         );
         require(
             token.transferFrom(msg.sender, address(this), amount),
@@ -154,7 +157,8 @@ contract Staking is AccessControlEnumerable, Pausable {
             client,
             stakersStakePerClient[msg.sender][client],
             clientStake[client],
-            amount
+            amount,
+            block.timestamp
         );
         require(token.transfer(msg.sender, amount), "token transfer failed");
     }
