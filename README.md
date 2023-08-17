@@ -125,3 +125,47 @@ The above script will perform following operation:
 | Forwarder            | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
 | TransparentForwarder | 0xe4371caE0ab6Fb4875BB1002c0230CB0a1423616 |
 | Staking              | 0x53Df936a3594777185DF12Cd073d9033cfF348D6 |
+
+## Adding a New Network to Bridge
+
+### 1. Update Hardhat Configuration
+
+To add a new network in bridge:
+
+#### Steps:
+
+1. **Open Configuration File**  
+   Navigate to your project directory and open `hardhat.config.js`.
+
+2. **Add Your Network Details**  
+   In the `networks` section, append your new network configuration:
+
+   ```javascript
+   [NETWORK_NAME]: {
+     url: "https://[YOUR-RPC-URL]",
+     chainId: [CHAIN_ID],
+     // ... any other specific configurations you might require.
+   },
+   ```
+
+   Replace:
+
+   - `[NETWORK_NAME]` with a unique identifier for your network (e.g., "mainnet").
+   - `[YOUR-RPC-URL]` with the full URL to your network's RPC endpoint.
+   - `[CHAIN_ID]` with the specific chain ID of your network.
+
+### 2. Deployment Script
+
+Once you've set up the network configuration, provide the following deployment script that needs to be run:
+
+```bash
+npx hardhat run scripts/deployBridge.js --network [NETWORK_NAME]
+```
+
+You'll need to replace `[NETWORK_NAME]` with the identifier you specified in the first step.
+
+### 3. Raise a Pull Request (PR)
+
+- Commit and push your changes.
+- Raise a PR against the original repository.
+- Describe your changes and wait for review.
