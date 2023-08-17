@@ -6,6 +6,7 @@ const COLLECTION_NAME_HASH =
   "0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160"; // ETHUSD
 const PAYLOAD =
   "0xadd4c78459102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160"; // getResult(hash(ETHUSD))
+const TOKEN_ADDRESS = "0xcbf70914Fae03B3acB91E953De60CfDAaCA8145f";
 
 async function main() {
   console.log("Deploying ResultManager contract...");
@@ -34,7 +35,7 @@ async function main() {
 
   console.log("Deploying Staking contract...");
   const Staking = await hre.ethers.getContractFactory("Staking");
-  const staking = await Staking.deploy();
+  const staking = await Staking.deploy(TOKEN_ADDRESS);
   console.log("Staking contract deployed at:", staking.address);
 
   console.log("Contract Addresses:");
