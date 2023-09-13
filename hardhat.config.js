@@ -57,7 +57,7 @@ module.exports = {
     europaMainnet: {
       chainId: 2046399126,
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
-      timeout: 60000,
+      timeout: 600000,
     },
   },
   gasReporter: {
