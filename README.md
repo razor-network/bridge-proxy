@@ -126,6 +126,15 @@ The above script will perform following operation:
 | TransparentForwarder | 0xe4371caE0ab6Fb4875BB1002c0230CB0a1423616 |
 | Staking              | 0x53Df936a3594777185DF12Cd073d9033cfF348D6 |
 
+### XDC Testnet (Apothem)
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+| Forwarder            | 0xe4371caE0ab6Fb4875BB1002c0230CB0a1423616 |
+| TransparentForwarder | 0x53Df936a3594777185DF12Cd073d9033cfF348D6 |
+| Staking              | 0x7f80398840d1be49dd99609abe405034bf97e97a |
+
 ## Adding a New Network to Bridge
 
 ### 1. Update Hardhat Configuration
