@@ -73,6 +73,12 @@ module.exports = {
       accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
       timeout: 60000,
     },
+    polygoZkTestnet: {
+        chainId: 1442,
+        url: "https://rpc.public.zkevm-test.net",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
+      },
   },
   gasReporter: {
     enabled: true,
