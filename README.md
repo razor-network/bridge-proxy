@@ -117,7 +117,7 @@ The above script will perform following operation:
 | TransparentForwarder | 0x47c475a69FF1F0AfBe74d6399D57Ef43E4245185 |
 | Staking              | 0x3238ee6E7EEDff8683dE31EB4fF80e187B5a1CC2 |
 
-### BSC Testnet
+### BNB Testnet
 
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
@@ -134,6 +134,15 @@ The above script will perform following operation:
 | Forwarder            | 0xe4371caE0ab6Fb4875BB1002c0230CB0a1423616 |
 | TransparentForwarder | 0x53Df936a3594777185DF12Cd073d9033cfF348D6 |
 | Staking              | 0x7f80398840d1be49dd99609abe405034bf97e97a |
+
+### opBNB Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
 
 ## Adding a New Network to Bridge
 

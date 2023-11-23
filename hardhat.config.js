@@ -2,6 +2,8 @@ require("@nomicfoundation/hardhat-toolbox");
 require("@openzeppelin/hardhat-upgrades");
 require("hardhat-abi-exporter");
 require("solidity-coverage");
+require('dotenv').config();
+
 /** @type import('hardhat/config').HardhatUserConfig */
 
 const { RINKEBY_RPC } = process.env;
@@ -62,6 +64,13 @@ module.exports = {
     xdcTestnet: {
       chainId: 51,
       url: "https://erpc.apothem.network",
+      accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+      timeout: 60000,
+    },
+    opBNBTestnet: {
+      chainId: 5611,
+      url: "https://opbnb-testnet-rpc.bnbchain.org",
+      accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
       timeout: 60000,
     },
   },
