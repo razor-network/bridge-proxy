@@ -117,7 +117,7 @@ The above script will perform following operation:
 | TransparentForwarder | 0x47c475a69FF1F0AfBe74d6399D57Ef43E4245185 |
 | Staking              | 0x3238ee6E7EEDff8683dE31EB4fF80e187B5a1CC2 |
 
-### BNB Testnet
+### BSC Testnet
 
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
