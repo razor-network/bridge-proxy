@@ -61,6 +61,26 @@ module.exports = {
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
       timeout: 60000,
     },
+    BNBMainnet: {
+        chainId: 56,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
+      polygon: {
+        chainId: 137,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
+      polygonZkEvmMainnet: {
+        chainId: 1101,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
+      xdcMainnet: {
+        chainId: 50,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
     xdcTestnet: {
       chainId: 51,
       url: "https://erpc.apothem.network",
