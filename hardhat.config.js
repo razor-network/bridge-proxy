@@ -86,6 +86,16 @@ module.exports = {
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
       timeout: 60000,
     },
+    BNBMainnet: {
+        chainId: 56,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
+    polygonZkEvmMainnet: {
+        chainId: 1101,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
     xdcMainnet: {
       chainId: 50,
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
@@ -104,7 +114,7 @@ module.exports = {
       accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
       timeout: 60000,
     },
-    polygonZkTestnet: {
+    polygonZkEvmTestnet: {
         chainId: 1442,
         url: "https://rpc.public.zkevm-test.net",
         accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
