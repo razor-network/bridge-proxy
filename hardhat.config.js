@@ -61,6 +61,31 @@ module.exports = {
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
       timeout: 60000,
     },
+    polygon: {
+      chainId: 137,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
+    moonbeam: {
+      chainId: 1284,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
+    meter: {
+      chainId: 82,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
+    zksyncEra: {
+      chainId: 324,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
+    canto: {
+      chainId: 7700,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
     xdcTestnet: {
       chainId: 51,
       url: "https://erpc.apothem.network",
@@ -90,8 +115,26 @@ module.exports = {
         url: "https://rpctest.meter.io",
         accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
         timeout: 60000,
-    }
-  },
+    },
+    zksyncEraTestnet: {
+      chainId: 280,
+      url: "https://zksync-era-testnet.blockpi.network/v1/rpc/public",
+      accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+      timeout: 60000,
+     },
+     moonbaseAlpha: {
+      chainId: 1287,
+      url: "https://rpc.testnet.moonbeam.network",
+      accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+      timeout: 60000,
+     },
+     cantoTestnet: {
+      chainID: 7701,
+      url: "https://canto-testnet.plexnode.wtf",
+      accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+      timeout: 60000,
+     }
+    },
   gasReporter: {
     enabled: true,
     outputFile: "gas-report.txt",
