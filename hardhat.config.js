@@ -86,6 +86,12 @@ module.exports = {
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
       timeout: 60000,
     },
+    xdcMainnet: {
+      chainId: 50,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
+    //Testnets
     xdcTestnet: {
       chainId: 51,
       url: "https://erpc.apothem.network",
