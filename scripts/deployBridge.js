@@ -1,6 +1,7 @@
 const hre = require("hardhat");
+require('dotenv').config();
 
-const SIGNER_ADDRESS = "0xa7d37047e2dcfD446c0A0D7263bfA827b6c5C012";
+const SIGNER_ADDRESS = process.env.SIGNER_ADDRESS || "0xC68AcC784227DbEaE98Bb6F5aC3C57cCe1aE9B4B";
 
 const COLLECTION_NAME_HASH =
   "0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160"; // ETHUSD

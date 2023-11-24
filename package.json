@@ -15,6 +15,7 @@
     "@openzeppelin/contracts-upgradeable": "^4.7.3",
     "@openzeppelin/hardhat-upgrades": "^1.20.0",
     "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
     "solhint": "^3.3.7",
     "solidity-coverage": "^0.8.2"
   }
