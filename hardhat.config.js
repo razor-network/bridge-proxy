@@ -73,12 +73,24 @@ module.exports = {
       accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
       timeout: 60000,
     },
-    polygoZkTestnet: {
+    polygonZkTestnet: {
         chainId: 1442,
         url: "https://rpc.public.zkevm-test.net",
         accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
         timeout: 60000,
       },
+    mumbai: {
+        chainId: 80001,
+        url: "https://rpc-mumbai.maticvigil.com",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
+    },
+    meterTestnet: {
+        chainId: 83,
+        url: "https://rpctest.meter.io",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
+    }
   },
   gasReporter: {
     enabled: true,
