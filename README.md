@@ -162,6 +162,15 @@ The above script will perform following operation:
 | TransparentForwarder | 0xb08183402f96645b72Cf2d2969DA01bB25D590CD |
 | Staking              | 0xF31198E0B27B3903F5c9E4D6BeaA9DB6998eF4BB |
 
+### Goerli Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xF2D39F390106603e66E80c56d04c063384CB1172 |
+| Forwarder            | 0x51B7Beca0380Abd19AB464c85538ee9AF6679B80 |
+| TransparentForwarder | 0x67d1285434D6777Df76e4C94A6802dB3F5AE7113 |
+| Staking              | 0x63AFD59bBC8e153D6aF220E3c1FB4d08bB4f6e97 |
+
 ## Adding a New Network to Bridge
 
 ### 1. Update Hardhat Configuration
