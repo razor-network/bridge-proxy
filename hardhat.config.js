@@ -51,11 +51,6 @@ module.exports = {
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
       timeout: 60000,
     },
-    nebulaTestnet: {
-      chainId: 503129905,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
-      timeout: 60000,
-    },
     europaMainnet: {
       chainId: 2046399126,
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
@@ -107,6 +102,18 @@ module.exports = {
       timeout: 60000,
     },
     //Testnets
+    europaTestnet: {
+        chainId: 476158412,
+        url: "https://staging-v3.skalenodes.com/v1/staging-legal-crazy-castor",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
+      },
+      calypsoTestnet: {
+        chainId: 344106930,
+        url: "https://staging-v3.skalenodes.com/v1/staging-utter-unripe-menkar",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
+      },
     xdcTestnet: {
       chainId: 51,
       url: "https://erpc.apothem.network",
