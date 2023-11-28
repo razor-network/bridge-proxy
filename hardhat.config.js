@@ -174,6 +174,24 @@ module.exports = {
         accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
         timeout: 60000,
       },
+      opSepolia: {
+        chainId: 11155420,
+        url: "https://sepolia.optimism.io",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
+      },
+      baseSepolia: {
+        chainId: 84532,
+        url: "https://sepolia.base.org",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
+      },
+      arbitrumSepolia: {
+        chainId: 421614,
+        url: "https://sepolia-rollup.arbitrum.io/rpc",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
+      }
     },
   gasReporter: {
     enabled: true,

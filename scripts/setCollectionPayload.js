@@ -6,7 +6,7 @@ const COLLECTION_NAME_HASH =
   "0x7404e3d104ea7841c3d9e6fd20adfe99b4ad586bc08d8f3bd3afef894cf184de"; // BTCUSD
 const PAYLOAD =
   "0xadd4c7847404e3d104ea7841c3d9e6fd20adfe99b4ad586bc08d8f3bd3afef894cf184de"; // getResult(bytes32) function signature + hash(BTCUSD)
-const FORWARDER_ADDRESS = "0x03bD73afB6d3C5B86578010C099E5474aF1aABeF";
+const FORWARDER_ADDRESS = "0xa26232204879C4370806cA56F821b9fe97eAeF5B";
 const FORWARDER_ABI = require("../abis/Forwarder.json");
 
 

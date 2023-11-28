@@ -162,14 +162,34 @@ The above script will perform following operation:
 | TransparentForwarder | 0xb08183402f96645b72Cf2d2969DA01bB25D590CD |
 | Staking              | 0xF31198E0B27B3903F5c9E4D6BeaA9DB6998eF4BB |
 
-### Goerli Testnet
+### Sepolia Testnet
 
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| ResultManager        | 0xF2D39F390106603e66E80c56d04c063384CB1172 |
-| Forwarder            | 0x51B7Beca0380Abd19AB464c85538ee9AF6679B80 |
-| TransparentForwarder | 0x67d1285434D6777Df76e4C94A6802dB3F5AE7113 |
-| Staking              | 0x63AFD59bBC8e153D6aF220E3c1FB4d08bB4f6e97 |
+| ResultManager        | 0x53Df936a3594777185DF12Cd073d9033cfF348D6 |
+| Forwarder            | 0x7f80398840D1bE49dD99609Abe405034bF97E97a |
+| TransparentForwarder | 0x328BAc5C2be4961252041EC589A22e55Ec132010 |
+| Staking              | 0x36b309a9D1404a7B2Ae3429742F2967EF861606E |
+
+
+### OP Sepolia Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
+
+### Base Sepolia Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| Forwarder            | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| TransparentForwarder | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+| Staking              | 0xe4371caE0ab6Fb4875BB1002c0230CB0a1423616 |
 
 ## Adding a New Network to Bridge
 
