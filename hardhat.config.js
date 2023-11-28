@@ -168,9 +168,9 @@ module.exports = {
       accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
       timeout: 60000,
      },
-      goerli: {
-        chainId: 5,
-        url: "https://rpc.ankr.com/eth_goerli",
+     sepolia: {
+        chainId: 11155111,
+        url: "https://ethereum-sepolia.publicnode.com",
         accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
         timeout: 60000,
       },
