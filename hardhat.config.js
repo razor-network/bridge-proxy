@@ -191,6 +191,18 @@ module.exports = {
         url: "https://sepolia-rollup.arbitrum.io/rpc",
         accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
         timeout: 60000,
+      },
+      mantleTestnet: {
+        chainId: 5001,
+        url: "https://rpc.testnet.mantle.xyz",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
+      },
+      lineaGoerli: {
+        chainId: 59140,
+        url: "https://rpc.goerli.linea.build",
+        accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 60000,
       }
     },
   gasReporter: {
