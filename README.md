@@ -191,6 +191,36 @@ The above script will perform following operation:
 | TransparentForwarder | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
 | Staking              | 0xe4371caE0ab6Fb4875BB1002c0230CB0a1423616 |
 
+
+### Arbitrum Sepolia Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
+
+### Mantle Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
+
+### Linea Goerli Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
 ## Adding a New Network to Bridge
 
 ### 1. Update Hardhat Configuration
