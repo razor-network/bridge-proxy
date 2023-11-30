@@ -101,6 +101,31 @@ module.exports = {
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
       timeout: 60000,
     },
+    optimism: {
+      chainId: 10,
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      timeout: 60000,
+    },
+    arbitrumOne: {
+        chainId: 42161,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
+      base: {
+        chainId: 8453,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
+      linea: {
+        chainId: 59144,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
+      scroll: {
+        chainId: 534352,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        timeout: 60000,
+      },
     //Testnets
     europaTestnet: {
         chainId: 476158412,
