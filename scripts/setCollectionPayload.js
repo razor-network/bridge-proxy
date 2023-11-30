@@ -8,7 +8,6 @@ const COLLECTION_NAME_HASH =
 const PAYLOAD =
   "0xadd4c7847404e3d104ea7841c3d9e6fd20adfe99b4ad586bc08d8f3bd3afef894cf184de"; // getResult(bytes32) function signature + hash(BTCUSD)
 const FORWARDER_ADDRESS = "0xa26232204879C4370806cA56F821b9fe97eAeF5B"; // This address should be updated depending on the chain script is running on
-const FORWARDER_ABI = require("../abis/Forwarder.json");
 
 async function main() {
   const signer = await hre.ethers.getSigner();
