@@ -144,6 +144,93 @@ The above script will perform following operation:
 | TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
 | Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
 
+### Polygon zkEVM Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
+### Meter Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0x7cF18d12c75ea10E4070CF3745Ee82BfB52309dB |
+| Forwarder            | 0xaec25C98C3EAC5f6D73a1760D1A70947B740A53C |
+| TransparentForwarder | 0xb08183402f96645b72Cf2d2969DA01bB25D590CD |
+| Staking              | 0xF31198E0B27B3903F5c9E4D6BeaA9DB6998eF4BB |
+
+### Sepolia Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0x53Df936a3594777185DF12Cd073d9033cfF348D6 |
+| Forwarder            | 0x7f80398840D1bE49dD99609Abe405034bF97E97a |
+| TransparentForwarder | 0x328BAc5C2be4961252041EC589A22e55Ec132010 |
+| Staking              | 0x36b309a9D1404a7B2Ae3429742F2967EF861606E |
+
+
+### OP Sepolia Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
+
+### Base Sepolia Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| Forwarder            | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| TransparentForwarder | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+| Staking              | 0xe4371caE0ab6Fb4875BB1002c0230CB0a1423616 |
+
+
+### Arbitrum Sepolia Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
+
+### Mantle Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
+
+### Linea Goerli Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
+
+### Scroll Sepolia Testnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
+| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
+| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
+| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+
 ## Adding a New Network to Bridge
 
 ### 1. Update Hardhat Configuration
