@@ -62,9 +62,6 @@ const getBlock = async (signer, epoch) => {
 };
 
 describe("Forwarder tests", () => {
-  const tokenName = "Token";
-  const tokenSymbol = "TKN";
-  const mintAmount = ethers.utils.parseEther("10000000");
   let resultManager;
   let signers;
   let epoch;
@@ -72,7 +69,6 @@ describe("Forwarder tests", () => {
   let transparentForwarder;
   let client;
   let transparentForwarderAsForwarder;
-  let token;
   let staking;
 
   before(async () => {
@@ -101,11 +97,8 @@ describe("Forwarder tests", () => {
       signers[0].address
     );
 
-    const Token = await hre.ethers.getContractFactory("Token");
-    token = await Token.deploy(tokenName, tokenSymbol, mintAmount);
-
     const Staking = await hre.ethers.getContractFactory("Staking");
-    staking = await Staking.deploy(token.address);
+    staking = await Staking.deploy();
 
     // * Grant STAKING_ADMIN_ROLE and ESCAPE_HATCH_ROLE to admin
     const STAKING_ADMIN_ROLE = await staking.STAKING_ADMIN_ROLE();
@@ -250,11 +243,7 @@ describe("Forwarder tests", () => {
 
     it("Client should be able to transfer ether in getResult", async () => {
       const transferAmount = hre.ethers.utils.parseEther("1");
-      const minStake = await staking.minStake();
-
-      await token.approve(staking.address, minStake);
-      await expect(staking.stake(client.address, minStake)).to.be.not.reverted;
-
+      await staking.setPermission(client.address);
       await client.getResult(namesHash[0], {
         value: transferAmount,
       });
@@ -264,39 +253,6 @@ describe("Forwarder tests", () => {
       );
 
       expect(stakingBalance).to.be.equal(transferAmount);
-    });
-
-    it("Client shouldn't be allowed to getResult if stake is less than minStake", async () => {
-      const minStake = await staking.minStake();
-
-      const stakersClients = await staking.getStakerClients(signers[0].address);
-      const index = stakersClients.indexOf(client.address);
-      // * unstake
-      await expect(staking.unstake(client.address, minStake, index)).to.be.not
-        .reverted;
-
-      await expect(client.getResult(namesHash[0])).to.be.revertedWith(
-        "Not whitelisted"
-      );
-    });
-
-    it("Updating minStake should change whitelisting logic", async () => {
-      const minStake = await staking.minStake();
-
-      await token.approve(staking.address, minStake);
-      await expect(staking.stake(client.address, minStake)).to.be.not.reverted;
-
-      // * whitelisted because minStake == clientStake
-      await expect(client.getResult(namesHash[0])).to.be.not.reverted;
-
-      // * update minStake
-      const newMinStake = minStake.mul(2);
-      await staking.updateMinStake(newMinStake);
-
-      // * client should not be whitelisted because minStake > clientStake
-      await expect(client.getResult(namesHash[0])).to.be.revertedWith(
-        "Not whitelisted"
-      );
     });
 
     it("Admin should be withdraw funds from staking contract", async () => {
