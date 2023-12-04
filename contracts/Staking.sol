@@ -17,17 +17,15 @@ contract Staking is AccessControlEnumerable {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function setPermission(address sender)
-        external
-        onlyRole(STAKING_ADMIN_ROLE)
-    {
+    function setPermission(
+        address sender
+    ) external onlyRole(STAKING_ADMIN_ROLE) {
         grantRole(WHITELISTED_ROLE, sender);
     }
 
-    function removePermission(address sender)
-        external
-        onlyRole(STAKING_ADMIN_ROLE)
-    {
+    function removePermission(
+        address sender
+    ) external onlyRole(STAKING_ADMIN_ROLE) {
         revokeRole(WHITELISTED_ROLE, sender);
     }
 
@@ -39,12 +37,9 @@ contract Staking is AccessControlEnumerable {
         isWhitelistEnabled = false;
     }
 
-    function isWhitelisted(address caller)
-        external
-        payable
-        onlyRole(TRANSPARENT_FORWARDER_ROLE)
-        returns (bool)
-    {
+    function isWhitelisted(
+        address caller
+    ) external payable onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (bool) {
         return isWhitelistEnabled ? hasRole(WHITELISTED_ROLE, caller) : true;
     }
 
