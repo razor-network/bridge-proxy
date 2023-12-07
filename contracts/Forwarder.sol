@@ -8,6 +8,14 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 contract Forwarder is AccessControlEnumerable, Pausable {
     using Address for address;
 
+    struct Value {
+        int8 power;
+        uint16 collectionId;
+        bytes32 name;
+        uint256 value;
+        uint256 timestamp;
+    }
+
     bytes32 public constant FORWARDER_ADMIN_ROLE =
         keccak256("FORWARDER_ADMIN_ROLE");
     bytes32 public constant TRANSPARENT_FORWARDER_ROLE =
@@ -15,7 +23,9 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
 
     address public resultManager;
-    mapping(bytes32 => bytes) public collectionPayload;
+    bytes4 public resultGetterSelector;
+    bytes4 public updateSelector;
+    bytes4 public validateSelector;
 
     event PermissionSet(address sender);
     event PermissionRemoved(address sender);
@@ -36,15 +46,33 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         resultManager = _resultManager;
     }
 
-    /// @notice Set collection payload
-    /// @dev Allows admin to set collection payload
-    /// @param _collectionName keccak256 hash of collection name
-    /// @param _payload payload to call
-    function setCollectionPayload(
-        bytes32 _collectionName,
-        bytes memory _payload
+    /// @notice Set resultGetter Selector
+    /// @dev Allows admin to set resultGetter Selector
+    /// @param _resultGetterSelector resultGetter Selector
+    function setResultGetterSelector(
+        bytes4 _resultGetterSelector
     ) external onlyRole(FORWARDER_ADMIN_ROLE) {
-        collectionPayload[_collectionName] = _payload;
+        resultGetterSelector = _resultGetterSelector;
+    }
+
+    /// @notice Set update selector
+    /// @dev Allows admin to set update selector
+    /// @param _updateSelector update selector
+    function setUpdateSelector(bytes4 _updateSelector)
+        external
+        onlyRole(FORWARDER_ADMIN_ROLE)
+    {
+        updateSelector = _updateSelector;
+    }
+
+    /// @notice Set validate selector
+    /// @dev Allows admin to set validate selector
+    /// @param _validateSelector validate selector
+    function setValidateSelector(bytes4 _validateSelector)
+        external
+        onlyRole(FORWARDER_ADMIN_ROLE)
+    {
+        validateSelector = _validateSelector;
     }
 
     function pause() external onlyRole(PAUSE_ROLE) {
@@ -56,20 +84,58 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     }
 
     /// @notice get result by collection name
-    function getResult(bytes32 collectionName)
+    function getResult(bytes memory collectionName)
         external
         view
         whenNotPaused
         onlyRole(TRANSPARENT_FORWARDER_ROLE)
-        returns (uint256, int8)
+        returns (uint256, int8, uint256)
     {
         require(
-            collectionPayload[collectionName].length > 0,
-            "Invalid collection name"
+            resultGetterSelector != bytes4(0),
+            "No result getter selector"
         );
         bytes memory data = resultManager.functionStaticCall(
-            collectionPayload[collectionName]
+            abi.encodePacked(
+                resultGetterSelector,
+                collectionName
+            )
         );
-        return abi.decode(data, (uint256, int8));
+
+        return abi.decode(data, (uint256, int8, uint256));
+    }
+
+    function getResult(bytes memory data)
+        external
+        view
+        whenNotPaused
+        onlyRole(TRANSPARENT_FORWARDER_ROLE)
+        returns (uint256, int8, uint256)
+    {
+        require(
+            updateSelector != bytes4(0),
+            "No update selector"
+        );
+        bytes memory returnData = resultManager.functionCall(
+            abi.encodePacked(updateSelector, data)
+        );   
+        return abi.decode(returnData, (uint256, int8, uint256));
+    }
+
+    function validateResult(bytes memory data)
+        external
+        view
+        whenNotPaused
+        onlyRole(TRANSPARENT_FORWARDER_ROLE)
+        returns (bool)
+    {
+        require(
+            validateSelector != bytes4(0),
+            "No validate selector"
+        );
+        bytes memory returnData = resultManager.functionCall(
+            abi.encodePacked(validateSelector, data)
+        );   
+        return abi.decode(returnData, (bool));
     }
 }
