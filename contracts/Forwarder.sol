@@ -132,7 +132,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
             validateSelector != bytes4(0),
             "No validate selector"
         );
-        bytes memory returnData = resultManager.functionCall(
+        bytes memory returnData = resultManager.functionStaticCall(
             abi.encodePacked(validateSelector, data)
         );   
         return abi.decode(returnData, (bool));

@@ -52,9 +52,10 @@ contract ResultManager is AccessControlEnumerable {
      *
      * - ecrecover(signature) should match with signerAddress
      */
-    function updateResult(bytes32 merkleRoot, bytes32[] memory proof, Value memory result, bytes memory signature) external onlyRole(FORWARDER_ROLE) returns (Value memory){
+    function updateResult(bytes32 merkleRoot, bytes32[] memory proof, Value memory result, bytes memory signature) external onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256){
         if (result.timestamp > _collectionResults[result.name].timestamp) {
-            bytes32 messageHash = keccak256(abi.encodePacked(merkleRoot, result));
+            bytes memory resultBytes = abi.encode(result);
+            bytes32 messageHash = keccak256(abi.encodePacked(merkleRoot, resultBytes));
             require(
                 ECDSA.recover(
                     ECDSA.toEthSignedMessageHash(messageHash),
@@ -63,7 +64,7 @@ contract ResultManager is AccessControlEnumerable {
                 "invalid signature"
             );
             require(
-                MerkleProof.verify(proof, merkleRoot, keccak256(result)),
+                MerkleProof.verify(proof, merkleRoot, keccak256(resultBytes)),
                 "invalid merkle proof"
             );
             _collectionResults[result.name] = result;
@@ -73,7 +74,8 @@ contract ResultManager is AccessControlEnumerable {
     }
 
     function validateResult(bytes32 merkleRoot, bytes32[] memory proof, Value memory result, bytes memory signature) external view onlyRole(FORWARDER_ROLE) returns (bool) {
-        bytes32 messageHash = keccak256(abi.encodePacked(merkleRoot, result));
+        bytes memory resultBytes = abi.encode(result);
+        bytes32 messageHash = keccak256(abi.encodePacked(merkleRoot, resultBytes));
 
         if(ECDSA.recover(
                 ECDSA.toEthSignedMessageHash(messageHash),
@@ -81,7 +83,7 @@ contract ResultManager is AccessControlEnumerable {
             ) != signerAddress
         ) return false;
 
-        if(!MerkleProof.verify(proof, merkleRoot, keccak256(result))) return false;
+        if(!MerkleProof.verify(proof, merkleRoot, keccak256(resultBytes))) return false;
 
         return true;
 
@@ -95,7 +97,7 @@ contract ResultManager is AccessControlEnumerable {
     function getResult(
         bytes32 _name
     ) external view onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256) {
-        _getResult(_name);
+        return _getResult(_name);
     }
 
     /**
