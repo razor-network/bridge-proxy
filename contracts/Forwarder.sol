@@ -89,36 +89,38 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         onlyRole(TRANSPARENT_FORWARDER_ROLE)
         returns (uint256, int8, uint256)
     {
+        
+        require(
+            updateSelector != bytes4(0),
+            "No update selector"
+        );
+        bytes memory returnData = resultManager.functionCall(
+            abi.encodePacked(
+                updateSelector,
+                data
+            )
+        );
+        return abi.decode(returnData, (uint256, int8, uint256));
+    }
+
+    function getResult(bytes32 name)
+        external
+        view
+        whenNotPaused
+        onlyRole(TRANSPARENT_FORWARDER_ROLE)
+        returns (uint256, int8, uint256)
+    {
         require(
             resultGetterSelector != bytes4(0),
             "No result getter selector"
         );
-        if (data.length == 32) {
-            require(
-                resultGetterSelector != bytes4(0),
-                "No result getter selector"
-            );
-            bytes memory returnData = resultManager.functionStaticCall(
-                abi.encodePacked(
-                    resultGetterSelector,
-                    data
-                )
-            );
-            return abi.decode(returnData, (uint256, int8, uint256));
-        }
-        else {
-            require(
-                updateSelector != bytes4(0),
-                "No update selector"
-            );
-            bytes memory returnData = resultManager.functionCall(
-                abi.encodePacked(
-                    updateSelector,
-                    data
-                )
-            );
-            return abi.decode(returnData, (uint256, int8, uint256));
-        }
+        bytes memory returnData = resultManager.functionStaticCall(
+            abi.encodePacked(
+                resultGetterSelector,
+                abi.encode(name)
+            )
+        );
+        return abi.decode(returnData, (uint256, int8, uint256));
     }
 
     function validateResult(bytes memory data)
