@@ -83,7 +83,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         Pausable._unpause();
     }
 
-    function getResult(bytes memory data)
+    function getResult(bytes calldata data)
         external
         whenNotPaused
         onlyRole(TRANSPARENT_FORWARDER_ROLE)
@@ -123,7 +123,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         return abi.decode(returnData, (uint256, int8, uint256));
     }
 
-    function validateResult(bytes memory data)
+    function validateResult(bytes calldata data)
         external
         view
         whenNotPaused
