@@ -15,10 +15,12 @@ interface IDelegator {
 
     /**
      * @dev using the hash of collection name, clients can query the result of that collection
-     * @param _name bytes32 hash of the collection name
+     * @param _data bytes32 hash of the collection name
      * @return result of the collection and its power
      */
-    function getResult(bytes32 _name) external payable returns (uint256, int8);
+    function getResult(
+        bytes calldata _data
+    ) external payable returns (uint256, int8, uint256);
 
     /**
      * @notice Allows Client to register for random number
@@ -27,6 +29,15 @@ interface IDelegator {
      * @return requestId : unique request id
      */
     function register() external returns (bytes32);
+
+    /**
+     * @dev using the hash of collection name, clients can query the result of that collection
+     * @param _name bytes32 hash of the collection name
+     * @return result of the collection and its power
+     */
+    function getResult(
+        bytes32 _name
+    ) external view returns (uint256, int8, uint256);
 
     /**
      * @dev using the hash of collection name, clients can query collection id with respect to its hash
@@ -75,16 +86,16 @@ interface IDelegator {
      * @param _epoch epoch
      * @return random number
      */
-    function getGenericRandomNumber(uint32 _epoch)
-        external
-        view
-        returns (uint256);
+    function getGenericRandomNumber(
+        uint32 _epoch
+    ) external view returns (uint256);
 }
 
 contract Client {
     IDelegator public transparentForwarder;
     uint256 public lastResult;
     int8 public lastPower;
+    uint256 public lastTimestamp;
 
     constructor(address _transparentForwarder) {
         transparentForwarder = IDelegator(_transparentForwarder);
@@ -94,13 +105,23 @@ contract Client {
         transparentForwarder = IDelegator(_transparentForwarder);
     }
 
-    function getResult(bytes32 name) public payable returns (uint256, int8) {
-        (uint256 result, int8 power) = transparentForwarder.getResult{
-            value: msg.value
-        }(name);
-        // * Storing the result to test since values doesn't return in ethers for payable function
+    function getResult(
+        bytes32 name
+    ) public view returns (uint256, int8, uint256) {
+        (uint256 result, int8 power, uint256 timestamp) = transparentForwarder
+            .getResult(name);
+        return (result, power, timestamp);
+    }
+
+    function updateResult(
+        bytes calldata data
+    ) public payable returns (uint256, int8, uint256) {
+        (uint256 result, int8 power, uint256 timestamp) = transparentForwarder
+            .getResult{value: msg.value}(data);
+
         lastResult = result;
         lastPower = power;
-        return (result, power);
+        lastTimestamp = timestamp;
+        return (result, power, timestamp);
     }
 }
