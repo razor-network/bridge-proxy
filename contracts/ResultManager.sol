@@ -52,10 +52,17 @@ contract ResultManager is AccessControlEnumerable {
      *
      * - ecrecover(signature) should match with signerAddress
      */
-    function updateResult(bytes32 merkleRoot, bytes32[] memory proof, Value memory result, bytes memory signature) external onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256){
+    function updateResult(
+        bytes32 merkleRoot,
+        bytes32[] memory proof,
+        Value memory result,
+        bytes memory signature
+    ) external onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256) {
         if (result.timestamp > _collectionResults[result.name].timestamp) {
             bytes memory resultBytes = abi.encode(result);
-            bytes32 messageHash = keccak256(abi.encodePacked(merkleRoot, resultBytes));
+            bytes32 messageHash = keccak256(
+                abi.encodePacked(merkleRoot, resultBytes)
+            );
             require(
                 ECDSA.recover(
                     ECDSA.toEthSignedMessageHash(messageHash),
@@ -63,8 +70,11 @@ contract ResultManager is AccessControlEnumerable {
                 ) == signerAddress,
                 "invalid signature"
             );
+            bytes32 leaf = keccak256(
+                bytes.concat(keccak256(abi.encode(resultBytes)))
+            );
             require(
-                MerkleProof.verify(proof, merkleRoot, keccak256(resultBytes)),
+                MerkleProof.verify(proof, merkleRoot, leaf),
                 "invalid merkle proof"
             );
             _collectionResults[result.name] = result;
@@ -73,20 +83,30 @@ contract ResultManager is AccessControlEnumerable {
         return _getResult(result.name);
     }
 
-    function validateResult(bytes32 merkleRoot, bytes32[] memory proof, Value memory result, bytes memory signature) external view onlyRole(FORWARDER_ROLE) returns (bool) {
+    function validateResult(
+        bytes32 merkleRoot,
+        bytes32[] memory proof,
+        Value memory result,
+        bytes memory signature
+    ) external view onlyRole(FORWARDER_ROLE) returns (bool) {
         bytes memory resultBytes = abi.encode(result);
-        bytes32 messageHash = keccak256(abi.encodePacked(merkleRoot, resultBytes));
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(merkleRoot, resultBytes)
+        );
 
-        if(ECDSA.recover(
+        if (
+            ECDSA.recover(
                 ECDSA.toEthSignedMessageHash(messageHash),
                 signature
             ) != signerAddress
         ) return false;
 
-        if(!MerkleProof.verify(proof, merkleRoot, keccak256(resultBytes))) return false;
+        bytes32 leaf = keccak256(
+            bytes.concat(keccak256(abi.encode(resultBytes)))
+        );
+        if (!MerkleProof.verify(proof, merkleRoot, leaf)) return false;
 
         return true;
-
     }
 
     /**
@@ -101,12 +121,12 @@ contract ResultManager is AccessControlEnumerable {
     }
 
     /**
-     * @dev internal function where using the hash of collection name, clients can query the 
+     * @dev internal function where using the hash of collection name, clients can query the
      * result of that collection
      * @param _name bytes32 hash of the collection name
      * @return result of the collection and its power
      */
-     function _getResult(
+    function _getResult(
         bytes32 _name
     ) internal view returns (uint256, int8, uint256) {
         Value memory result = _collectionResults[_name];
