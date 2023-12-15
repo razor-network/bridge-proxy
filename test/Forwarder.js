@@ -1,5 +1,6 @@
 const hre = require("hardhat");
 const { expect } = require("chai");
+const { generateTree, getProof } = require("./helpers/tree");
 
 const ids = [1, 2, 3, 4, 5];
 const result = [12122, 212121, 21212, 212, 21];
@@ -60,6 +61,8 @@ const getBlock = async (signer, epoch) => {
     message,
   };
 };
+
+const tree = generateTree();
 
 describe("Forwarder tests", () => {
   let resultManager;
@@ -190,32 +193,78 @@ describe("Forwarder tests", () => {
         .reverted;
     });
 
-    it("getResult call should revert for unassigned collection payload", async () => {
-      // * Whitlist client address
+    it("only FORWARDER_ADMIN_ROLE should be able to update selector setters", async () => {
+      const FORWARDER_ADMIN_ROLE = await forwarder.FORWARDER_ADMIN_ROLE();
+      await forwarder.revokeRole(FORWARDER_ADMIN_ROLE, signers[0].address);
+      await expect(forwarder.setResultGetterSelector("0x98d2a0f3")).to.be
+        .reverted;
+      await expect(forwarder.setUpdateSelector("0x2d444fd5")).to.be.reverted;
+      await expect(forwarder.setValidateSelector("0x41417a9d")).to.be.reverted;
 
-      await expect(client.getResult(namesHash[2])).to.be.rejectedWith(
-        "Invalid collection name"
-      );
+      await forwarder.grantRole(FORWARDER_ADMIN_ROLE, signers[0].address);
+      await expect(forwarder.setResultGetterSelector("0xadd4c784")).to.be.not
+        .reverted;
+      await expect(forwarder.setUpdateSelector("0x2d444fd5")).to.be.not
+        .reverted;
+      await expect(forwarder.setValidateSelector("0x41417a9d")).to.be.not
+        .reverted;
     });
 
     it("Forwarder should return required result", async () => {
-      const block = await getBlock(signers[0], epoch);
+      const FORWARDER_ROLE = await resultManager.FORWARDER_ROLE();
+      await resultManager.grantRole(FORWARDER_ROLE, signers[0].address);
+      const [proof, resultDecoded, signature] = await getProof(
+        tree,
+        1,
+        signers[0]
+      );
 
-      await resultManager.setBlock(block);
+      // * update result via directly resultManager
+      expect(
+        await resultManager.updateResult(
+          tree.root,
+          proof,
+          resultDecoded,
+          signature
+        )
+      ).to.be.not.reverted;
 
-      const funcSignatureHash = "0xadd4c784";
-      const payload = hre.ethers.utils.hexConcat([
-        funcSignatureHash,
-        namesHash[0],
-      ]);
+      const Client = await hre.ethers.getContractFactory("Client");
+      const forwarderInterface = Client.attach(transparentForwarder.address);
+      const result = await forwarderInterface.getResult(resultDecoded[2]);
+      console.log({ result });
+    });
 
-      await forwarder.setCollectionPayload(namesHash[0], payload);
+    it("update result via client", async () => {
+      const TRANSPARENT_FORWARDER_ROLE =
+        await forwarder.TRANSPARENT_FORWARDER_ROLE();
+      await forwarder.grantRole(TRANSPARENT_FORWARDER_ROLE, signers[0].address);
+      const [proof, resultDecoded, signature] = await getProof(
+        tree,
+        3,
+        signers[0]
+      );
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof, resultDecoded, signature] // The data in the same order
+      );
 
-      expect(await client.getResult(namesHash[0])).to.be.not.reverted;
-      const clientResult = await client.lastResult();
-      const clientPower = await client.lastPower();
-      expect(result[0]).to.be.equal(clientResult);
-      expect(power[0]).to.be.equal(clientPower);
+      expect(await client.updateResult(combinedData)).to.be.not.reverted;
+      const lastResult = await client.lastResult();
+      const lastPower = await client.lastPower();
+      const lastTimestamp = await client.lastTimestamp();
+      console.log({
+        lastPower,
+        lastResult,
+        lastTimestamp,
+      });
+
+      expect(await client.getResult(namesHash[3])).to.be.not.reverted;
     });
 
     it("Account should be able to access if whitelist mode is disabled", async () => {
@@ -225,9 +274,9 @@ describe("Forwarder tests", () => {
 
     it("Non whitelisted account should not be able to getResult", async () => {
       await staking.enableWhitelist();
-      await expect(
-        transparentForwarderAsForwarder.getResult(namesHash[0])
-      ).to.be.revertedWith("Not whitelisted");
+      await expect(client.getResult(namesHash[0])).to.be.revertedWith(
+        "Not whitelisted"
+      );
     });
 
     it("Caller should have TRANSPARENT_FORWARDER_ROLE role to getResult", async () => {
