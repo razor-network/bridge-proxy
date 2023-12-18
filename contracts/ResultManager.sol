@@ -29,6 +29,9 @@ contract ResultManager is AccessControlEnumerable {
         address indexed newSigner
     );
 
+    error InvalidSignature();
+    error InvalidMerkleProof();
+
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         signerAddress = _signerAddress;
@@ -63,20 +66,18 @@ contract ResultManager is AccessControlEnumerable {
             bytes32 messageHash = keccak256(
                 abi.encodePacked(merkleRoot, resultBytes)
             );
-            require(
+            if(
                 ECDSA.recover(
                     ECDSA.toEthSignedMessageHash(messageHash),
                     signature
-                ) == signerAddress,
-                "invalid signature"
-            );
+                ) != signerAddress) revert InvalidSignature();
+
             bytes32 leaf = keccak256(
                 bytes.concat(keccak256(abi.encode(resultBytes)))
             );
-            require(
-                MerkleProof.verify(proof, merkleRoot, leaf),
-                "invalid merkle proof"
-            );
+            if(
+                !MerkleProof.verify(proof, merkleRoot, leaf)
+            ) revert InvalidMerkleProof();
             _collectionResults[result.name] = result;
         }
 

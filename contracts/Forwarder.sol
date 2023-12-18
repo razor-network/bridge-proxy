@@ -22,14 +22,16 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     event PermissionSet(address sender);
     event PermissionRemoved(address sender);
 
+    error NoSelectorPresent();
+
+    modifier checkSelector(bytes4 selector) {
+        if(selector == bytes4(0)) revert NoSelectorPresent();
+        _;
+    }
+
     constructor(address _resultManager) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         resultManager = _resultManager;
-    }
-
-    modifier checkSelector(bytes4 selector) {
-        require(selector != bytes4(0), "No selector");
-        _;
     }
 
     /// @notice Set result manager contract address
@@ -39,7 +41,6 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         external
         onlyRole(FORWARDER_ADMIN_ROLE)
     {
-        require(_resultManager.isContract(), "Not a contract address");
         resultManager = _resultManager;
     }
 

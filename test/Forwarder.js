@@ -139,19 +139,14 @@ describe("Forwarder tests", () => {
       ).to.be.not.reverted;
     });
 
-    it("setting resultManager address for non contract address should revert", async () => {
-      await expect(
-        forwarder.setResultManager(signers[1].address)
-      ).to.be.rejectedWith("Not a contract address");
-
+    it("client should not be able to getResult or validateResult if selectors are not set", async () => {
       await expect(forwarder.setResultManager(resultManager.address)).to.be.not
         .reverted;
-    });
 
-    it("client should not be able to getResult or validateResult if selectors are not set", async () => {
-      await expect(client.getResult(namesHash[0])).to.be.revertedWith(
-        "No selector"
-      );
+        await expect(client.getResult(namesHash[0])).to.be.revertedWithCustomError(
+          forwarder,
+          "NoSelectorPresent"
+        );
       const [proof, resultDecoded, signature] = await getProof(
         tree,
         3,
@@ -166,11 +161,13 @@ describe("Forwarder tests", () => {
         ], // The types in order
         [tree.root, proof, resultDecoded, signature] // The data in the same order
       );
-      await expect(client.updateResult(combinedData)).to.be.revertedWith(
-        "No selector"
+      await expect(client.updateResult(combinedData)).to.be.revertedWithCustomError(
+        forwarder,
+        "NoSelectorPresent"
       );
-      await expect(client.validateResult(combinedData)).to.be.revertedWith(
-        "No selector"
+      await expect(client.validateResult(combinedData)).to.be.revertedWithCustomError(
+        forwarder,
+        "NoSelectorPresent"
       );
     });
 
@@ -265,8 +262,9 @@ describe("Forwarder tests", () => {
         [tree.root, proof, resultDecoded, signature] // The data in the same order
       );
 
-      await expect(client.updateResult(combinedData)).to.be.revertedWith(
-        "invalid signature"
+      await expect(client.updateResult(combinedData)).to.be.revertedWithCustomError(
+        resultManager,
+        "InvalidSignature"
       );
     });
 
@@ -290,8 +288,9 @@ describe("Forwarder tests", () => {
         ], // The types in order
         [tree.root, proof_5, resultDecoded_4, signature_4] // The data in the same order
       );
-      await expect(client.updateResult(combinedData)).to.be.revertedWith(
-        "invalid merkle proof"
+      await expect(client.updateResult(combinedData)).to.be.revertedWithCustomError(
+        resultManager,
+        "InvalidMerkleProof"
       );
     });
 
@@ -427,8 +426,9 @@ describe("Forwarder tests", () => {
 
     it("Non whitelisted account should not be able to getResult", async () => {
       await staking.enableWhitelist();
-      await expect(client.getResult(namesHash[0])).to.be.revertedWith(
-        "Not whitelisted"
+      await expect(client.getResult(namesHash[0])).to.be.revertedWithCustomError(
+        transparentForwarder,
+        "NotWhiteListed"
       );
     });
 

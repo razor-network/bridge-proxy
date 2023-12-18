@@ -165,7 +165,10 @@ describe("Result Manager tests", async () => {
     // should revert with message as invalid signature
     await expect(
       resultManager.updateResult(tree.root, proof, resultDecoded, signature)
-    ).to.be.revertedWith("invalid signature");
+    ).to.be.revertedWithCustomError(
+      resultManager,
+      "InvalidSignature"
+      );
   });
 
   it("updateResult should revert for invalid merkle proof", async () => {
@@ -182,7 +185,10 @@ describe("Result Manager tests", async () => {
     // should revert with message as invalid merkle proof
     await expect(
       resultManager.updateResult(tree.root, proof_5, resultDecoded_4, signature_4)
-    ).to.be.revertedWith("invalid merkle proof");
+    ).to.be.revertedWithCustomError(
+      resultManager,
+      "InvalidMerkleProof"
+      );
   });
 
   it("should update result if timestamp is greater than previous result", async () => {
