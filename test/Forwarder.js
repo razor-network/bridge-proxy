@@ -150,7 +150,7 @@ describe("Forwarder tests", () => {
 
     it("client should not be able to getResult or validateResult if selectors are not set", async () => {
       await expect(client.getResult(namesHash[0])).to.be.revertedWith(
-        "No result getter selector"
+        "No selector"
       );
       const [proof, resultDecoded, signature] = await getProof(
         tree,
@@ -167,10 +167,10 @@ describe("Forwarder tests", () => {
         [tree.root, proof, resultDecoded, signature] // The data in the same order
       );
       await expect(client.updateResult(combinedData)).to.be.revertedWith(
-        "No update selector"
+        "No selector"
       );
       await expect(client.validateResult(combinedData)).to.be.revertedWith(
-        "No validate selector"
+        "No selector"
       );
     });
 

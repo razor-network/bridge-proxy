@@ -27,6 +27,11 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         resultManager = _resultManager;
     }
 
+    modifier checkSelector(bytes4 selector) {
+        require(selector != bytes4(0), "No selector");
+        _;
+    }
+
     /// @notice Set result manager contract address
     /// @dev Allows admin to update result manager
     /// @param _resultManager new result manager address
@@ -82,17 +87,13 @@ contract Forwarder is AccessControlEnumerable, Pausable {
      * @param data bytes data required to update the result
      * @return result of the collection, its power and timestamp
      */
-    function getResult(bytes calldata data)
+    function getLatestResult(bytes calldata data)
         external
         whenNotPaused
+        checkSelector(updateSelector)
         onlyRole(TRANSPARENT_FORWARDER_ROLE)
         returns (uint256, int8, uint256)
     {
-        
-        require(
-            updateSelector != bytes4(0),
-            "No update selector"
-        );
         bytes memory returnData = resultManager.functionCall(
             abi.encodePacked(
                 updateSelector,
@@ -111,13 +112,10 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         external
         view
         whenNotPaused
+        checkSelector(resultGetterSelector)
         onlyRole(TRANSPARENT_FORWARDER_ROLE)
         returns (uint256, int8, uint256)
     {
-        require(
-            resultGetterSelector != bytes4(0),
-            "No result getter selector"
-        );
         bytes memory returnData = resultManager.functionStaticCall(
             abi.encodePacked(
                 resultGetterSelector,
@@ -136,13 +134,10 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         external
         view
         whenNotPaused
+        checkSelector(validateSelector)
         onlyRole(TRANSPARENT_FORWARDER_ROLE)
         returns (bool)
     {
-        require(
-            validateSelector != bytes4(0),
-            "No validate selector"
-        );
         bytes memory returnData = resultManager.functionStaticCall(
             abi.encodePacked(validateSelector, data)
         );   

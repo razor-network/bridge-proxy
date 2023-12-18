@@ -6,17 +6,12 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract ResultManager is AccessControlEnumerable {
-    struct Block {
-        bytes message; // epoch, timestamp, Value[]
-        bytes signature;
-    }
-
     struct Value {
         int8 power;
         uint16 collectionId;
         bytes32 name;
         uint256 value;
-        uint256 timestamp;
+        uint256 lastUpdatedtimestamp;
     }
 
     bytes32 public constant RESULT_MANAGER_ADMIN_ROLE =
@@ -63,7 +58,7 @@ contract ResultManager is AccessControlEnumerable {
         Value memory result,
         bytes memory signature
     ) external onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256) {
-        if (result.timestamp > _collectionResults[result.name].timestamp) {
+        if (result.lastUpdatedtimestamp > _collectionResults[result.name].lastUpdatedtimestamp) {
             bytes memory resultBytes = abi.encode(result);
             bytes32 messageHash = keccak256(
                 abi.encodePacked(merkleRoot, resultBytes)
@@ -143,6 +138,6 @@ contract ResultManager is AccessControlEnumerable {
         bytes32 _name
     ) internal view returns (uint256, int8, uint256) {
         Value memory result = _collectionResults[_name];
-        return (result.value, result.power, result.timestamp);
+        return (result.value, result.power, result.lastUpdatedtimestamp);
     }
 }

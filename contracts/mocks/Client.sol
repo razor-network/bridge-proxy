@@ -10,7 +10,7 @@ interface IDelegator {
      * @param _data bytes32 hash of the collection name
      * @return result of the collection, its power and timestamp
      */
-    function getResult(
+    function getLatestResult(
         bytes calldata _data
     ) external payable returns (uint256, int8, uint256);
 
@@ -50,7 +50,7 @@ contract Client {
         bytes calldata data
     ) public payable returns (uint256, int8, uint256) {
         (uint256 result, int8 power, uint256 timestamp) = transparentForwarder
-            .getResult{value: msg.value}(data);
+            .getLatestResult{value: msg.value}(data);
 
         lastResult = result;
         lastPower = power;
