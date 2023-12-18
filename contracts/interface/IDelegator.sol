@@ -10,7 +10,7 @@ interface IDelegator {
      * @param _data bytes data required to update the result
      * @return result of the collection, its power and timestamp
      */
-    function getLatestResult(
+    function fetchResult(
         bytes calldata _data
     ) external payable returns (uint256, int8, uint256);
 
