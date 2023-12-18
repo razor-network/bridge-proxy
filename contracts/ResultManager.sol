@@ -11,7 +11,7 @@ contract ResultManager is AccessControlEnumerable {
         uint16 collectionId;
         bytes32 name;
         uint256 value;
-        uint256 lastUpdatedtimestamp;
+        uint256 lastUpdatedTimestamp;
     }
 
     bytes32 public constant RESULT_MANAGER_ADMIN_ROLE =
@@ -61,7 +61,7 @@ contract ResultManager is AccessControlEnumerable {
         Value memory result,
         bytes memory signature
     ) external onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256) {
-        if (result.lastUpdatedtimestamp > _collectionResults[result.name].lastUpdatedtimestamp) {
+        if (result.lastUpdatedTimestamp > _collectionResults[result.name].lastUpdatedTimestamp) {
             bytes memory resultBytes = abi.encode(result);
             bytes32 messageHash = keccak256(
                 abi.encodePacked(merkleRoot, resultBytes)
@@ -139,6 +139,6 @@ contract ResultManager is AccessControlEnumerable {
         bytes32 _name
     ) internal view returns (uint256, int8, uint256) {
         Value memory result = _collectionResults[_name];
-        return (result.value, result.power, result.lastUpdatedtimestamp);
+        return (result.value, result.power, result.lastUpdatedTimestamp);
     }
 }
