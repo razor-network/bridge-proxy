@@ -14,8 +14,6 @@ contract TransparentForwarder is AccessControlEnumerable {
     address public forwarder;
     IStaking public staking;
 
-    error NotWhiteListed();
-
     constructor(address _forwarder) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         forwarder = _forwarder;
@@ -43,8 +41,7 @@ contract TransparentForwarder is AccessControlEnumerable {
         bool isWhitelisted = staking.isWhitelisted{value: msg.value}(
             msg.sender
         );
-        
-        if(!isWhitelisted) revert NotWhiteListed();
+        require(isWhitelisted, "Not whitelisted");
 
         address forwarderContract = getForwarder();
         // solhint-disable-next-line no-inline-assembly

@@ -426,9 +426,8 @@ describe("Forwarder tests", () => {
 
     it("Non whitelisted account should not be able to getResult", async () => {
       await staking.enableWhitelist();
-      await expect(client.getResult(namesHash[0])).to.be.revertedWithCustomError(
-        transparentForwarder,
-        "NotWhiteListed"
+      await expect(client.getResult(namesHash[0])).to.be.revertedWith(
+        "Not whitelisted"
       );
     });
 
