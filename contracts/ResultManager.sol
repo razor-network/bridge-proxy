@@ -39,6 +39,9 @@ contract ResultManager is AccessControlEnumerable {
         signerAddress = _signerAddress;
     }
 
+    /**
+     * @notice Updates the signer address
+     */
     function updateSignerAddress(
         address _signerAddress
     ) external onlyRole(RESULT_MANAGER_ADMIN_ROLE) {
@@ -46,12 +49,14 @@ contract ResultManager is AccessControlEnumerable {
         signerAddress = _signerAddress;
     }
 
-    /**
-     * @dev Verify the signature and update the results
-     * Requirements:
-     *
-     * - ecrecover(signature) should match with signerAddress
-     */
+    /**  @notice Updates the result based on the provided Merkle proof and decoded result. Regardless of whether the result
+     * is updated, a result will be returned.
+     * @param merkleRoot The root of the Merkle tree
+     * @param proof The Merkle proof for the result
+     * @param result The decoded result
+     * @param signature The signature for the result
+     * @return result of the collection, its power and timestamp
+    */
     function updateResult(
         bytes32 merkleRoot,
         bytes32[] memory proof,
@@ -83,6 +88,14 @@ contract ResultManager is AccessControlEnumerable {
         return _getResult(result.name);
     }
 
+    /**
+     * @dev validates the result based on the provided data and returns the validity
+     * @param merkleRoot The root of the Merkle tree
+     * @param proof The Merkle proof for the result
+     * @param result The decoded result
+     * @param signature The signature for the result
+     * @return validity of the result
+     */
     function validateResult(
         bytes32 merkleRoot,
         bytes32[] memory proof,

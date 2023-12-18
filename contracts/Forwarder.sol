@@ -67,14 +67,21 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         validateSelector = _validateSelector;
     }
 
+    /// @notice pause the contract
     function pause() external onlyRole(PAUSE_ROLE) {
         Pausable._pause();
     }
 
+    /// @notice unpause the contract
     function unpause() external onlyRole(PAUSE_ROLE) {
         Pausable._unpause();
     }
 
+    /**
+     * @notice Updates the result based on the provided data and returns the latest result
+     * @param data bytes data required to update the result
+     * @return result of the collection, its power and timestamp
+     */
     function getResult(bytes calldata data)
         external
         whenNotPaused
@@ -95,6 +102,11 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         return abi.decode(returnData, (uint256, int8, uint256));
     }
 
+    /**
+     * @dev using the hash of collection name, clients can query the result of that collection
+     * @param name bytes32 hash of the collection name
+     * @return result of the collection and its power
+     */
     function getResult(bytes32 name)
         external
         view
@@ -115,6 +127,11 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         return abi.decode(returnData, (uint256, int8, uint256));
     }
 
+    /**
+     * @dev validates the result based on the provided data and returns the validity
+     * @param data bytes data required to validate the result
+     * @return validity of the result
+     */
     function validateResult(bytes calldata data)
         external
         view
