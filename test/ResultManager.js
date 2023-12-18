@@ -2,9 +2,21 @@ const hre = require("hardhat");
 const { expect } = require("chai");
 const { generateTree, getProof } = require("./helpers/tree");
 
-const abiCoder = new hre.ethers.utils.AbiCoder();
+const ids = [1, 2, 3, 4, 5];
+let result = [12122, 212121, 21212, 212, 21];
+const power = [2, 2, 2, 2, 5];
+let timestamp = [1620000000, 1620000000, 1620000000, 1620000000, 1620000000];
 
-const tree = generateTree();
+const namesHash = [
+  "0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9",
+  "0x60f80af122a08d5feb55b4bc442814adfa75e095370d49d5657c23adf1efcf23",
+  "0xf4f695ea9b25bb19437503d3494e8b744124bfef02c8221e6be4bce31a8ef3c0",
+  "0xa6ace279d909674e37f74fbb3052afa3e05bfdf6ce343c254e31a0606a1928f9",
+  "0x0f5e947b204a798dd86405ac2f21fed0d109e748bcd057b913eb87b6ffe07c3e",
+];
+
+
+const tree = generateTree(power, ids, namesHash, result, timestamp);
 
 describe("Result Manager tests", async () => {
   let resultManager;
@@ -78,6 +90,48 @@ describe("Result Manager tests", async () => {
     expect(result).to.be.true;
   });
 
+  it("validateResult should revert for invalid signature", async () => {
+    const merkleRoot = tree.root;
+    const [proof, resultDecoded, signature] = await getProof(
+      tree,
+      1,
+      signers[1]
+    );
+    const result = await resultManager.validateResult(
+      merkleRoot,
+      proof,
+      resultDecoded,
+      signature
+    )
+    await expect(
+      result
+    ).to.be.false;
+  });
+
+  it("validateResult should revert for invalid merkle proof", async () => {
+    const merkleRoot = tree.root;
+    const [, resultDecoded_4, signature_4] = await getProof(
+      tree,
+      4,
+      signers[0]
+    );
+    const [proof_5, , ] = await getProof(
+      tree,
+      5,
+      signers[0]
+    );
+    const result = await resultManager.validateResult(
+      merkleRoot,
+      proof_5,
+      resultDecoded_4,
+      signature_4
+    )
+    await expect(
+      result
+    ).to.be.false;
+  });
+
+
   it("updateResult should update the collection result", async () => {
     const [proof, resultDecoded, signature] = await getProof(
       tree,
@@ -94,12 +148,88 @@ describe("Result Manager tests", async () => {
     ).to.be.not.reverted;
 
     const colResult = await resultManager.getResult(resultDecoded[2]);
-    console.log({ colResult });
     // * value
     expect(colResult[0]).to.be.equal(resultDecoded[3]);
     // * power
     expect(colResult[1]).to.be.equal(resultDecoded[0]);
     // * timestamp
     expect(colResult[2]).to.be.equal(resultDecoded[4]);
+  });
+
+  it("updateResult should revert for invalid signature", async () => {
+    let [proof, resultDecoded, signature] = await getProof(
+      tree,
+      4,
+      signers[1]
+    );
+    // should revert with message as invalid signature
+    await expect(
+      resultManager.updateResult(tree.root, proof, resultDecoded, signature)
+    ).to.be.revertedWith("invalid signature");
+  });
+
+  it("updateResult should revert for invalid merkle proof", async () => {
+    const [, resultDecoded_4, signature_4] = await getProof(
+      tree,
+      4,
+      signers[0]
+    );
+    const [proof_5, , ] = await getProof(
+      tree,
+      5,
+      signers[0]
+    );
+    // should revert with message as invalid merkle proof
+    await expect(
+      resultManager.updateResult(tree.root, proof_5, resultDecoded_4, signature_4)
+    ).to.be.revertedWith("invalid merkle proof");
+  });
+
+  it("should update result if timestamp is greater than previous result", async () => {
+    let timestampUpdated = [1620000001, 1620000000, 1620000000, 1620000000, 1620000000];
+    let resultUpdated = [12123, 212121, 21212, 212, 21];
+    let tree_2 = generateTree(power, ids, namesHash, resultUpdated, timestampUpdated);
+
+    const [updatedProof, updatedResultDecoded, updatedSignature] = await getProof(
+      tree_2,
+      1,
+      signers[0]
+    );
+
+    let resultBefore = await resultManager.getResult(updatedResultDecoded[2]);
+
+    expect(
+      await resultManager.updateResult(
+       tree_2.root,
+       updatedProof,
+       updatedResultDecoded,
+       updatedSignature
+      )
+   ).to.be.not.reverted;
+
+    let resultAfterUpdation = await resultManager.getResult(updatedResultDecoded[2]);
+
+    expect(resultBefore[2]).to.be.lessThan(resultAfterUpdation[2]);
+    expect(resultBefore[0]).to.be.lessThan(resultAfterUpdation[0]);
+      
+    const [staleProof, staleResultDecoded, staleSignature] = await getProof(
+      tree,
+      1,
+      signers[0]
+    );
+
+    expect(
+      await resultManager.updateResult(
+       tree.root,
+       staleProof,
+       staleResultDecoded,
+       staleSignature
+      )
+   ).to.be.not.reverted;
+
+   let resultAfterStaleUpdation = await resultManager.getResult(updatedResultDecoded[2]);
+
+    expect(resultAfterUpdation[2]).to.be.equal(resultAfterStaleUpdation[2]);
+    expect(resultAfterUpdation[0]).to.be.equal(resultAfterStaleUpdation[0]);
   });
 });

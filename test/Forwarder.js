@@ -3,8 +3,9 @@ const { expect } = require("chai");
 const { generateTree, getProof } = require("./helpers/tree");
 
 const ids = [1, 2, 3, 4, 5];
-const result = [12122, 212121, 21212, 212, 21];
+let result = [12122, 212121, 21212, 212, 21];
 const power = [2, 2, 2, 2, 5];
+let timestamp = [1620000000, 1620000000, 1620000000, 1620000000, 1620000000];
 
 const namesHash = [
   "0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9",
@@ -16,53 +17,7 @@ const namesHash = [
 
 const abiCoder = new hre.ethers.utils.AbiCoder();
 
-const getValues = () => {
-  let values = [];
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    values.push({
-      power: power[i],
-      collectionId: id,
-      name: namesHash[i],
-      value: result[i],
-    });
-  }
-  return values;
-};
-
-const getMessage = (epoch) => {
-  const timestampBN = hre.ethers.BigNumber.from("1231231");
-  const values = getValues();
-  const message = abiCoder.encode(
-    [
-      "uint32",
-      "uint256",
-      "tuple[](int8 power, uint16 collectionId, bytes32 name, uint256 value)",
-    ],
-    [epoch, timestampBN, values]
-  );
-  return message;
-};
-
-const getSignature = async (message, signer) => {
-  const messageHash = hre.ethers.utils.arrayify(
-    hre.ethers.utils.keccak256(message)
-  );
-
-  const signature = await signer.signMessage(messageHash);
-  return signature;
-};
-
-const getBlock = async (signer, epoch) => {
-  const message = getMessage(epoch);
-  const signature = await getSignature(message, signer);
-  return {
-    signature,
-    message,
-  };
-};
-
-const tree = generateTree();
+const tree = generateTree(power, ids, namesHash, result, timestamp);
 
 describe("Forwarder tests", () => {
   let resultManager;
@@ -193,6 +148,32 @@ describe("Forwarder tests", () => {
         .reverted;
     });
 
+    it("client should not be able to getResult or validateResult if selectors are not set", async () => {
+      await expect(client.getResult(namesHash[0])).to.be.revertedWith(
+        "No result getter selector"
+      );
+      const [proof, resultDecoded, signature] = await getProof(
+        tree,
+        3,
+        signers[0]
+      );
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof, resultDecoded, signature] // The data in the same order
+      );
+      await expect(client.updateResult(combinedData)).to.be.revertedWith(
+        "No update selector"
+      );
+      await expect(client.validateResult(combinedData)).to.be.revertedWith(
+        "No validate selector"
+      );
+    });
+
     it("only FORWARDER_ADMIN_ROLE should be able to update selector setters", async () => {
       const FORWARDER_ADMIN_ROLE = await forwarder.FORWARDER_ADMIN_ROLE();
       await forwarder.revokeRole(FORWARDER_ADMIN_ROLE, signers[0].address);
@@ -232,7 +213,6 @@ describe("Forwarder tests", () => {
       const Client = await hre.ethers.getContractFactory("Client");
       const forwarderInterface = Client.attach(transparentForwarder.address);
       const result = await forwarderInterface.getResult(resultDecoded[2]);
-      console.log({ result });
     });
 
     it("update result via client", async () => {
@@ -258,14 +238,187 @@ describe("Forwarder tests", () => {
       const lastResult = await client.lastResult();
       const lastPower = await client.lastPower();
       const lastTimestamp = await client.lastTimestamp();
-      console.log({
-        lastPower,
-        lastResult,
-        lastTimestamp,
-      });
 
-      expect(await client.getResult(namesHash[3])).to.be.not.reverted;
+      expect(lastResult).to.be.equal(resultDecoded[3]);
+      expect(lastPower).to.be.equal(resultDecoded[0]);
+      expect(lastTimestamp).to.be.equal(resultDecoded[4]);
+
+      const clientResult = await client.getResult(namesHash[2])
+      expect(clientResult[0]).to.be.equal(lastResult);
+      expect(clientResult[1]).to.be.equal(lastPower);
+      expect(clientResult[2]).to.be.equal(lastTimestamp);
     });
+
+    it("update result via client should revert for invalid signature", async () => {
+      const [proof, resultDecoded, signature] = await getProof(
+        tree,
+        2,
+        signers[1]
+      );
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof, resultDecoded, signature] // The data in the same order
+      );
+
+      await expect(client.updateResult(combinedData)).to.be.revertedWith(
+        "invalid signature"
+      );
+    });
+
+    it("update result via client should revert for invalid merkle proof", async () => {
+      const [, resultDecoded_4, signature_4] = await getProof(
+        tree,
+        4,
+        signers[0]
+      );
+      const [proof_5, , ] = await getProof(
+        tree,
+        5,
+        signers[0]
+      );
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof_5, resultDecoded_4, signature_4] // The data in the same order
+      );
+      await expect(client.updateResult(combinedData)).to.be.revertedWith(
+        "invalid merkle proof"
+      );
+    });
+
+    it("validate should return true for valid signature", async () => {
+      const [proof, resultDecoded, signature] = await getProof(
+        tree,
+        1,
+        signers[0]
+      );
+
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof, resultDecoded, signature]
+      ); 
+
+      expect(
+        await client.validateResult(combinedData)
+      ).to.be.true;
+    });
+
+    it("validate should return false for invalid signature", async () => {
+      const [proof, resultDecoded, signature] = await getProof(
+        tree,
+        1,
+        signers[1]
+      );
+
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof, resultDecoded, signature]
+      ); 
+
+      expect(
+        await client.validateResult(combinedData)
+      ).to.be.false;
+    });
+
+    it("validate should return false for invalid merkle proof", async () => {
+      const [, resultDecoded_4, signature_4] = await getProof(
+        tree,
+        4,
+        signers[0]
+      );
+      const [proof_5, , ] = await getProof(
+        tree,
+        5,
+        signers[0]
+      );
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof_5, resultDecoded_4, signature_4]
+      ); 
+
+      expect(
+        await client.validateResult(combinedData)
+      ).to.be.false;
+    });
+
+    it("client should be able to update result if timestamp is greater than previous result", async () => {
+      let timestampUpdated = [1620000001, 1620000000, 1620000000, 1620000000, 1620000000];
+      let resultUpdated = [12123, 212121, 21212, 212, 21];
+      let tree_2 = generateTree(power, ids, namesHash, resultUpdated, timestampUpdated);
+      const [updatedProof, updatedResultDecoded, updatedSignature] = await getProof(
+        tree_2,
+        1,
+        signers[0]
+      );
+
+      const updatedCombinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree_2.root, updatedProof, updatedResultDecoded, updatedSignature]
+      ); 
+  
+      let resultBefore = await client.getResult(updatedResultDecoded[2]);
+      
+      expect(await client.updateResult(updatedCombinedData)).to.be.not.reverted;
+      let clientResultAfterUpdation = await client.lastResult();
+      let clientTimestampAfterUpdation = await client.lastTimestamp();
+
+      expect(resultBefore[0]).to.be.lessThan(clientResultAfterUpdation);
+      expect(resultBefore[2]).to.be.lessThan(clientTimestampAfterUpdation);
+
+      const [staleProof, staleResultDecoded, staleSignature] = await getProof(
+        tree,
+        1,
+        signers[0]
+      );
+
+      const staleCombinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ],
+        [tree.root, staleProof, staleResultDecoded, staleSignature]
+      );
+
+      expect(await client.updateResult(staleCombinedData)).to.be.not.reverted;
+      let clientResultAfterStaleUpdation = await client.lastResult();
+      let clientTimestampAfterStaleUpdation = await client.lastTimestamp();
+
+      expect(clientResultAfterUpdation).to.be.equal(clientResultAfterStaleUpdation);
+      expect(clientTimestampAfterUpdation).to.be.equal(clientTimestampAfterStaleUpdation);
+
+    });
+        
 
     it("Account should be able to access if whitelist mode is disabled", async () => {
       await staking.disableWhitelist();
@@ -280,7 +433,7 @@ describe("Forwarder tests", () => {
     });
 
     it("Caller should have TRANSPARENT_FORWARDER_ROLE role to getResult", async () => {
-      await expect(forwarder.connect(signers[1]).getResult(namesHash[0])).to.be
+      await expect(forwarder.connect(signers[1])["getResult(bytes32)"](namesHash[0])).to.be
         .reverted;
     });
 
@@ -293,7 +446,21 @@ describe("Forwarder tests", () => {
     it("Client should be able to transfer ether in getResult", async () => {
       const transferAmount = hre.ethers.utils.parseEther("1");
       await staking.setPermission(client.address);
-      await client.getResult(namesHash[0], {
+      const [proof, resultDecoded, signature] = await getProof(
+        tree,
+        3,
+        signers[0]
+      );
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof, resultDecoded, signature] // The data in the same order
+      );
+      await client.updateResult(combinedData, {
         value: transferAmount,
       });
 

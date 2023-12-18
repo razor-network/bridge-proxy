@@ -8,14 +8,6 @@ import "@openzeppelin/contracts/security/Pausable.sol";
 contract Forwarder is AccessControlEnumerable, Pausable {
     using Address for address;
 
-    struct Value {
-        int8 power;
-        uint16 collectionId;
-        bytes32 name;
-        uint256 value;
-        uint256 timestamp;
-    }
-
     bytes32 public constant FORWARDER_ADMIN_ROLE =
         keccak256("FORWARDER_ADMIN_ROLE");
     bytes32 public constant TRANSPARENT_FORWARDER_ROLE =
@@ -117,7 +109,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         bytes memory returnData = resultManager.functionStaticCall(
             abi.encodePacked(
                 resultGetterSelector,
-                abi.encode(name)
+                name
             )
         );
         return abi.decode(returnData, (uint256, int8, uint256));
