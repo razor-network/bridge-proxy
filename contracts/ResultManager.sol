@@ -29,6 +29,8 @@ contract ResultManager is AccessControlEnumerable {
         address indexed newSigner
     );
 
+    event ResultUpdated(Value value);
+
     error InvalidSignature();
     error InvalidMerkleProof();
 
@@ -79,6 +81,8 @@ contract ResultManager is AccessControlEnumerable {
                 !MerkleProof.verify(proof, merkleRoot, leaf)
             ) revert InvalidMerkleProof();
             _collectionResults[result.name] = result;
+
+            emit ResultUpdated(result);
         }
 
         return _getResult(result.name);
