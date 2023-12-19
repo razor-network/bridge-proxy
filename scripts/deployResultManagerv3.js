@@ -36,7 +36,7 @@ async function main() {
     console.log("Transaction hash: ", tx1.hash);
 
     const TransparentForwarder = await hre.ethers.getContractFactory("TransparentForwarder");
-    const transparentForwarder = TransparentForwarder.attach(TRANSPARENT_FORWARDER_ADDRESS); // Forwarder address from previous deployment
+    const transparentForwarder = TransparentForwarder.attach(TRANSPARENT_FORWARDER_ADDRESS); // Transparent Forwarder address from previous deployment
     console.log(
     `[Transparent Forwarder] setting forwarder address to ${forwarder.address}`
     );
