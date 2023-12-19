@@ -1,9 +1,11 @@
 const hre = require("hardhat");
 const { expect } = require("chai");
+const { generateTree, getProof } = require("./helpers/tree");
 
 const ids = [1, 2, 3, 4, 5];
-const result = [12122, 212121, 21212, 212, 21];
+let result = [12122, 212121, 21212, 212, 21];
 const power = [2, 2, 2, 2, 5];
+let timestamp = [1620000000, 1620000000, 1620000000, 1620000000, 1620000000];
 
 const namesHash = [
   "0x1bbf634c3ad0a99dd58667a617f7773ccb7f37901afa8e9ea1e32212bddb83c9",
@@ -13,53 +15,8 @@ const namesHash = [
   "0x0f5e947b204a798dd86405ac2f21fed0d109e748bcd057b913eb87b6ffe07c3e",
 ];
 
-const abiCoder = new hre.ethers.utils.AbiCoder();
 
-const getValues = () => {
-  let values = [];
-  for (let i = 0; i < ids.length; i++) {
-    const id = ids[i];
-    values.push({
-      power: power[i],
-      collectionId: id,
-      name: namesHash[i],
-      value: result[i],
-    });
-  }
-  return values;
-};
-
-const getMessage = (epoch) => {
-  const timestampBN = hre.ethers.BigNumber.from("1231231");
-  const values = getValues();
-  const message = abiCoder.encode(
-    [
-      "uint32",
-      "uint256",
-      "tuple[](int8 power, uint16 collectionId, bytes32 name, uint256 value)",
-    ],
-    [epoch, timestampBN, values]
-  );
-  return message;
-};
-
-const getSignature = async (message, signer) => {
-  const messageHash = hre.ethers.utils.arrayify(
-    hre.ethers.utils.keccak256(message)
-  );
-
-  const signature = await signer.signMessage(messageHash);
-  return signature;
-};
-
-const getBlock = async (signer, epoch) => {
-  const message = getMessage(epoch);
-  const signature = await getSignature(message, signer);
-  return {
-    signature,
-    message,
-  };
-};
+const tree = generateTree(power, ids, namesHash, result, timestamp);
 
 describe("Result Manager tests", async () => {
   let resultManager;
@@ -115,29 +72,170 @@ describe("Result Manager tests", async () => {
     ).to.be.reverted;
   });
 
-  it("publish result should fail if signature is invalid", async () => {
-    const block = await getBlock(signers[1], epoch);
-
-    await expect(resultManager.setBlock(block)).to.be.revertedWith(
-      "invalid signature"
-    );
-  });
-
-  it("getResult should be only accessed by forwarder", async () => {
-    await expect(resultManager.connect(signers[1]).getResult(namesHash[0])).be
-      .reverted;
+  it("validateResult should return true for valid result", async () => {
     const FORWARDER_ROLE = await resultManager.FORWARDER_ROLE();
-    await resultManager.grantRole(FORWARDER_ROLE, signers[1].address);
-    await expect(resultManager.connect(signers[1]).getResult(namesHash[0])).not
-      .be.reverted;
+    await resultManager.grantRole(FORWARDER_ROLE, signers[0].address);
+    const merkleRoot = tree.root;
+    const [proof, resultDecoded, signature] = await getProof(
+      tree,
+      1,
+      signers[0]
+    );
+    const result = await resultManager.validateResult(
+      merkleRoot,
+      proof,
+      resultDecoded,
+      signature
+    );
+    expect(result).to.be.true;
   });
 
-  it("setBlock should revert for same epoch", async () => {
-    const block = await getBlock(signers[0], epoch);
-    await expect(resultManager.setBlock(block)).to.be.not.reverted;
-    await expect(resultManager.setBlock(block)).to.be.rejectedWith(
-      "epoch must be > latestEpoch"
+  it("validateResult should revert for invalid signature", async () => {
+    const merkleRoot = tree.root;
+    const [proof, resultDecoded, signature] = await getProof(
+      tree,
+      1,
+      signers[1]
     );
-    epoch++;
+    const result = await resultManager.validateResult(
+      merkleRoot,
+      proof,
+      resultDecoded,
+      signature
+    )
+    await expect(
+      result
+    ).to.be.false;
+  });
+
+  it("validateResult should revert for invalid merkle proof", async () => {
+    const merkleRoot = tree.root;
+    const [, resultDecoded_4, signature_4] = await getProof(
+      tree,
+      4,
+      signers[0]
+    );
+    const [proof_5, , ] = await getProof(
+      tree,
+      5,
+      signers[0]
+    );
+    const result = await resultManager.validateResult(
+      merkleRoot,
+      proof_5,
+      resultDecoded_4,
+      signature_4
+    )
+    await expect(
+      result
+    ).to.be.false;
+  });
+
+
+  it("updateResult should update the collection result", async () => {
+    const [proof, resultDecoded, signature] = await getProof(
+      tree,
+      1,
+      signers[0]
+    );
+    expect(
+      await resultManager.updateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.not.reverted;
+
+    const colResult = await resultManager.getResult(resultDecoded[2]);
+    // * value
+    expect(colResult[0]).to.be.equal(resultDecoded[3]);
+    // * power
+    expect(colResult[1]).to.be.equal(resultDecoded[0]);
+    // * timestamp
+    expect(colResult[2]).to.be.equal(resultDecoded[4]);
+  });
+
+  it("updateResult should revert for invalid signature", async () => {
+    let [proof, resultDecoded, signature] = await getProof(
+      tree,
+      4,
+      signers[1]
+    );
+    // should revert with message as invalid signature
+    await expect(
+      resultManager.updateResult(tree.root, proof, resultDecoded, signature)
+    ).to.be.revertedWithCustomError(
+      resultManager,
+      "InvalidSignature"
+      );
+  });
+
+  it("updateResult should revert for invalid merkle proof", async () => {
+    const [, resultDecoded_4, signature_4] = await getProof(
+      tree,
+      4,
+      signers[0]
+    );
+    const [proof_5, , ] = await getProof(
+      tree,
+      5,
+      signers[0]
+    );
+    // should revert with message as invalid merkle proof
+    await expect(
+      resultManager.updateResult(tree.root, proof_5, resultDecoded_4, signature_4)
+    ).to.be.revertedWithCustomError(
+      resultManager,
+      "InvalidMerkleProof"
+      );
+  });
+
+  it("should update result if timestamp is greater than previous result", async () => {
+    let timestampUpdated = [1620000001, 1620000000, 1620000000, 1620000000, 1620000000];
+    let resultUpdated = [12123, 212121, 21212, 212, 21];
+    let tree_2 = generateTree(power, ids, namesHash, resultUpdated, timestampUpdated);
+
+    const [updatedProof, updatedResultDecoded, updatedSignature] = await getProof(
+      tree_2,
+      1,
+      signers[0]
+    );
+
+    let resultBefore = await resultManager.getResult(updatedResultDecoded[2]);
+
+    expect(
+      await resultManager.updateResult(
+       tree_2.root,
+       updatedProof,
+       updatedResultDecoded,
+       updatedSignature
+      )
+   ).to.be.not.reverted;
+
+    let resultAfterUpdation = await resultManager.getResult(updatedResultDecoded[2]);
+
+    expect(resultBefore[2]).to.be.lessThan(resultAfterUpdation[2]);
+    expect(resultBefore[0]).to.be.lessThan(resultAfterUpdation[0]);
+      
+    const [staleProof, staleResultDecoded, staleSignature] = await getProof(
+      tree,
+      1,
+      signers[0]
+    );
+
+    expect(
+      await resultManager.updateResult(
+       tree.root,
+       staleProof,
+       staleResultDecoded,
+       staleSignature
+      )
+   ).to.be.not.reverted;
+
+   let resultAfterStaleUpdation = await resultManager.getResult(updatedResultDecoded[2]);
+
+    expect(resultAfterUpdation[2]).to.be.equal(resultAfterStaleUpdation[2]);
+    expect(resultAfterUpdation[0]).to.be.equal(resultAfterStaleUpdation[0]);
   });
 });

@@ -3,18 +3,15 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 
 contract ResultManager is AccessControlEnumerable {
-    struct Block {
-        bytes message; // epoch, timestamp, Value[]
-        bytes signature;
-    }
-
     struct Value {
         int8 power;
         uint16 collectionId;
         bytes32 name;
         uint256 value;
+        uint256 lastUpdatedTimestamp;
     }
 
     bytes32 public constant RESULT_MANAGER_ADMIN_ROLE =
@@ -22,16 +19,9 @@ contract ResultManager is AccessControlEnumerable {
     bytes32 public constant FORWARDER_ROLE = keccak256("FORWARDER_ROLE");
 
     address public signerAddress;
-    uint256 public lastUpdatedTimestamp;
-    uint32 public latestEpoch;
-
-    /// @notice mapping for name of collection in bytes32 -> collectionid
-    mapping(bytes32 => uint16) public collectionIds;
 
     /// @notice mapping for CollectionID -> Value Info
-    mapping(uint16 => Value) private _collectionResults;
-
-    event BlockReceived(Block messageBlock);
+    mapping(bytes32 => Value) private _collectionResults;
 
     event SignerUpdated(
         address sender,
@@ -39,11 +29,19 @@ contract ResultManager is AccessControlEnumerable {
         address indexed newSigner
     );
 
+    event ResultUpdated(Value value);
+
+    error InvalidSignature();
+    error InvalidMerkleProof();
+
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         signerAddress = _signerAddress;
     }
 
+    /**
+     * @notice Updates the signer address
+     */
     function updateSignerAddress(
         address _signerAddress
     ) external onlyRole(RESULT_MANAGER_ADMIN_ROLE) {
@@ -51,36 +49,77 @@ contract ResultManager is AccessControlEnumerable {
         signerAddress = _signerAddress;
     }
 
-    /**
-     * @dev Verify the signature and update the results
-     * Requirements:
-     *
-     * - ecrecover(signature) should match with signerAddress
-     */
-    function setBlock(Block memory messageBlock) external {
-        (uint32 epoch, uint256 timestamp, Value[] memory values) = abi.decode(
-            messageBlock.message,
-            (uint32, uint256, Value[])
-        );
-        require(epoch > latestEpoch, "epoch must be > latestEpoch");
+    /**  @notice Updates the result based on the provided Merkle proof and decoded result. Regardless of whether the result
+     * is updated, a result will be returned.
+     * @param merkleRoot The root of the Merkle tree
+     * @param proof The Merkle proof for the result
+     * @param result The decoded result
+     * @param signature The signature for the result
+     * @return result of the collection, its power and timestamp
+    */
+    function updateResult(
+        bytes32 merkleRoot,
+        bytes32[] memory proof,
+        Value memory result,
+        bytes memory signature
+    ) external onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256) {
+        if (result.lastUpdatedTimestamp > _collectionResults[result.name].lastUpdatedTimestamp) {
+            bytes memory resultBytes = abi.encode(result);
+            bytes32 messageHash = keccak256(
+                abi.encodePacked(merkleRoot, resultBytes)
+            );
+            if(
+                ECDSA.recover(
+                    ECDSA.toEthSignedMessageHash(messageHash),
+                    signature
+                ) != signerAddress) revert InvalidSignature();
 
-        bytes32 messageHash = keccak256(messageBlock.message);
-        require(
+            bytes32 leaf = keccak256(
+                bytes.concat(keccak256(abi.encode(resultBytes)))
+            );
+            if(
+                !MerkleProof.verify(proof, merkleRoot, leaf)
+            ) revert InvalidMerkleProof();
+            _collectionResults[result.name] = result;
+
+            emit ResultUpdated(result);
+        }
+
+        return _getResult(result.name);
+    }
+
+    /**
+     * @dev validates the result based on the provided data and returns the validity
+     * @param merkleRoot The root of the Merkle tree
+     * @param proof The Merkle proof for the result
+     * @param result The decoded result
+     * @param signature The signature for the result
+     * @return validity of the result
+     */
+    function validateResult(
+        bytes32 merkleRoot,
+        bytes32[] memory proof,
+        Value memory result,
+        bytes memory signature
+    ) external view onlyRole(FORWARDER_ROLE) returns (bool) {
+        bytes memory resultBytes = abi.encode(result);
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(merkleRoot, resultBytes)
+        );
+
+        if (
             ECDSA.recover(
                 ECDSA.toEthSignedMessageHash(messageHash),
-                messageBlock.signature
-            ) == signerAddress,
-            "invalid signature"
+                signature
+            ) != signerAddress
+        ) return false;
+
+        bytes32 leaf = keccak256(
+            bytes.concat(keccak256(abi.encode(resultBytes)))
         );
+        if (!MerkleProof.verify(proof, merkleRoot, leaf)) return false;
 
-        for (uint256 i; i < values.length; i++) {
-            _collectionResults[values[i].collectionId] = values[i];
-            collectionIds[values[i].name] = values[i].collectionId;
-        }
-        lastUpdatedTimestamp = timestamp;
-        latestEpoch = epoch;
-
-        emit BlockReceived(messageBlock);
+        return true;
     }
 
     /**
@@ -90,17 +129,20 @@ contract ResultManager is AccessControlEnumerable {
      */
     function getResult(
         bytes32 _name
-    ) external view onlyRole(FORWARDER_ROLE) returns (uint256, int8) {
-        uint16 id = collectionIds[_name];
-        return _getResultFromID(id);
+    ) external view onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256) {
+        return _getResult(_name);
     }
 
     /**
-     * @dev Returns collection result and power with collectionId as parameter
+     * @dev internal function where using the hash of collection name, clients can query the
+     * result of that collection
+     * @param _name bytes32 hash of the collection name
+     * @return result of the collection and its power
      */
-    function _getResultFromID(
-        uint16 _id
-    ) internal view returns (uint256, int8) {
-        return (_collectionResults[_id].value, _collectionResults[_id].power);
+    function _getResult(
+        bytes32 _name
+    ) internal view returns (uint256, int8, uint256) {
+        Value memory result = _collectionResults[_name];
+        return (result.value, result.power, result.lastUpdatedTimestamp);
     }
 }
