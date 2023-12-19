@@ -15,10 +15,19 @@ contract Forwarder is AccessControlEnumerable, Pausable {
     bytes32 public constant PAUSE_ROLE = keccak256("PAUSE_ROLE");
 
     address public resultManager;
-    mapping(bytes32 => bytes) public collectionPayload;
+    bytes4 public resultGetterSelector;
+    bytes4 public updateSelector;
+    bytes4 public validateSelector;
 
     event PermissionSet(address sender);
     event PermissionRemoved(address sender);
+
+    error NoSelectorPresent();
+
+    modifier checkSelector(bytes4 selector) {
+        if(selector == bytes4(0)) revert NoSelectorPresent();
+        _;
+    }
 
     constructor(address _resultManager) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -32,44 +41,107 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         external
         onlyRole(FORWARDER_ADMIN_ROLE)
     {
-        require(_resultManager.isContract(), "Not a contract address");
         resultManager = _resultManager;
     }
 
-    /// @notice Set collection payload
-    /// @dev Allows admin to set collection payload
-    /// @param _collectionName keccak256 hash of collection name
-    /// @param _payload payload to call
-    function setCollectionPayload(
-        bytes32 _collectionName,
-        bytes memory _payload
+    /// @notice Set resultGetter Selector
+    /// @dev Allows admin to set resultGetter Selector
+    /// @param _resultGetterSelector resultGetter Selector
+    function setResultGetterSelector(
+        bytes4 _resultGetterSelector
     ) external onlyRole(FORWARDER_ADMIN_ROLE) {
-        collectionPayload[_collectionName] = _payload;
+        resultGetterSelector = _resultGetterSelector;
     }
 
+    /// @notice Set update selector
+    /// @dev Allows admin to set update selector
+    /// @param _updateSelector update selector
+    function setUpdateSelector(bytes4 _updateSelector)
+        external
+        onlyRole(FORWARDER_ADMIN_ROLE)
+    {
+        updateSelector = _updateSelector;
+    }
+
+    /// @notice Set validate selector
+    /// @dev Allows admin to set validate selector
+    /// @param _validateSelector validate selector
+    function setValidateSelector(bytes4 _validateSelector)
+        external
+        onlyRole(FORWARDER_ADMIN_ROLE)
+    {
+        validateSelector = _validateSelector;
+    }
+
+    /// @notice pause the contract
     function pause() external onlyRole(PAUSE_ROLE) {
         Pausable._pause();
     }
 
+    /// @notice unpause the contract
     function unpause() external onlyRole(PAUSE_ROLE) {
         Pausable._unpause();
     }
 
-    /// @notice get result by collection name
-    function getResult(bytes32 collectionName)
+    /**
+     * @notice Updates the result based on the provided data and returns the latest result
+     * @param data bytes data required to update the result
+     * @return result of the collection, its power and timestamp
+     */
+    function fetchResult(bytes calldata data)
+        external
+        whenNotPaused
+        checkSelector(updateSelector)
+        onlyRole(TRANSPARENT_FORWARDER_ROLE)
+        returns (uint256, int8, uint256)
+    {
+        bytes memory returnData = resultManager.functionCall(
+            abi.encodePacked(
+                updateSelector,
+                data
+            )
+        );
+        return abi.decode(returnData, (uint256, int8, uint256));
+    }
+
+    /**
+     * @dev using the hash of collection name, clients can query the result of that collection
+     * @param name bytes32 hash of the collection name
+     * @return result of the collection and its power
+     */
+    function getResult(bytes32 name)
         external
         view
         whenNotPaused
+        checkSelector(resultGetterSelector)
         onlyRole(TRANSPARENT_FORWARDER_ROLE)
-        returns (uint256, int8)
+        returns (uint256, int8, uint256)
     {
-        require(
-            collectionPayload[collectionName].length > 0,
-            "Invalid collection name"
+        bytes memory returnData = resultManager.functionStaticCall(
+            abi.encodePacked(
+                resultGetterSelector,
+                name
+            )
         );
-        bytes memory data = resultManager.functionStaticCall(
-            collectionPayload[collectionName]
-        );
-        return abi.decode(data, (uint256, int8));
+        return abi.decode(returnData, (uint256, int8, uint256));
+    }
+
+    /**
+     * @dev validates the result based on the provided data and returns the validity
+     * @param data bytes data required to validate the result
+     * @return validity of the result
+     */
+    function validateResult(bytes calldata data)
+        external
+        view
+        whenNotPaused
+        checkSelector(validateSelector)
+        onlyRole(TRANSPARENT_FORWARDER_ROLE)
+        returns (bool)
+    {
+        bytes memory returnData = resultManager.functionStaticCall(
+            abi.encodePacked(validateSelector, data)
+        );   
+        return abi.decode(returnData, (bool));
     }
 }
