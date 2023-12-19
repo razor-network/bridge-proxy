@@ -177,13 +177,13 @@ module.exports = {
     },
     zksyncEraTestnet: {
       chainId: 280,
-      url: "https://zksync-era-testnet.blockpi.network/v1/rpc/public",
+      url: "https://testnet.era.zksync.dev",
       accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
       timeout: 60000,
      },
      moonbaseAlpha: {
       chainId: 1287,
-      url: "https://rpc.testnet.moonbeam.network",
+      url: "https://rpc.api.moonbase.moonbeam.network",
       accounts: [process.env.DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
       timeout: 60000,
      },
