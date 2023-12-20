@@ -2,7 +2,7 @@ const hre = require("hardhat");
 require('dotenv').config();
 
 const SIGNER_ADDRESS = process.env.SIGNER_ADDRESS || "0xC68AcC784227DbEaE98Bb6F5aC3C57cCe1aE9B4B";
-const TRANSPARENT_FORWARDER_ADDRESS = "0x76a6AB56E27823B2175F11b0041c489bFdb13c88";
+const TRANSPARENT_FORWARDER_ADDRESS = "0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84";
 const COLLECTION_NAME_HASH =
   "0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160"; // ETHUSD
 const PAYLOAD =
@@ -71,27 +71,19 @@ async function main() {
     await tx4.wait();
     console.log("Transaction hash: ", tx4.hash);
     console.log("--------------------------------------------------------------");
-
-    console.log(
-    `[Forwarder] Setting collection name hash: ${COLLECTION_NAME_HASH} with payload ${PAYLOAD}`
-    );
-    const tx5 = await forwarder.setCollectionPayload(
-    COLLECTION_NAME_HASH,
-    PAYLOAD
-    );
+    const tx5 = await forwarder.setResultGetterSelector("0xadd4c784");
     await tx5.wait();
     console.log("Transaction hash: ", tx5.hash);
     console.log("--------------------------------------------------------------");
 
-    console.log(
-    `[Forwarder] Setting collection name hash: ${BTC_COLLECTION_NAME_HASH} with payload ${BTC_PAYLOAD}`
-    );
-    const tx6 = await forwarder.setCollectionPayload(
-    BTC_COLLECTION_NAME_HASH,
-    BTC_PAYLOAD
-    );
+    const tx6 = await forwarder.setUpdateSelector("0x2d444fd5");
     await tx6.wait();
     console.log("Transaction hash: ", tx6.hash);
+    console.log("--------------------------------------------------------------");
+
+    const tx7 = await forwarder.setValidateSelector("0x41417a9d");
+    await tx7.wait();
+    console.log("Transaction hash: ", tx7.hash);
     console.log("--------------------------------------------------------------");
 
 }
