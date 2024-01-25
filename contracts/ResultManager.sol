@@ -64,22 +64,10 @@ contract ResultManager is AccessControlEnumerable {
         bytes memory signature
     ) external onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256) {
         if (result.lastUpdatedTimestamp > _collectionResults[result.name].lastUpdatedTimestamp) {
-            bytes memory resultBytes = abi.encode(result);
-            bytes32 messageHash = keccak256(
-                abi.encodePacked(merkleRoot, resultBytes)
-            );
-            if(
-                ECDSA.recover(
-                    ECDSA.toEthSignedMessageHash(messageHash),
-                    signature
-                ) != signerAddress) revert InvalidSignature();
+            if (!_checkSignature(merkleRoot, signature)) revert InvalidSignature();
 
-            bytes32 leaf = keccak256(
-                bytes.concat(keccak256(abi.encode(resultBytes)))
-            );
-            if(
-                !MerkleProof.verify(proof, merkleRoot, leaf)
-            ) revert InvalidMerkleProof();
+            if (!_checkMerkle(result, merkleRoot, proof)) revert InvalidMerkleProof();
+
             _collectionResults[result.name] = result;
 
             emit ResultUpdated(result);
@@ -102,22 +90,9 @@ contract ResultManager is AccessControlEnumerable {
         Value memory result,
         bytes memory signature
     ) external view onlyRole(FORWARDER_ROLE) returns (bool) {
-        bytes memory resultBytes = abi.encode(result);
-        bytes32 messageHash = keccak256(
-            abi.encodePacked(merkleRoot, resultBytes)
-        );
+        if (!_checkSignature(merkleRoot, signature)) return false;
 
-        if (
-            ECDSA.recover(
-                ECDSA.toEthSignedMessageHash(messageHash),
-                signature
-            ) != signerAddress
-        ) return false;
-
-        bytes32 leaf = keccak256(
-            bytes.concat(keccak256(abi.encode(resultBytes)))
-        );
-        if (!MerkleProof.verify(proof, merkleRoot, leaf)) return false;
+        if (!_checkMerkle(result, merkleRoot, proof)) return false;
 
         return true;
     }
@@ -131,6 +106,46 @@ contract ResultManager is AccessControlEnumerable {
         bytes32 _name
     ) external view onlyRole(FORWARDER_ROLE) returns (uint256, int8, uint256) {
         return _getResult(_name);
+    }
+
+    /**
+     * @dev internal function to check the signature of the result
+     * @param merkleRoot The root of the Merkle tree
+     * @param signature The signature for the result
+     * @return validity of the signature
+     */
+    function _checkSignature(bytes32 merkleRoot, bytes memory signature) internal view returns (bool) {
+        bytes32 messageHash = keccak256(
+            abi.encodePacked(merkleRoot)
+        );
+
+        if (
+            ECDSA.recover(
+                ECDSA.toEthSignedMessageHash(messageHash),
+                signature
+            ) != signerAddress
+        ) return false;
+
+        return true;
+    }
+
+    /**
+     * @dev internal function to check the Merkle proof of the result
+     * @param result The decoded result
+     * @param merkleRoot The root of the Merkle tree
+     * @param proof The Merkle proof for the result
+     */
+    function _checkMerkle(
+        Value memory result, 
+        bytes32 merkleRoot, 
+        bytes32[] memory proof
+    ) internal pure returns (bool) {
+        bytes32 leaf = keccak256(
+            bytes.concat(keccak256(abi.encode(result)))
+        );
+        if (!MerkleProof.verify(proof, merkleRoot, leaf)) return false;
+
+        return true;
     }
 
     /**

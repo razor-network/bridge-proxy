@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-interface IDelegator {
+interface IForwarder {
     /**
      * @notice Updates the result based on the provided data and returns the latest result
      * @dev The data will be updated only if the result is valid and is newer than the previous result.

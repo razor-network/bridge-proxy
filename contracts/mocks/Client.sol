@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-interface IDelegator {
+interface IForwarder {
     /**
      * @notice Updates the result based on the provided data and returns the latest result
      * @dev The data will be updated only if the result is valid and is newer than the previous result.
@@ -33,17 +33,17 @@ interface IDelegator {
 }
 
 contract Client {
-    IDelegator public transparentForwarder;
+    IForwarder public transparentForwarder;
     uint256 public lastResult;
     int8 public lastPower;
     uint256 public lastTimestamp;
 
     constructor(address _transparentForwarder) {
-        transparentForwarder = IDelegator(_transparentForwarder);
+        transparentForwarder = IForwarder(_transparentForwarder);
     }
 
     function setTransparentForwarder(address _transparentForwarder) public {
-        transparentForwarder = IDelegator(_transparentForwarder);
+        transparentForwarder = IForwarder(_transparentForwarder);
     }
 
     function updateResult(
