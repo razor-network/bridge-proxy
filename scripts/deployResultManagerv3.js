@@ -3,15 +3,7 @@ require('dotenv').config();
 
 const SIGNER_ADDRESS = process.env.SIGNER_ADDRESS || "0xC68AcC784227DbEaE98Bb6F5aC3C57cCe1aE9B4B";
 const TRANSPARENT_FORWARDER_ADDRESS = "0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84";
-const COLLECTION_NAME_HASH =
-  "0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160"; // ETHUSD
-const PAYLOAD =
-  "0xadd4c78459102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160"; // getResult(hash(ETHUSD))
 
-  const BTC_COLLECTION_NAME_HASH =
-  "0x7404e3d104ea7841c3d9e6fd20adfe99b4ad586bc08d8f3bd3afef894cf184de"; // BTCUSD
-const BTC_PAYLOAD =
-  "0xadd4c7847404e3d104ea7841c3d9e6fd20adfe99b4ad586bc08d8f3bd3afef894cf184de"; // getResult(bytes32) function signature + hash(BTCUSD)
 
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
 
