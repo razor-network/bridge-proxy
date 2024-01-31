@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-interface IDelegator {
+interface IForwarder {
     /**
      * @notice Updates the result based on the provided data and returns the latest result
      * @dev The data will be updated only if the result is valid and is newer than the previous result.
@@ -10,7 +10,7 @@ interface IDelegator {
      * @param _data bytes data required to update the result
      * @return result of the collection, its power and timestamp
      */
-    function fetchResult(
+    function updateAndGetResult(
         bytes calldata _data
     ) external payable returns (uint256, int8, uint256);
 

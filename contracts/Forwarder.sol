@@ -88,7 +88,7 @@ contract Forwarder is AccessControlEnumerable, Pausable {
      * @param data bytes data required to update the result
      * @return result of the collection, its power and timestamp
      */
-    function fetchResult(bytes calldata data)
+    function updateAndGetResult(bytes calldata data)
         external
         whenNotPaused
         checkSelector(updateSelector)
