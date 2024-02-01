@@ -89,12 +89,12 @@ contract ResultManager is AccessControlEnumerable {
         bytes32[] memory proof,
         Value memory result,
         bytes memory signature
-    ) external view onlyRole(FORWARDER_ROLE) returns (bool) {
-        if (!_checkSignature(merkleRoot, signature)) return false;
+    ) external view onlyRole(FORWARDER_ROLE) returns (bool, uint256, int8, uint256) {
+        if (!_checkSignature(merkleRoot, signature)) return (false, 0, 0, 0);
 
-        if (!_checkMerkle(result, merkleRoot, proof)) return false;
+        if (!_checkMerkle(result, merkleRoot, proof)) return (false, 0, 0, 0);
 
-        return true;
+        return (true, result.value, result.power, result.lastUpdatedTimestamp);
     }
 
     /**

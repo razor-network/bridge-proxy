@@ -137,11 +137,11 @@ contract Forwarder is AccessControlEnumerable, Pausable {
         whenNotPaused
         checkSelector(validateSelector)
         onlyRole(TRANSPARENT_FORWARDER_ROLE)
-        returns (bool)
+        returns (bool, uint256, int8, uint256)
     {
         bytes memory returnData = resultManager.functionStaticCall(
             abi.encodePacked(validateSelector, data)
         );   
-        return abi.decode(returnData, (bool));
+        return abi.decode(returnData, (bool, uint256, int8, uint256));
     }
 }

@@ -19,13 +19,13 @@ contract Staking is AccessControlEnumerable {
 
     function setPermission(
         address sender
-    ) external onlyRole(STAKING_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(WHITELISTED_ROLE, sender);
     }
 
     function removePermission(
         address sender
-    ) external onlyRole(STAKING_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(WHITELISTED_ROLE, sender);
     }
 
