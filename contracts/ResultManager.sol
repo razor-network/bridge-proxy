@@ -49,6 +49,14 @@ contract ResultManager is AccessControlEnumerable {
         signerAddress = _signerAddress;
     }
 
+    /**
+     * @notice deletes the result of a collection
+     * @param name The name of the collection
+     */
+    function deleteResult(bytes32 name) external onlyRole(RESULT_MANAGER_ADMIN_ROLE) {
+        delete _collectionResults[name];
+    }
+
     /**  @notice Updates the result based on the provided Merkle proof and decoded result. Regardless of whether the result
      * is updated, a result will be returned.
      * @param merkleRoot The root of the Merkle tree
