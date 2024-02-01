@@ -52,4 +52,17 @@ describe("Staking tests", () => {
     await staking.revokeRole(STAKING_ADMIN_ROLE, signers[1].address);
   });
 
+  it("Only DEFAULT_ADMIN_ROLE can set/remove permission", async () => {
+    await expect(staking.connect(signers[1]).setPermission(signers[2].address)).to.be.reverted;
+    await expect(staking.connect(signers[1]).removePermission(signers[2].address)).to.be.reverted;
+
+    const DEFAULT_ADMIN_ROLE = await staking.DEFAULT_ADMIN_ROLE();
+    await staking.grantRole(DEFAULT_ADMIN_ROLE, signers[1].address);
+
+    await expect(staking.connect(signers[1]).setPermission(signers[1].address)).to.be.not.reverted;
+    await expect(staking.connect(signers[1]).removePermission(signers[1].address)).to.be.not.reverted;
+
+    await staking.revokeRole(DEFAULT_ADMIN_ROLE, signers[1].address);
+  });
+
 });

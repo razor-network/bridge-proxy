@@ -2,14 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "./interface/IStaking.sol";
 
-contract Staking is AccessControlEnumerable {
-    bytes32 public constant STAKING_ADMIN_ROLE =
-        keccak256("STAKING_ADMIN_ROLE");
+contract Staking is AccessControlEnumerable, IStaking {
+    bytes32 public constant STAKING_ADMIN_ROLE = keccak256("STAKING_ADMIN_ROLE");
     bytes32 public constant ESCAPE_HATCH_ROLE = keccak256("ESCAPE_HATCH_ROLE");
     bytes32 public constant WHITELISTED_ROLE = keccak256("WHITELISTED_ROLE");
-    bytes32 public constant TRANSPARENT_FORWARDER_ROLE =
-        keccak256("TRANSPARENT_FORWARDER_ROLE");
+    bytes32 public constant TRANSPARENT_FORWARDER_ROLE = keccak256("TRANSPARENT_FORWARDER_ROLE");
 
     bool public isWhitelistEnabled;
 
@@ -17,15 +16,11 @@ contract Staking is AccessControlEnumerable {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function setPermission(
-        address sender
-    ) external onlyRole(STAKING_ADMIN_ROLE) {
+    function setPermission(address sender) external onlyRole(DEFAULT_ADMIN_ROLE) {
         grantRole(WHITELISTED_ROLE, sender);
     }
 
-    function removePermission(
-        address sender
-    ) external onlyRole(STAKING_ADMIN_ROLE) {
+    function removePermission(address sender) external onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(WHITELISTED_ROLE, sender);
     }
 
@@ -37,14 +32,13 @@ contract Staking is AccessControlEnumerable {
         isWhitelistEnabled = false;
     }
 
-    function isWhitelisted(
-        address caller
-    ) external payable onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (bool) {
+    function isWhitelisted(address caller) external payable onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (bool) {
         return isWhitelistEnabled ? hasRole(WHITELISTED_ROLE, caller) : true;
     }
 
     function withdraw() external onlyRole(ESCAPE_HATCH_ROLE) {
         uint256 amount = address(this).balance;
+        // slither-disable-next-line arbitrary-send-eth
         payable(msg.sender).transfer(amount);
     }
 }

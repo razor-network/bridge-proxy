@@ -115,9 +115,13 @@ describe("Forwarder tests", () => {
       ).to.be.reverted;
     });
 
-    it("Only Admin should be able to update forwarder address in TF", async () => {
+    it("Only Admin should be able to update forwarder and staking addresss in TF", async () => {
       await expect(
         transparentForwarder.connect(signers[1]).setForwarder(forwarder.address)
+      ).to.be.reverted;
+
+      await expect(
+        transparentForwarder.connect(signers[1]).setStaking(staking.address)
       ).to.be.reverted;
     });
 
@@ -240,10 +244,10 @@ describe("Forwarder tests", () => {
       expect(lastPower).to.be.equal(resultDecoded[0]);
       expect(lastTimestamp).to.be.equal(resultDecoded[4]);
 
-      const clientResult = await client.getResult(namesHash[2])
-      expect(clientResult[0]).to.be.equal(lastResult);
-      expect(clientResult[1]).to.be.equal(lastPower);
-      expect(clientResult[2]).to.be.equal(lastTimestamp);
+      await client.getResult(namesHash[2])
+      expect(await client.lastResult()).to.be.equal(lastResult);
+      expect(await client.lastPower()).to.be.equal(lastPower);
+      expect(await client.lastTimestamp()).to.be.equal(lastTimestamp);
     });
 
     it("update result via client should revert for invalid signature", async () => {
@@ -310,9 +314,10 @@ describe("Forwarder tests", () => {
         ], // The types in order
         [tree.root, proof, resultDecoded, signature]
       ); 
-
+      
+      await client.validateResult(combinedData)
       expect(
-        await client.validateResult(combinedData)
+        await client.isResultValid()
       ).to.be.true;
     });
 
@@ -332,9 +337,10 @@ describe("Forwarder tests", () => {
         ], // The types in order
         [tree.root, proof, resultDecoded, signature]
       ); 
-
+      
+      await client.validateResult(combinedData)
       expect(
-        await client.validateResult(combinedData)
+        await client.isResultValid()
       ).to.be.false;
     });
 
@@ -358,9 +364,10 @@ describe("Forwarder tests", () => {
         ], // The types in order
         [tree.root, proof_5, resultDecoded_4, signature_4]
       ); 
-
+      
+      await client.validateResult(combinedData)
       expect(
-        await client.validateResult(combinedData)
+        await client.isResultValid()
       ).to.be.false;
     });
 
@@ -384,14 +391,16 @@ describe("Forwarder tests", () => {
         [tree_2.root, updatedProof, updatedResultDecoded, updatedSignature]
       ); 
   
-      let resultBefore = await client.getResult(updatedResultDecoded[2]);
+      await client.getResult(updatedResultDecoded[2]);
+      let clientResultBeforeUpdation = await client.lastResult();
+      let clientTimestampBeforeUpdation = await client.lastTimestamp();
       
       expect(await client.updateResult(updatedCombinedData)).to.be.not.reverted;
       let clientResultAfterUpdation = await client.lastResult();
       let clientTimestampAfterUpdation = await client.lastTimestamp();
 
-      expect(resultBefore[0]).to.be.lessThan(clientResultAfterUpdation);
-      expect(resultBefore[2]).to.be.lessThan(clientTimestampAfterUpdation);
+      expect(clientResultBeforeUpdation).to.be.lessThan(clientResultAfterUpdation);
+      expect(clientTimestampBeforeUpdation).to.be.lessThan(clientTimestampAfterUpdation);
 
       const [staleProof, staleResultDecoded, staleSignature] = await getProof(
         tree,
@@ -431,9 +440,34 @@ describe("Forwarder tests", () => {
       );
     });
 
-    it("Caller should have TRANSPARENT_FORWARDER_ROLE role to getResult", async () => {
-      await expect(forwarder.connect(signers[1])["getResult(bytes32)"](namesHash[0])).to.be
-        .reverted;
+    it("Caller should have TRANSPARENT_FORWARDER_ROLE role to update, validate or get Result", async () => {
+      const [proof, resultDecoded, signature] = await getProof(
+        tree,
+        1,
+        signers[0]
+      );
+
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof, resultDecoded, signature]
+      ); 
+
+      await expect(
+        forwarder.connect(signers[1]).validateResult(combinedData)
+      ).to.be.reverted
+      
+      await expect(
+        forwarder.connect(signers[1]).updateAndGetResult(combinedData)
+      ).to.be.reverted
+      
+      await expect(
+        forwarder.connect(signers[1]).getResult(namesHash[0])
+      ).to.be.reverted;
     });
 
     it("staking.isWhitelisted() should be only called my address with TRANSPARENT_FORWARDER_ROLE", async () => {
@@ -515,7 +549,31 @@ describe("Forwarder tests", () => {
 
     it("Client should not be able to fetch result if forwarder contract is paused", async () => {
       await forwarder.connect(signers[0]).pause();
+      const [proof, resultDecoded, signature] = await getProof(
+        tree,
+        1,
+        signers[0]
+      );
+
+      const combinedData = hre.ethers.utils.defaultAbiCoder.encode(
+        [
+          "bytes32",
+          "bytes32[]",
+          "tuple(int8, uint16, bytes32, uint256, uint256)",
+          "bytes",
+        ], // The types in order
+        [tree.root, proof, resultDecoded, signature]
+      ); 
+
       await expect(client.getResult(namesHash[0])).to.be.revertedWith(
+        "Pausable: paused"
+      );
+
+      await expect(client.validateResult(combinedData)).to.be.revertedWith(
+        "Pausable: paused"
+      );
+
+      await expect(client.updateResult(namesHash[0])).to.be.revertedWith(
         "Pausable: paused"
       );
 

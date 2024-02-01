@@ -72,6 +72,35 @@ describe("Result Manager tests", async () => {
     ).to.be.reverted;
   });
 
+  it("functions should revert for not having FORWARDER_ROLE", async () => {
+    const [proof, resultDecoded, signature] = await getProof(
+      tree,
+      1,
+      signers[0]
+    );
+    await expect(
+      resultManager.validateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+    
+    await expect(
+      resultManager.updateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+
+    await expect(
+      resultManager.getResult(resultDecoded[2])
+    ).to.be.reverted
+  });
+
   it("validateResult should return true for valid result", async () => {
     const FORWARDER_ROLE = await resultManager.FORWARDER_ROLE();
     await resultManager.grantRole(FORWARDER_ROLE, signers[0].address);

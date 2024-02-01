@@ -12,8 +12,5 @@ struct Collection {
 }
 
 interface ICollectionManager {
-    function getCollection(uint16 id)
-        external
-        view
-        returns (Collection memory collection);
+    function getCollection(uint16 id) external view returns (Collection memory collection);
 }
