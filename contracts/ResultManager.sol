@@ -33,6 +33,7 @@ contract ResultManager is AccessControlEnumerable {
 
     error InvalidSignature();
     error InvalidMerkleProof();
+    error ZeroResult();
 
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -166,6 +167,7 @@ contract ResultManager is AccessControlEnumerable {
         bytes32 _name
     ) internal view returns (uint256, int8, uint256) {
         Value memory result = _collectionResults[_name];
+        if (result.value == 0) revert ZeroResult();
         return (result.value, result.power, result.lastUpdatedTimestamp);
     }
 }
