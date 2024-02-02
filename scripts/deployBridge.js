@@ -2,6 +2,7 @@ const hre = require("hardhat");
 require('dotenv').config();
 
 const SIGNER_ADDRESS = process.env.SIGNER_ADDRESS || "0xC68AcC784227DbEaE98Bb6F5aC3C57cCe1aE9B4B";
+const ORACLE_RPC_URL = process.env.ORACLE_RPC_URL || "https://staging-v3.skalenodes.com/v1/staging-aware-chief-gianfar";
 
 const RESULTGETTER_SELECTOR = "0xadd4c784";  
 const UPDATE_SELECTOR = "0x2d444fd5"; 
@@ -9,6 +10,34 @@ const VALIDATE_SELECTOR = "0x41417a9d";
 
 
 async function main() {
+  console.log("Validating block timestamp of the deploying chain")
+
+  const oracleProvider = new hre.ethers.providers.JsonRpcProvider(ORACLE_RPC_URL);
+
+  // Fetch latest block from the oracle chain
+  const oracleBlock = await oracleProvider.getBlock("latest");
+  const oracleTimestamp = oracleBlock.timestamp;
+  console.log(`Oracle Chain Latest Block Timestamp: ${oracleTimestamp}`);
+
+  // Fetch latest block from the deploying chain
+  const deployingBlock = await hre.ethers.provider.getBlock("latest");
+  const deployingTimestamp = deployingBlock.timestamp;
+  console.log(`Deploying Chain Latest Block Timestamp: ${deployingTimestamp}`);
+
+  if (typeof deployingTimestamp === 'string' && deployingTimestamp.startsWith('0x')) {
+    throw new Error('Reverting: Deploying chain timestamp is in hexadecimal format.');
+  }
+
+  const timeDifference = deployingTimestamp - oracleTimestamp;
+  console.log(`Time difference (Deploying Chain - Native Chain) in seconds: ${timeDifference}`);
+
+  if (Math.abs(timeDifference) <= 15) {
+    console.log('Timestamp is valid. Proceeding with deployment...');
+  } else {
+    throw new Error('Error: The time difference is more than ±15 seconds.');
+  }
+
+
   console.log("Deploying ResultManager contract...");
   const signer = await hre.ethers.getSigner();
 
