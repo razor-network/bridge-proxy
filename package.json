@@ -12,8 +12,8 @@
     "gasCost": "npx hardhat test && node gasCost.js"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.9.4",
-    "@openzeppelin/contracts-upgradeable": "^4.7.3",
+    "@openzeppelin/contracts": "^4.9.5",
+    "@openzeppelin/contracts-upgradeable": "^4.9.5",
     "@openzeppelin/hardhat-upgrades": "^1.20.0",
     "axios": "^1.4.0",
     "dotenv": "^16.3.1",
