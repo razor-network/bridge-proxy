@@ -28,6 +28,7 @@ contract ResultManager is AccessControlEnumerable {
 
     error InvalidSignature();
     error InvalidMerkleProof();
+    error ZeroResult();
 
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -42,6 +43,14 @@ contract ResultManager is AccessControlEnumerable {
         emit SignerUpdated(msg.sender, signerAddress, _signerAddress);
         // slither-disable-next-line missing-zero-check
         signerAddress = _signerAddress;
+    }
+
+    /**
+     * @notice deletes the result of a collection
+     * @param name The name of the collection
+     */
+    function deleteResult(bytes32 name) external onlyRole(RESULT_MANAGER_ADMIN_ROLE) {
+        delete _collectionResults[name];
     }
 
     /**  @notice Updates the result based on the provided Merkle proof and decoded result. Regardless of whether the result
@@ -136,6 +145,7 @@ contract ResultManager is AccessControlEnumerable {
      */
     function _getResult(bytes32 _name) internal view returns (uint256, int8, uint256) {
         Value memory result = _collectionResults[_name];
+        if (result.value == 0) revert ZeroResult();
         return (result.value, result.power, result.lastUpdatedTimestamp);
     }
 }
