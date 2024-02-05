@@ -581,5 +581,14 @@ describe("Forwarder tests", () => {
       await forwarder.connect(signers[0]).unpause();
       await expect(client.getResult(namesHash[0])).to.be.not.reverted;
     });
+
+    it("client should revert if the result is zero", async () => {
+      await expect(
+        client.getResult(namesHash[4])
+      ).to.be.revertedWithCustomError(
+        resultManager,
+        "ZeroResult"
+        );
+    });
   });
 });
