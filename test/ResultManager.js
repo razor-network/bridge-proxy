@@ -238,4 +238,25 @@ describe("Result Manager tests", async () => {
     expect(resultAfterUpdation[2]).to.be.equal(resultAfterStaleUpdation[2]);
     expect(resultAfterUpdation[0]).to.be.equal(resultAfterStaleUpdation[0]);
   });
+
+  it("should delete result if called by RESULT_MANAGER_ADMIN_ROLE", async () => {
+    const RESULT_MANAGER_ADMIN_ROLE = await resultManager.RESULT_MANAGER_ADMIN_ROLE();
+    await expect(
+      resultManager.connect(signers[1]).deleteResult(namesHash[0])
+    ).to.be.reverted;
+
+    await resultManager.grantRole(RESULT_MANAGER_ADMIN_ROLE, signers[1].address);
+    await expect(
+      await resultManager.connect(signers[1]).deleteResult(namesHash[0])
+    ).to.be.not.reverted;
+    await resultManager.revokeRole(RESULT_MANAGER_ADMIN_ROLE, signers[1].address);
+
+    // should revert with message as invalid merkle proof
+    await expect(
+      resultManager.getResult(namesHash[4])
+    ).to.be.revertedWithCustomError(
+      resultManager,
+      "ZeroResult"
+      );
+  });
 });
