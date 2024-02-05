@@ -1,6 +1,6 @@
 const hre = require("hardhat");
 
-async function main() {
+async function checkTimeDifference() {
   const { ORACLE_RPC_URL } = process.env;
 
   // Initialize providers
@@ -30,9 +30,20 @@ async function main() {
   }
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
+async function main() {
+  try {
+    await checkTimeDifference();
+    process.exit(0);
+  } catch (error) {
     console.error(error);
     process.exit(1);
-  });
+  }
+}
+
+// Detect if the script is being run directly by Node.js
+if (require.main === module) {
+  main();
+}
+
+module.exports = { checkTimeDifference };
+
