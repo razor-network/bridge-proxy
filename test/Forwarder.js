@@ -18,6 +18,7 @@ const namesHash = [
 const abiCoder = new hre.ethers.utils.AbiCoder();
 
 const tree = generateTree(power, ids, namesHash, result, timestamp);
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 describe("Forwarder tests", () => {
   let resultManager;
@@ -33,9 +34,11 @@ describe("Forwarder tests", () => {
     signers = await hre.ethers.getSigners();
 
     const ResultManager = await hre.ethers.getContractFactory("ResultManager");
+    await expect(ResultManager.deploy(ZERO_ADDRESS)).to.be.reverted
     resultManager = await ResultManager.deploy(signers[0].address);
 
     const Forwarder = await hre.ethers.getContractFactory("Forwarder");
+    await expect(Forwarder.deploy(ZERO_ADDRESS)).to.be.reverted
     forwarder = await Forwarder.deploy(resultManager.address);
 
     // * Grant FORWARDER_ADMIN_ROLE to admin
@@ -45,6 +48,7 @@ describe("Forwarder tests", () => {
     const TransparentForwarder = await hre.ethers.getContractFactory(
       "TransparentForwarder"
     );
+    await expect(TransparentForwarder.deploy(ZERO_ADDRESS)).to.be.reverted
     transparentForwarder = await TransparentForwarder.deploy(forwarder.address);
 
     // * Grant TRANSPARENT_FORWARDER_ADMIN_ROLE to admin
@@ -113,6 +117,9 @@ describe("Forwarder tests", () => {
       await expect(
         forwarder.connect(signers[1]).setResultManager(resultManager.address)
       ).to.be.reverted;
+      await expect(
+        forwarder.setResultManager(ZERO_ADDRESS)
+      ).to.be.reverted;
     });
 
     it("Only Admin should be able to update forwarder and staking addresss in TF", async () => {
@@ -122,6 +129,14 @@ describe("Forwarder tests", () => {
 
       await expect(
         transparentForwarder.connect(signers[1]).setStaking(staking.address)
+      ).to.be.reverted;
+
+      await expect(
+        transparentForwarder.setForwarder(ZERO_ADDRESS)
+      ).to.be.reverted;
+
+      await expect(
+        transparentForwarder.setStaking(ZERO_ADDRESS)
       ).to.be.reverted;
     });
 

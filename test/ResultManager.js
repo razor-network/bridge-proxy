@@ -17,6 +17,7 @@ const namesHash = [
 
 
 const tree = generateTree(power, ids, namesHash, result, timestamp);
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 describe("Result Manager tests", async () => {
   let resultManager;
@@ -69,6 +70,10 @@ describe("Result Manager tests", async () => {
   it("updateSignerAddress should revert for non admin accounts", async () => {
     await expect(
       resultManager.connect(signers[1]).updateSignerAddress(signers[0].address)
+    ).to.be.reverted;
+
+    await expect(
+      resultManager.updateSignerAddress(ZERO_ADDRESS)
     ).to.be.reverted;
   });
 

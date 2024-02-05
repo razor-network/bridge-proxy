@@ -22,6 +22,7 @@ contract Forwarder is AccessControlEnumerable, Pausable, IForwarder {
     event PermissionRemoved(address sender);
 
     error NoSelectorPresent();
+    error ZeroAddress();
 
     modifier checkSelector(bytes4 selector) {
         if (selector == bytes4(0)) revert NoSelectorPresent();
@@ -30,7 +31,7 @@ contract Forwarder is AccessControlEnumerable, Pausable, IForwarder {
 
     constructor(address _resultManager) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        // slither-disable-next-line missing-zero-check
+        if (_resultManager == address(0)) revert ZeroAddress();
         resultManager = _resultManager;
     }
 
@@ -38,7 +39,7 @@ contract Forwarder is AccessControlEnumerable, Pausable, IForwarder {
     /// @dev Allows admin to update result manager
     /// @param _resultManager new result manager address
     function setResultManager(address _resultManager) external onlyRole(FORWARDER_ADMIN_ROLE) {
-        // slither-disable-next-line missing-zero-check
+        if (_resultManager == address(0)) revert ZeroAddress();
         resultManager = _resultManager;
     }
 

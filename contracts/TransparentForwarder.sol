@@ -10,9 +10,11 @@ contract TransparentForwarder is AccessControlEnumerable {
     address public forwarder;
     IStaking public staking;
 
+    error ZeroAddress();
+
     constructor(address _forwarder) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        // slither-disable-next-line missing-zero-check
+        if (_forwarder == address(0)) revert ZeroAddress();
         forwarder = _forwarder;
     }
 
@@ -63,11 +65,12 @@ contract TransparentForwarder is AccessControlEnumerable {
     // solhint-enable
 
     function setForwarder(address _forwarder) external onlyRole(TRANSPARENT_FORWARDER_ADMIN_ROLE) {
-        // slither-disable-next-line missing-zero-check
+        if (_forwarder == address(0)) revert ZeroAddress();
         forwarder = _forwarder;
     }
 
     function setStaking(address _staking) external onlyRole(TRANSPARENT_FORWARDER_ADMIN_ROLE) {
+        if (_staking == address(0)) revert ZeroAddress();
         staking = IStaking(_staking);
     }
 

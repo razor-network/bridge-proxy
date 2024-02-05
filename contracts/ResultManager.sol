@@ -29,10 +29,11 @@ contract ResultManager is AccessControlEnumerable {
     error InvalidSignature();
     error InvalidMerkleProof();
     error ZeroResult();
+    error ZeroAddress();
 
     constructor(address _signerAddress) {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        // slither-disable-next-line missing-zero-check
+        if (_signerAddress == address(0)) revert ZeroAddress();
         signerAddress = _signerAddress;
     }
 
@@ -41,7 +42,7 @@ contract ResultManager is AccessControlEnumerable {
      */
     function updateSignerAddress(address _signerAddress) external onlyRole(RESULT_MANAGER_ADMIN_ROLE) {
         emit SignerUpdated(msg.sender, signerAddress, _signerAddress);
-        // slither-disable-next-line missing-zero-check
+        if (_signerAddress == address(0)) revert ZeroAddress();
         signerAddress = _signerAddress;
     }
 
