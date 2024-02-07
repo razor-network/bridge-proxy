@@ -493,7 +493,8 @@ describe("Forwarder tests", () => {
 
     it("Client should be able to transfer ether in getResult", async () => {
       const transferAmount = hre.ethers.utils.parseEther("1");
-      await staking.setPermission(client.address);
+      const WHITELISTED_ROLE = await staking.WHITELISTED_ROLE();
+      await staking.grantRole(WHITELISTED_ROLE, client.address);
       const [proof, resultDecoded, signature] = await getProof(
         tree,
         3,
