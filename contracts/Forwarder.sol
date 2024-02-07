@@ -93,14 +93,7 @@ contract Forwarder is AccessControlEnumerable, Pausable, IForwarder {
      */
     function getResult(
         bytes32 name
-    )
-        external
-        view
-        whenNotPaused
-        checkSelector(resultGetterSelector)
-        onlyRole(TRANSPARENT_FORWARDER_ROLE)
-        returns (uint256, int8, uint256)
-    {
+    ) external view whenNotPaused checkSelector(resultGetterSelector) onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (uint256, int8, uint256) {
         bytes memory returnData = resultManager.functionStaticCall(abi.encodePacked(resultGetterSelector, name));
         return abi.decode(returnData, (uint256, int8, uint256));
     }
@@ -110,9 +103,7 @@ contract Forwarder is AccessControlEnumerable, Pausable, IForwarder {
      * @param data bytes data required to validate the result
      * @return validity of the result
      */
-    function validateResult(
-        bytes calldata data
-    ) external view whenNotPaused checkSelector(validateSelector) onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (bool) {
+    function validateResult(bytes calldata data) external view whenNotPaused checkSelector(validateSelector) onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (bool) {
         bytes memory returnData = resultManager.functionStaticCall(abi.encodePacked(validateSelector, data));
         return abi.decode(returnData, (bool));
     }

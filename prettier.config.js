@@ -3,7 +3,7 @@ module.exports = {
     {
       files: "*.sol",
       options: {
-        printWidth: 140,
+        printWidth: 170,
         plugins: [require.resolve('prettier-plugin-solidity')]
       }
     }
