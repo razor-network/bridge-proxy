@@ -17,18 +17,6 @@ contract Staking is AccessControlEnumerable {
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-    function setPermission(
-        address sender
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        grantRole(WHITELISTED_ROLE, sender);
-    }
-
-    function removePermission(
-        address sender
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(WHITELISTED_ROLE, sender);
-    }
-
     function enableWhitelist() external onlyRole(STAKING_ADMIN_ROLE) {
         isWhitelistEnabled = true;
     }
