@@ -41,8 +41,8 @@ contract ResultManager is AccessControlEnumerable {
      * @notice Updates the signer address
      */
     function updateSignerAddress(address _signerAddress) external onlyRole(RESULT_MANAGER_ADMIN_ROLE) {
-        emit SignerUpdated(msg.sender, signerAddress, _signerAddress);
         if (_signerAddress == address(0)) revert ZeroAddress();
+        emit SignerUpdated(msg.sender, signerAddress, _signerAddress);
         signerAddress = _signerAddress;
     }
 
