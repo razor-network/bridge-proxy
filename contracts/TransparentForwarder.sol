@@ -23,7 +23,8 @@ contract TransparentForwarder is AccessControlEnumerable {
         bool isWhitelisted = staking.isWhitelisted{value: msg.value}(msg.sender);
         require(isWhitelisted, "Not whitelisted");
 
-        address forwarderContract = getForwarder();
+        address forwarderContract = forwarder;
+        // slither disabled b/c we want to use low-level calls
         // slither-disable-next-line assembly
         assembly {
             // Copy msg.data. We take full control of memory in this inline assembly
@@ -72,9 +73,5 @@ contract TransparentForwarder is AccessControlEnumerable {
     function setStaking(address _staking) external onlyRole(TRANSPARENT_FORWARDER_ADMIN_ROLE) {
         if (_staking == address(0)) revert ZeroAddress();
         staking = IStaking(_staking);
-    }
-
-    function getForwarder() public view returns (address) {
-        return forwarder;
     }
 }

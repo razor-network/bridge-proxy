@@ -30,6 +30,8 @@ contract Staking is AccessControlEnumerable, IStaking {
 
     function withdraw() external onlyRole(ESCAPE_HATCH_ROLE) {
         uint256 amount = address(this).balance;
+        // since the address is required to have the ESCAPE_HATCH_ROLE to call the function,
+        // it is trusted and not an arbitrary address 
         // slither-disable-next-line arbitrary-send-eth
         payable(msg.sender).transfer(amount);
     }
