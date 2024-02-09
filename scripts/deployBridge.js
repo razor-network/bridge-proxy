@@ -2,6 +2,7 @@ const hre = require("hardhat");
 require('dotenv').config();
 
 const SIGNER_ADDRESS = process.env.SIGNER_ADDRESS || "0xC68AcC784227DbEaE98Bb6F5aC3C57cCe1aE9B4B";
+const { checkTimeDifference } = require('./validateTimestamp');
 
 const RESULTGETTER_SELECTOR = "0xadd4c784";  
 const UPDATE_SELECTOR = "0x2d444fd5"; 
@@ -9,6 +10,13 @@ const VALIDATE_SELECTOR = "0x41417a9d";
 
 
 async function main() {
+  console.log("Validating block timestamp of the deploying chain")
+
+  await checkTimeDifference()
+  .then(() => console.log('Finished checking time difference.'))
+  .catch(error => console.error('An error occurred:', error));
+
+
   console.log("Deploying ResultManager contract...");
   const signer = await hre.ethers.getSigner();
 
