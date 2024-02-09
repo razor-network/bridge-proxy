@@ -17,6 +17,7 @@ const namesHash = [
 
 
 const tree = generateTree(power, ids, namesHash, result, timestamp);
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 describe("Result Manager tests", async () => {
   let resultManager;
@@ -70,6 +71,39 @@ describe("Result Manager tests", async () => {
     await expect(
       resultManager.connect(signers[1]).updateSignerAddress(signers[0].address)
     ).to.be.reverted;
+
+    await expect(
+      resultManager.updateSignerAddress(ZERO_ADDRESS)
+    ).to.be.reverted;
+  });
+
+  it("functions should revert for not having FORWARDER_ROLE", async () => {
+    const [proof, resultDecoded, signature] = await getProof(
+      tree,
+      1,
+      signers[0]
+    );
+    await expect(
+      resultManager.validateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+    
+    await expect(
+      resultManager.updateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+
+    await expect(
+      resultManager.getResult(resultDecoded[2])
+    ).to.be.reverted
   });
 
   it("validateResult should return true for valid result", async () => {
