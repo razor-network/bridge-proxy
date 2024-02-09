@@ -10,24 +10,19 @@ interface IForwarder {
      * @param _data bytes data required to update the result
      * @return result of the collection, its power and timestamp
      */
-    function updateAndGetResult(
-        bytes calldata _data
-    ) external payable returns (uint256, int8, uint256);
+    function updateAndGetResult(bytes calldata _data) external returns (uint256, int8, uint256);
 
     /**
      * @dev using the hash of collection name, clients can query the result of that collection
      * @param _name bytes32 hash of the collection name
      * @return result of the collection and its power
      */
-    function getResult(
-        bytes32 _name
-    ) external view returns (uint256, int8, uint256);
+    function getResult(bytes32 _name) external view returns (uint256, int8, uint256);
 
     /**
      * @dev validates the result based on the provided data and returns the validity
      * @param _data bytes data required to validate the result
      * @return validity of the result
      */
-    function validateResult(bytes calldata _data)
-        external view returns (bool, uint256, int8, uint256);
+    function validateResult(bytes calldata _data) external view returns (bool, uint256, int8, uint256);
 }
