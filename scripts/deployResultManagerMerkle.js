@@ -1,8 +1,8 @@
 const hre = require("hardhat");
 require('dotenv').config();
 
-const SIGNER_ADDRESS = process.env.SIGNER_ADDRESS || "0xC68AcC784227DbEaE98Bb6F5aC3C57cCe1aE9B4B";
-const TRANSPARENT_FORWARDER_ADDRESS = "0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84";
+const SIGNER_ADDRESS = process.env.SIGNER_ADDRESS || "0xC68AcC784227DbEaE98Bb6F5aC3C57cCe1aE9B4B"; // Update this to DESTINATION CHAIN SIGNER_ADDRESS
+const TRANSPARENT_FORWARDER_ADDRESS = "0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84"; // Update this to DESTINATION CHAIN TRANSPARENT_FORWARDER_ADDRESS
 
 
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
@@ -11,19 +11,19 @@ async function main() {
     console.log("Deploying ResultManager contract...");
     const signer = await hre.ethers.getSigner();
     const ResultManager = await hre.ethers.getContractFactory("ResultManager");
-    const resultManagerV2 = await ResultManager.deploy(SIGNER_ADDRESS);
-    console.log("ResultManager contract deployed at:", resultManagerV2.address);
+    const resultManagerMerkle = await ResultManager.deploy(SIGNER_ADDRESS);
+    console.log("ResultManager contract deployed at:", resultManagerMerkle.address);
 
     console.log("Deploying forwarder contract...");
     const Forwarder = await hre.ethers.getContractFactory("Forwarder");
-    const forwarder = await Forwarder.deploy(resultManagerV2.address);
+    const forwarder = await Forwarder.deploy(resultManagerMerkle.address);
     console.log("Forwarder contract deployed at:", forwarder.address);
 
     console.log(
     "[ResultManager] Granting FORWARDER_ROLE to forwarder contract address"
     );
-    const FORWARDER_ROLE = await resultManagerV2.FORWARDER_ROLE();
-    const tx1 = await resultManagerV2.grantRole(FORWARDER_ROLE, forwarder.address);
+    const FORWARDER_ROLE = await resultManagerMerkle.FORWARDER_ROLE();
+    const tx1 = await resultManagerMerkle.grantRole(FORWARDER_ROLE, forwarder.address);
     await tx1.wait();
     console.log("Transaction hash: ", tx1.hash);
 
