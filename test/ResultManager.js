@@ -17,6 +17,7 @@ const namesHash = [
 
 
 const tree = generateTree(power, ids, namesHash, result, timestamp);
+const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000"
 
 describe("Result Manager tests", async () => {
   let resultManager;
@@ -70,6 +71,68 @@ describe("Result Manager tests", async () => {
     await expect(
       resultManager.connect(signers[1]).updateSignerAddress(signers[0].address)
     ).to.be.reverted;
+
+    await expect(
+      resultManager.updateSignerAddress(ZERO_ADDRESS)
+    ).to.be.reverted;
+  });
+
+  it("functions should revert for not having FORWARDER_ROLE", async () => {
+    const [proof, resultDecoded, signature] = await getProof(
+      tree,
+      1,
+      signers[0]
+    );
+    await expect(
+      resultManager.validateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+    
+    await expect(
+      resultManager.updateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+
+    await expect(
+      resultManager.getResult(resultDecoded[2])
+    ).to.be.reverted
+  });
+
+  it("functions should revert for not having FORWARDER_ROLE", async () => {
+    const [proof, resultDecoded, signature] = await getProof(
+      tree,
+      1,
+      signers[0]
+    );
+    await expect(
+      resultManager.validateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+    
+    await expect(
+      resultManager.updateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+
+    await expect(
+      resultManager.getResult(resultDecoded[2])
+    ).to.be.reverted
   });
 
   it("validateResult should return true for valid result", async () => {
@@ -81,13 +144,17 @@ describe("Result Manager tests", async () => {
       1,
       signers[0]
     );
-    const result = await resultManager.validateResult(
+    const [validResult, result, power, timestamp] = await resultManager.validateResult(
       merkleRoot,
       proof,
       resultDecoded,
       signature
     );
-    expect(result).to.be.true;
+    
+    expect(validResult).to.be.true;
+    expect(result).to.be.equal(resultDecoded[3]);
+    expect(power).to.be.equal(resultDecoded[0]);
+    expect(timestamp).to.be.equal(resultDecoded[4]);
   });
 
   it("validateResult should revert for invalid signature", async () => {
@@ -97,15 +164,18 @@ describe("Result Manager tests", async () => {
       1,
       signers[1]
     );
-    const result = await resultManager.validateResult(
+
+    const [validResult, result, power, timestamp] = await resultManager.validateResult(
       merkleRoot,
       proof,
       resultDecoded,
       signature
-    )
-    await expect(
-      result
-    ).to.be.false;
+    );
+
+    expect(validResult).to.be.false;
+    expect(result).to.be.equal(0);
+    expect(power).to.be.equal(0);
+    expect(timestamp).to.be.equal(0);
   });
 
   it("validateResult should revert for invalid merkle proof", async () => {
@@ -120,15 +190,18 @@ describe("Result Manager tests", async () => {
       5,
       signers[0]
     );
-    const result = await resultManager.validateResult(
+
+    const [validResult, result, power, timestamp] = await resultManager.validateResult(
       merkleRoot,
       proof_5,
       resultDecoded_4,
       signature_4
-    )
-    await expect(
-      result
-    ).to.be.false;
+    );
+
+    expect(validResult).to.be.false;
+    expect(result).to.be.equal(0);
+    expect(power).to.be.equal(0);
+    expect(timestamp).to.be.equal(0);
   });
 
 
@@ -237,5 +310,26 @@ describe("Result Manager tests", async () => {
 
     expect(resultAfterUpdation[2]).to.be.equal(resultAfterStaleUpdation[2]);
     expect(resultAfterUpdation[0]).to.be.equal(resultAfterStaleUpdation[0]);
+  });
+
+  it("should delete result if called by RESULT_MANAGER_ADMIN_ROLE", async () => {
+    const RESULT_MANAGER_ADMIN_ROLE = await resultManager.RESULT_MANAGER_ADMIN_ROLE();
+    await expect(
+      resultManager.connect(signers[1]).deleteResult(namesHash[0])
+    ).to.be.reverted;
+
+    await resultManager.grantRole(RESULT_MANAGER_ADMIN_ROLE, signers[1].address);
+    await expect(
+      await resultManager.connect(signers[1]).deleteResult(namesHash[0])
+    ).to.be.not.reverted;
+    await resultManager.revokeRole(RESULT_MANAGER_ADMIN_ROLE, signers[1].address);
+
+    // should revert with message as invalid merkle proof
+    await expect(
+      resultManager.getResult(namesHash[4])
+    ).to.be.revertedWithCustomError(
+      resultManager,
+      "ZeroResult"
+      );
   });
 });

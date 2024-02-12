@@ -51,5 +51,4 @@ describe("Staking tests", () => {
     expect(await staking.isWhitelistEnabled()).to.be.false;
     await staking.revokeRole(STAKING_ADMIN_ROLE, signers[1].address);
   });
-
 });

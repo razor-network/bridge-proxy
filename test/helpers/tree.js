@@ -11,18 +11,15 @@ const getValues = (power, ids, namesHash, result, timestamp) => {
   let values = [];
   for (let i = 0; i < ids.length; i++) {
     const value = ethers.BigNumber.from(result[i]);
-    const collectionResult = abiCoder.encode(
-      ["int8", "uint16", "bytes32", "uint256", "uint256"],
-      [power[i], ids[i], namesHash[i], value, timestamp[i]]
-    );
-    values.push([collectionResult]);
+    const collectionResult = [power[i], ids[i], namesHash[i], value, timestamp[i]]
+    values.push(collectionResult);
   }
   return values;
 };
 
 const generateTree = (power, ids, namesHash, result, timestamp) => {
   const values = getValues(power, ids, namesHash, result, timestamp);
-  const tree = StandardMerkleTree.of(values, ["bytes"]);
+  const tree = StandardMerkleTree.of(values, ["int8", "uint16", "bytes32", "uint256", "uint256"]);
   console.log("Merkle Root:", tree.root);
   return tree;
 };
@@ -30,28 +27,14 @@ const generateTree = (power, ids, namesHash, result, timestamp) => {
 const getProof = async (tree, id, signer) => {
   for (const [i, v] of tree.entries()) {
     const proof = tree.getProof(i);
-    const resultDecoded = abiCoder.decode(
-      [
-        "int8 power",
-        "uint16 id",
-        "bytes32 nameHash",
-        "uint256 result",
-        "uint256 timestamp",
-      ],
-      v[0]
-    );
-    if (resultDecoded.id === id) {
+    if (v[1] === id) {
       const messageHash = ethers.utils.keccak256(
-        ethers.utils.concat([tree.root, v[0]])
+        ethers.utils.concat([tree.root])
       );
       const signature = await signer.signMessage(
         ethers.utils.arrayify(messageHash)
       );
-      const resultDecoded = abiCoder.decode(
-        ["int8", "uint16", "bytes32", "uint256", "uint256"],
-        v[0]
-      );
-      return [proof, resultDecoded, signature];
+      return [proof, v, signature];
     }
   }
 };

@@ -2,13 +2,21 @@ const hre = require("hardhat");
 require('dotenv').config();
 
 const SIGNER_ADDRESS = process.env.SIGNER_ADDRESS || "0xC68AcC784227DbEaE98Bb6F5aC3C57cCe1aE9B4B";
+const { checkTimeDifference } = require('./validateTimestamp');
 
-const COLLECTION_NAME_HASH =
-  "0x59102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160"; // ETHUSD
-const PAYLOAD =
-  "0xadd4c78459102b37de83bdda9f38ac8254e596f0d9ac61d2035c07936675e87342817160"; // getResult(hash(ETHUSD))
+const RESULTGETTER_SELECTOR = "0xadd4c784";  
+const UPDATE_SELECTOR = "0x2d444fd5"; 
+const VALIDATE_SELECTOR = "0x41417a9d";
+
 
 async function main() {
+  console.log("Validating block timestamp of the deploying chain")
+
+  await checkTimeDifference()
+  .then(() => console.log('Finished checking time difference.'))
+  .catch(error => console.error('An error occurred:', error));
+
+
   console.log("Deploying ResultManager contract...");
   const signer = await hre.ethers.getSigner();
 
@@ -80,46 +88,59 @@ async function main() {
   console.log("--------------------------------------------------------------");
 
   console.log(
-    `[Forwarder] Setting collection name hash: ${COLLECTION_NAME_HASH} with payload ${PAYLOAD}`
+    `[Forwarder] Setting resultGetter selector to ${RESULTGETTER_SELECTOR}`
   );
-  const tx4 = await forwarder.setCollectionPayload(
-    COLLECTION_NAME_HASH,
-    PAYLOAD
-  );
+  const tx4 = await forwarder.setResultGetterSelector(RESULTGETTER_SELECTOR);
   await tx4.wait();
   console.log("Transaction hash: ", tx4.hash);
   console.log("--------------------------------------------------------------");
+
+  console.log(
+    `[Forwarder] Setting update selector to ${UPDATE_SELECTOR}`
+  );
+  const tx5 = await forwarder.setUpdateSelector(UPDATE_SELECTOR);
+  await tx5.wait();
+  console.log("Transaction hash: ", tx5.hash);
+  console.log("--------------------------------------------------------------");
+
+  console.log(
+    `[Forwarder] Setting validate selector to ${VALIDATE_SELECTOR}`
+  );
+  const tx6 = await forwarder.setValidateSelector(VALIDATE_SELECTOR);
+  await tx6.wait();
+  console.log("Transaction hash: ", tx6.hash);
+  console.log("--------------------------------------------------------------");  
 
   console.log(
     `[TransparentForwarder] Granting TRANSPARENT_FORWARDER_ADMIN_ROLE to admin(${signer.address})`
   );
   const TRANSPARENT_FORWARDER_ADMIN_ROLE =
     await transparentForwarder.TRANSPARENT_FORWARDER_ADMIN_ROLE();
-  const tx5 = await transparentForwarder.grantRole(
+  const tx7 = await transparentForwarder.grantRole(
     TRANSPARENT_FORWARDER_ADMIN_ROLE,
     signer.address
   );
-  await tx5.wait();
-  console.log("Transaction hash: ", tx5.hash);
+  await tx7.wait();
+  console.log("Transaction hash: ", tx7.hash);
   console.log("--------------------------------------------------------------");
 
   console.log(
     `[Tranparent Forwarder] setting staking address to ${staking.address}`
   );
-  const tx6 = await transparentForwarder.setStaking(staking.address);
-  await tx6.wait();
-  console.log("Transaction hash: ", tx6.hash);
+  const tx8 = await transparentForwarder.setStaking(staking.address);
+  await tx8.wait();
+  console.log("Transaction hash: ", tx8.hash);
   console.log("--------------------------------------------------------------");
 
   console.log(
     `[Staking] Granting TRANSPARENT_FORWARDER_ROLE to Transparent Forwarder contract address`
   );
-  const tx7 = await staking.grantRole(
+  const tx9 = await staking.grantRole(
     TRANSPARENT_FORWARDER_ROLE,
     transparentForwarder.address
   );
-  await tx7.wait();
-  console.log("Transaction hash: ", tx7.hash);
+  await tx9.wait();
+  console.log("Transaction hash: ", tx9.hash);
   console.log("--------------------------------------------------------------");
 }
 
