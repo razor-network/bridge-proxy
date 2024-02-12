@@ -37,7 +37,7 @@ contract Client {
     }
 
     function validateResult(bytes calldata data) public returns (bool) {
-        isResultValid = transparentForwarder.validateResult(data);
+        (isResultValid, , , ) = transparentForwarder.validateResult(data);
 
         return isResultValid;
     }

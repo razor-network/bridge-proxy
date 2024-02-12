@@ -106,6 +106,35 @@ describe("Result Manager tests", async () => {
     ).to.be.reverted
   });
 
+  it("functions should revert for not having FORWARDER_ROLE", async () => {
+    const [proof, resultDecoded, signature] = await getProof(
+      tree,
+      1,
+      signers[0]
+    );
+    await expect(
+      resultManager.validateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+    
+    await expect(
+      resultManager.updateResult(
+        tree.root,
+        proof,
+        resultDecoded,
+        signature
+      )
+    ).to.be.reverted
+
+    await expect(
+      resultManager.getResult(resultDecoded[2])
+    ).to.be.reverted
+  });
+
   it("validateResult should return true for valid result", async () => {
     const FORWARDER_ROLE = await resultManager.FORWARDER_ROLE();
     await resultManager.grantRole(FORWARDER_ROLE, signers[0].address);
@@ -115,13 +144,17 @@ describe("Result Manager tests", async () => {
       1,
       signers[0]
     );
-    const result = await resultManager.validateResult(
+    const [validResult, result, power, timestamp] = await resultManager.validateResult(
       merkleRoot,
       proof,
       resultDecoded,
       signature
     );
-    expect(result).to.be.true;
+    
+    expect(validResult).to.be.true;
+    expect(result).to.be.equal(resultDecoded[3]);
+    expect(power).to.be.equal(resultDecoded[0]);
+    expect(timestamp).to.be.equal(resultDecoded[4]);
   });
 
   it("validateResult should revert for invalid signature", async () => {
@@ -131,15 +164,18 @@ describe("Result Manager tests", async () => {
       1,
       signers[1]
     );
-    const result = await resultManager.validateResult(
+
+    const [validResult, result, power, timestamp] = await resultManager.validateResult(
       merkleRoot,
       proof,
       resultDecoded,
       signature
-    )
-    await expect(
-      result
-    ).to.be.false;
+    );
+
+    expect(validResult).to.be.false;
+    expect(result).to.be.equal(0);
+    expect(power).to.be.equal(0);
+    expect(timestamp).to.be.equal(0);
   });
 
   it("validateResult should revert for invalid merkle proof", async () => {
@@ -154,15 +190,18 @@ describe("Result Manager tests", async () => {
       5,
       signers[0]
     );
-    const result = await resultManager.validateResult(
+
+    const [validResult, result, power, timestamp] = await resultManager.validateResult(
       merkleRoot,
       proof_5,
       resultDecoded_4,
       signature_4
-    )
-    await expect(
-      result
-    ).to.be.false;
+    );
+
+    expect(validResult).to.be.false;
+    expect(result).to.be.equal(0);
+    expect(power).to.be.equal(0);
+    expect(timestamp).to.be.equal(0);
   });
 
 

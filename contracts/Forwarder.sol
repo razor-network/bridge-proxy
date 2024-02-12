@@ -103,8 +103,10 @@ contract Forwarder is AccessControlEnumerable, Pausable, IForwarder {
      * @param data bytes data required to validate the result
      * @return validity of the result
      */
-    function validateResult(bytes calldata data) external view whenNotPaused checkSelector(validateSelector) onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (bool) {
+    function validateResult(
+        bytes calldata data
+    ) external view whenNotPaused checkSelector(validateSelector) onlyRole(TRANSPARENT_FORWARDER_ROLE) returns (bool, uint256, int8, uint256) {
         bytes memory returnData = resultManager.functionStaticCall(abi.encodePacked(validateSelector, data));
-        return abi.decode(returnData, (bool));
+        return abi.decode(returnData, (bool, uint256, int8, uint256));
     }
 }

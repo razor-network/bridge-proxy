@@ -24,5 +24,5 @@ interface IForwarder {
      * @param _data bytes data required to validate the result
      * @return validity of the result
      */
-    function validateResult(bytes calldata _data) external view returns (bool);
+    function validateResult(bytes calldata _data) external view returns (bool, uint256, int8, uint256);
 }
