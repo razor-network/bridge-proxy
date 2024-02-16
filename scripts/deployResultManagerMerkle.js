@@ -35,9 +35,9 @@ async function main() {
     const tx2 = await transparentForwarder.setForwarder(forwarder.address);
     await tx2.wait();
     console.log("Transaction hash: ", tx2.hash);
-    console.log("Sleeping for 1 minute...")
-    await sleep(60000);
-    console.log("Awake...");
+    // console.log("Sleeping for 1 minute...")
+    // await sleep(60000);
+    // console.log("Awake...");
 
     console.log(
     "[Forwarder] Granting TRANSPARENT_FORWARDER_ROLE to transparent forwarder contract address"
@@ -51,9 +51,9 @@ async function main() {
     await tx3.wait();
     console.log("Transaction hash: ", tx3.hash);
     console.log("--------------------------------------------------------------");
-    console.log("Sleeping for 1 minute...")
-    await sleep(60000);
-    console.log("Awake...");
+    // console.log("Sleeping for 1 minute...")
+    // await sleep(60000);
+    // console.log("Awake...");
 
     console.log(
     `[Forwarder] Granting FORWARDER_ADMIN_ROLE to admin(${signer.address}) `
