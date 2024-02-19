@@ -1,6 +1,7 @@
 {
   "name": "hardhat-project",
   "devDependencies": {
+    "@nomicfoundation/hardhat-ledger": "^1.0.2",
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@openzeppelin/merkle-tree": "^1.0.5",
     "hardhat": "^2.10.0",
