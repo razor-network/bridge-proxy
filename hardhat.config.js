@@ -21,7 +21,7 @@ module.exports = {
     },
     calypsoMainnet: {
       chainId: 1564830818,
-      url: " https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague",
+      url: "https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague",
       ledgerAccounts: [
         "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
       ],
