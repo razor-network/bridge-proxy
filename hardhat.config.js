@@ -53,7 +53,7 @@ module.exports = {
     },
     polygon: {
       chainId: 137,
-      url: "https://polygon-mumbai.g.alchemy.com/v2/qd48HaAN9IlVsVhr-Pp7mjWeE8CG7OG-",
+      url: "https://rpc.ankr.com/polygon",
       ledgerAccounts: [
         "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
       ],
