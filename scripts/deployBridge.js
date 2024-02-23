@@ -26,10 +26,10 @@ async function main() {
   .catch(error => console.error('An error occurred:', error));
 
   const gasPrice = await calculateGasPrice();
-  console.log("Gas Price is", gasPrice.toString() + " wei");
-  console.log("Deploying ResultManager contract...");
+  console.log("Gas Price used", gasPrice.toString() + " wei");
   const signer = await hre.ethers.getSigner();
 
+  console.log("Deploying ResultManager contract...");
   const ResultManager = await hre.ethers.getContractFactory("ResultManager");
   const resultManager = await ResultManager.deploy(SIGNER_ADDRESS, {
     gasPrice,
