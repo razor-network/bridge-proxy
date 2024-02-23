@@ -81,7 +81,7 @@ async function main() {
   await sleep(30000);
   console.log("Awake...");
   console.log(
-    "[ResultManager] Granting FORWARDER_ROLE to forwarder contract address", resultManager.address, forwarder.address
+    "[ResultManager] Granting FORWARDER_ROLE to forwarder contract address"
   );
   const FORWARDER_ROLE = await resultManager.FORWARDER_ROLE();
   const tx1 = await resultManager.grantRole(FORWARDER_ROLE, forwarder.address);
