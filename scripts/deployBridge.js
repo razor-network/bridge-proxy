@@ -2,7 +2,9 @@ const hre = require("hardhat");
 require('dotenv').config();
 
 const SIGNER_ADDRESS = process.env.SIGNER_ADDRESS || "0xC68AcC784227DbEaE98Bb6F5aC3C57cCe1aE9B4B";
+const DEPLOYER_ADDRESS = process.env.DEPLOYER_ADDRESS;
 const { checkTimeDifference } = require('./validateTimestamp');
+const { calculateGasPrice } = require('./calculateGasPrice');
 
 const RESULTGETTER_SELECTOR = "0xadd4c784";  
 const UPDATE_SELECTOR = "0x2d444fd5"; 
@@ -13,20 +15,27 @@ const sleep = (m) => new Promise((r) => setTimeout(r, m));
 
 async function main() {
   console.log("Validating block timestamp of the deploying chain")
-
+    if(!DEPLOYER_ADDRESS){
+        console.log("DEPLOYER_ADDRESS not set in env");
+        process.exit(0);
+    } else {
+        console.log("Deployer address:", DEPLOYER_ADDRESS);
+    }
   await checkTimeDifference()
   .then(() => console.log('Finished checking time difference.'))
   .catch(error => console.error('An error occurred:', error));
 
-
+  const gasPrice = await calculateGasPrice();
+  console.log("Gas Price is", gasPrice.toString() + " wei");
   console.log("Deploying ResultManager contract...");
   const signer = await hre.ethers.getSigner();
 
   const ResultManager = await hre.ethers.getContractFactory("ResultManager");
   const resultManager = await ResultManager.deploy(SIGNER_ADDRESS, {
-    // gasPrice: 10000000000, //10 GWEI
+    gasPrice,
     gasLimit: 3000000,
   });
+  await resultManager.deployed();
   console.log("ResultManager contract deployed at:", resultManager.address);
   console.log("Sleeping for 30s...")
   await sleep(30000);
@@ -35,9 +44,10 @@ async function main() {
   console.log("Deploying forwarder contract...");
   const Forwarder = await hre.ethers.getContractFactory("Forwarder");
   const forwarder = await Forwarder.deploy(resultManager.address, {
-    // gasPrice: 10000000000, //10 GWEI
+    gasPrice,
     gasLimit: 3000000,
   });
+  await forwarder.deployed();
   console.log("Forwarder contract deployed at:", forwarder.address);
   console.log("Sleeping for 30s...");
   await sleep(30000);
@@ -48,10 +58,11 @@ async function main() {
     "TransparentForwarder"
   );
   const transparentForwarder = await TransparentForwarder.deploy(forwarder.address, {
-    // gasPrice: 10000000000, //10 GWEI
+    gasPrice,
     gasLimit: 3000000,
     }
   );
+  await transparentForwarder.deployed();
   console.log(
     "TransparentForwarder contract deployed at:",
     transparentForwarder.address
@@ -63,9 +74,10 @@ async function main() {
   console.log("Deploying Staking contract...");
   const Staking = await hre.ethers.getContractFactory("Staking");
   const staking = await Staking.deploy({
-    // gasPrice: 10000000000, //10 GWEI
+    gasPrice,
     gasLimit: 3000000,
     });
+    await staking.deployed();
   console.log("Staking contract deployed at:", staking.address);
 
   console.log("Contract Addresses:");
