@@ -53,7 +53,7 @@ module.exports = {
     },
     polygon: {
       chainId: 137,
-      url: "https://rpc.ankr.com/polygon",
+      url: "https://polygon-mainnet.g.alchemy.com/v2/gRnVEzoAIzLe4xbgLj07oPUFfEcjlvDW",
       ledgerAccounts: [
         "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
       ],
@@ -61,67 +61,106 @@ module.exports = {
     },
     moonbeam: {
       chainId: 1284,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      url: "https://rpc.api.moonbeam.network", 
+      ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
       timeout: 600000,
     },
     meter: {
       chainId: 82,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      url: "https://rpc.meter.io", 
+      ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
       timeout: 600000,
     },
     zksyncEra: {
       chainId: 324,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      url: "https://mainnet.era.zksync.io", 
+      ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
       timeout: 600000,
     },
     canto: {
       chainId: 7700,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      url: "http://127.0.0.1:1248", 
+      ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
       timeout: 600000,
     },
     BNBMainnet: {
       chainId: 56,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      url: "https://bsc-dataseed4.bnbchain.org", 
+      ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
       timeout: 600000,
       },
     opBNBMainnet: {
       chainId: 204,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      url: "https://opbnb-mainnet-rpc.bnbchain.org	", 
+      ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
       timeout: 600000,
     },
     polygonZkEvmMainnet: {
       chainId: 1101,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      url: "https://polygonzkevm-mainnet.g.alchemy.com/v2/qPs1m6q-HNpDjUn_A10pYNjssZuWIVnq", 
+      ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
       timeout: 600000,
       },
     xdcMainnet: {
       chainId: 50,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      url: "https://rpc.xinfin.network/", 
+      ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
       timeout: 600000,
     },
     optimism: {
       chainId: 10,
-      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+      url: "https://mainnet.optimism.io", 
+      ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
       timeout: 600000,
     },
     arbitrumOne: {
         chainId: 42161,
-        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        url: "https://arb1.arbitrum.io/rpc", 
+        ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
         timeout: 600000,
       },
       base: {
         chainId: 8453,
-        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        url: "https://mainnet.base.org", 
+        ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
         timeout: 600000,
       },
       linea: {
         chainId: 59144,
-        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        url: "https://rpc.linea.build", 
+        ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
         timeout: 600000,
       },
       scroll: {
         chainId: 534352,
-        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
+        url: "https://rpc.scroll.io/", 
+        ledgerAccounts: [
+        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
         timeout: 600000,
       },
     //Testnets

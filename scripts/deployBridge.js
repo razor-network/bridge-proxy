@@ -8,6 +8,8 @@ const RESULTGETTER_SELECTOR = "0xadd4c784";
 const UPDATE_SELECTOR = "0x2d444fd5"; 
 const VALIDATE_SELECTOR = "0x41417a9d";
 
+const sleep = (m) => new Promise((r) => setTimeout(r, m));
+
 
 async function main() {
   console.log("Validating block timestamp of the deploying chain")
@@ -21,29 +23,49 @@ async function main() {
   const signer = await hre.ethers.getSigner();
 
   const ResultManager = await hre.ethers.getContractFactory("ResultManager");
-  const resultManager = await ResultManager.deploy(SIGNER_ADDRESS);
+  const resultManager = await ResultManager.deploy(SIGNER_ADDRESS, {
+    // gasPrice: 10000000000, //10 GWEI
+    gasLimit: 3000000,
+  });
   console.log("ResultManager contract deployed at:", resultManager.address);
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
 
   console.log("Deploying forwarder contract...");
   const Forwarder = await hre.ethers.getContractFactory("Forwarder");
-  const forwarder = await Forwarder.deploy(resultManager.address);
+  const forwarder = await Forwarder.deploy(resultManager.address, {
+    // gasPrice: 10000000000, //10 GWEI
+    gasLimit: 3000000,
+  });
   console.log("Forwarder contract deployed at:", forwarder.address);
+  console.log("Sleeping for 30s...");
+  await sleep(30000);
+  console.log("Awake...");
 
   console.log("Deploying Transparent forwarder contract...");
   const TransparentForwarder = await hre.ethers.getContractFactory(
     "TransparentForwarder"
   );
-  const transparentForwarder = await TransparentForwarder.deploy(
-    forwarder.address
+  const transparentForwarder = await TransparentForwarder.deploy(forwarder.address, {
+    // gasPrice: 10000000000, //10 GWEI
+    gasLimit: 3000000,
+    }
   );
   console.log(
     "TransparentForwarder contract deployed at:",
     transparentForwarder.address
   );
+  console.log("Sleeping for 30s...");
+  await sleep(30000);
+  console.log("Awake...");
 
   console.log("Deploying Staking contract...");
   const Staking = await hre.ethers.getContractFactory("Staking");
-  const staking = await Staking.deploy();
+  const staking = await Staking.deploy({
+    // gasPrice: 10000000000, //10 GWEI
+    gasLimit: 3000000,
+    });
   console.log("Staking contract deployed at:", staking.address);
 
   console.log("Contract Addresses:");
@@ -55,15 +77,21 @@ async function main() {
   });
 
   console.log("--------------------------------------------------------------");
-
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
   console.log(
-    "[ResultManager] Granting FORWARDER_ROLE to forwarder contract address"
+    "[ResultManager] Granting FORWARDER_ROLE to forwarder contract address", resultManager.address, forwarder.address
   );
   const FORWARDER_ROLE = await resultManager.FORWARDER_ROLE();
   const tx1 = await resultManager.grantRole(FORWARDER_ROLE, forwarder.address);
   await tx1.wait();
   console.log("Transaction hash: ", tx1.hash);
   console.log("--------------------------------------------------------------");
+
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
 
   console.log(
     "[Forwarder] Granting TRANSPARENT_FORWARDER_ROLE to transparent forwarder contract address"
@@ -77,6 +105,9 @@ async function main() {
   await tx2.wait();
   console.log("Transaction hash: ", tx2.hash);
   console.log("--------------------------------------------------------------");
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
 
   console.log(
     `[Forwarder] Granting FORWARDER_ADMIN_ROLE to admin(${signer.address}) `
@@ -87,6 +118,10 @@ async function main() {
   console.log("Transaction hash: ", tx3.hash);
   console.log("--------------------------------------------------------------");
 
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
+
   console.log(
     `[Forwarder] Setting resultGetter selector to ${RESULTGETTER_SELECTOR}`
   );
@@ -94,6 +129,10 @@ async function main() {
   await tx4.wait();
   console.log("Transaction hash: ", tx4.hash);
   console.log("--------------------------------------------------------------");
+
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
 
   console.log(
     `[Forwarder] Setting update selector to ${UPDATE_SELECTOR}`
@@ -103,6 +142,10 @@ async function main() {
   console.log("Transaction hash: ", tx5.hash);
   console.log("--------------------------------------------------------------");
 
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
+
   console.log(
     `[Forwarder] Setting validate selector to ${VALIDATE_SELECTOR}`
   );
@@ -110,6 +153,9 @@ async function main() {
   await tx6.wait();
   console.log("Transaction hash: ", tx6.hash);
   console.log("--------------------------------------------------------------");  
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
 
   console.log(
     `[TransparentForwarder] Granting TRANSPARENT_FORWARDER_ADMIN_ROLE to admin(${signer.address})`
@@ -123,6 +169,9 @@ async function main() {
   await tx7.wait();
   console.log("Transaction hash: ", tx7.hash);
   console.log("--------------------------------------------------------------");
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
 
   console.log(
     `[Tranparent Forwarder] setting staking address to ${staking.address}`
@@ -131,6 +180,9 @@ async function main() {
   await tx8.wait();
   console.log("Transaction hash: ", tx8.hash);
   console.log("--------------------------------------------------------------");
+  console.log("Sleeping for 30s...")
+  await sleep(30000);
+  console.log("Awake...");
 
   console.log(
     `[Staking] Granting TRANSPARENT_FORWARDER_ROLE to Transparent Forwarder contract address`
