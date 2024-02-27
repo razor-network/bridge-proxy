@@ -119,7 +119,7 @@ module.exports = {
       chainId: 1101,
       url: "https://polygonzkevm-mainnet.g.alchemy.com/v2/qPs1m6q-HNpDjUn_A10pYNjssZuWIVnq", 
       ledgerAccounts: [
-        "0x0519aF06037A0E6331f593E082eF4946e07e9741", // specify Ledger Address here (required) ADMIN ADDRESS
+        process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
       ],
       timeout: 600000,
       },
