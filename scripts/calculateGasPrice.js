@@ -13,10 +13,5 @@ async function calculateGasPrice() {
   }
 }
 
-// Detect if the script is being run directly by Node.js
-if (require.main === module) {
-    getGasPrice();
-}
-
 module.exports = { calculateGasPrice };
 
