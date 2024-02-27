@@ -1,7 +1,7 @@
 const hre = require("hardhat");
 
 async function checkTimeDifference() {
-  const { ORACLE_RPC_URL } = process.env;
+  const ORACLE_RPC_URL = "https://mainnet.skalenodes.com/v1/turbulent-unique-scheat"
 
   // Initialize providers
   const oracleProvider = new hre.ethers.providers.JsonRpcProvider(ORACLE_RPC_URL);
