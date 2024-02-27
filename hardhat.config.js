@@ -125,7 +125,7 @@ module.exports = {
       },
     xdcMainnet: {
       chainId: 50,
-      url: "https://rpc.xinfin.network/", 
+      url: "https://erpc.xinfin.network", 
       ledgerAccounts: [
         process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
       ],
