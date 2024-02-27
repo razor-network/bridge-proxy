@@ -9,7 +9,7 @@ const { calculateGasPrice } = require('./calculateGasPrice');
 const RESULTGETTER_SELECTOR = "0xadd4c784";  
 const UPDATE_SELECTOR = "0x2d444fd5"; 
 const VALIDATE_SELECTOR = "0x41417a9d";
-
+const SLEEP_TIME = 10000; // 30s
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
 
 
@@ -37,8 +37,8 @@ async function main() {
   });
   await resultManager.deployed();
   console.log("ResultManager contract deployed at:", resultManager.address);
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log("Deploying forwarder contract...");
@@ -49,8 +49,8 @@ async function main() {
   });
   await forwarder.deployed();
   console.log("Forwarder contract deployed at:", forwarder.address);
-  console.log("Sleeping for 30s...");
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`);
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log("Deploying Transparent forwarder contract...");
@@ -67,8 +67,8 @@ async function main() {
     "TransparentForwarder contract deployed at:",
     transparentForwarder.address
   );
-  console.log("Sleeping for 30s...");
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`);
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log("Deploying Staking contract...");
@@ -89,8 +89,8 @@ async function main() {
   });
 
   console.log("--------------------------------------------------------------");
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
   console.log(
     "[ResultManager] Granting FORWARDER_ROLE to forwarder contract address"
@@ -101,8 +101,8 @@ async function main() {
   console.log("Transaction hash: ", tx1.hash);
   console.log("--------------------------------------------------------------");
 
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log(
@@ -117,8 +117,8 @@ async function main() {
   await tx2.wait();
   console.log("Transaction hash: ", tx2.hash);
   console.log("--------------------------------------------------------------");
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log(
@@ -130,8 +130,8 @@ async function main() {
   console.log("Transaction hash: ", tx3.hash);
   console.log("--------------------------------------------------------------");
 
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log(
@@ -142,8 +142,8 @@ async function main() {
   console.log("Transaction hash: ", tx4.hash);
   console.log("--------------------------------------------------------------");
 
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log(
@@ -154,8 +154,8 @@ async function main() {
   console.log("Transaction hash: ", tx5.hash);
   console.log("--------------------------------------------------------------");
 
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log(
@@ -165,8 +165,8 @@ async function main() {
   await tx6.wait();
   console.log("Transaction hash: ", tx6.hash);
   console.log("--------------------------------------------------------------");  
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log(
@@ -181,8 +181,8 @@ async function main() {
   await tx7.wait();
   console.log("Transaction hash: ", tx7.hash);
   console.log("--------------------------------------------------------------");
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log(
@@ -192,8 +192,8 @@ async function main() {
   await tx8.wait();
   console.log("Transaction hash: ", tx8.hash);
   console.log("--------------------------------------------------------------");
-  console.log("Sleeping for 30s...")
-  await sleep(30000);
+  console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
+  await sleep(SLEEP_TIME);
   console.log("Awake...");
 
   console.log(
