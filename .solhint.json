@@ -21,7 +21,7 @@
     "private-vars-leading-underscore": "error",
     "quotes": ["error", "double"],
     "reentrancy": "error",
-    "var-name-mixedcase": "error",
+    "var-name-mixedcase": "warn",
     "visibility-modifier-order": "error",
     "reason-string": "error"
   }
