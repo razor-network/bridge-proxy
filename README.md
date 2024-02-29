@@ -277,7 +277,7 @@ Make sure to install foundry following the steps [here](https://book.getfoundry.
 
 using private key: 
 ```bash
-forge script script/Deployer.s.sol:Deployer --rpc-url https://polygon-mumbai.g.alchemy.com/v2/faKTLG7KNMgar4s7gSuV5H3jI6KAwLjd --optimize --private-key ${PRIV_KEY} -vvv
+forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize --private-key ${PRIV_KEY} -vvv
 ```
 Note: the PRIV_KEY should match the derived DEPLOYER_ADDRESS set in ENV
 
