@@ -10,6 +10,7 @@ const RESULTGETTER_SELECTOR = "0xadd4c784";
 const UPDATE_SELECTOR = "0x2d444fd5"; 
 const VALIDATE_SELECTOR = "0x41417a9d";
 const SLEEP_TIME = 10000; // 10s
+const GAS_LIMIT = 30000000; // 30M
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
 
 
@@ -33,7 +34,7 @@ async function main() {
   const ResultManager = await hre.ethers.getContractFactory("ResultManager");
   const resultManager = await ResultManager.deploy(SIGNER_ADDRESS, {
     gasPrice,
-    gasLimit: 30000000,
+    gasLimit: GAS_LIMIT,
   });
   await resultManager.deployed();
   console.log("ResultManager contract deployed at:", resultManager.address);
@@ -45,7 +46,7 @@ async function main() {
   const Forwarder = await hre.ethers.getContractFactory("Forwarder");
   const forwarder = await Forwarder.deploy(resultManager.address, {
     gasPrice,
-    gasLimit: 30000000,
+    gasLimit: GAS_LIMIT,
   });
   await forwarder.deployed();
   console.log("Forwarder contract deployed at:", forwarder.address);
@@ -59,7 +60,7 @@ async function main() {
   );
   const transparentForwarder = await TransparentForwarder.deploy(forwarder.address, {
     gasPrice,
-    gasLimit: 30000000,
+    gasLimit: GAS_LIMIT,
     }
   );
   await transparentForwarder.deployed();
@@ -75,7 +76,7 @@ async function main() {
   const Staking = await hre.ethers.getContractFactory("Staking");
   const staking = await Staking.deploy({
     gasPrice,
-    gasLimit: 30000000,
+    gasLimit: GAS_LIMIT,
     });
     await staking.deployed();
   console.log("Staking contract deployed at:", staking.address);
