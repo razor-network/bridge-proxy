@@ -284,7 +284,7 @@ Note: the PRIV_KEY should match the derived DEPLOYER_ADDRESS set in ENV
 using ledger: 
 
 ```bash
-forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize  -vvvv --ledger --sender ${DEPLOYER_ADDRESS} --hd-paths "m/44'/60'/${index}'/0/0" --broadcast
+forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize  -vvvv --ledger --sender ${DEPLOYER_ADDRESS} --hd-paths "m/44'/60'/${index}'/0/0" 
 ```
 
 Note: 
