@@ -10,7 +10,7 @@ const RESULTGETTER_SELECTOR = "0xadd4c784";
 const UPDATE_SELECTOR = "0x2d444fd5"; 
 const VALIDATE_SELECTOR = "0x41417a9d";
 const SLEEP_TIME = 10000; // 10s
-const GAS_LIMIT = 30000000; // 30M
+const GAS_LIMIT = 3000000; // 3M, for SKALE networks 30M is suggested
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
 
 
