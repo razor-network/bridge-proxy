@@ -9,7 +9,7 @@ const { calculateGasPrice } = require('./calculateGasPrice');
 const RESULTGETTER_SELECTOR = "0xadd4c784";  
 const UPDATE_SELECTOR = "0x2d444fd5"; 
 const VALIDATE_SELECTOR = "0x41417a9d";
-const SLEEP_TIME = 10000; // 10s
+const SLEEP_TIME = 20000; // 10s
 const sleep = (m) => new Promise((r) => setTimeout(r, m));
 
 
@@ -31,10 +31,7 @@ async function main() {
 
   console.log("Deploying ResultManager contract...");
   const ResultManager = await hre.ethers.getContractFactory("ResultManager");
-  const resultManager = await ResultManager.deploy(SIGNER_ADDRESS, {
-    gasPrice,
-    gasLimit: 30000000,
-  });
+  const resultManager = await ResultManager.deploy(SIGNER_ADDRESS);
   await resultManager.deployed();
   console.log("ResultManager contract deployed at:", resultManager.address);
   console.log(`Sleeping for ${SLEEP_TIME/1000}s...`)
@@ -43,10 +40,7 @@ async function main() {
 
   console.log("Deploying forwarder contract...");
   const Forwarder = await hre.ethers.getContractFactory("Forwarder");
-  const forwarder = await Forwarder.deploy(resultManager.address, {
-    gasPrice,
-    gasLimit: 30000000,
-  });
+  const forwarder = await Forwarder.deploy(resultManager.address);
   await forwarder.deployed();
   console.log("Forwarder contract deployed at:", forwarder.address);
   console.log(`Sleeping for ${SLEEP_TIME/1000}s...`);
@@ -57,11 +51,7 @@ async function main() {
   const TransparentForwarder = await hre.ethers.getContractFactory(
     "TransparentForwarder"
   );
-  const transparentForwarder = await TransparentForwarder.deploy(forwarder.address, {
-    gasPrice,
-    gasLimit: 30000000,
-    }
-  );
+  const transparentForwarder = await TransparentForwarder.deploy(forwarder.address);
   await transparentForwarder.deployed();
   console.log(
     "TransparentForwarder contract deployed at:",
@@ -73,10 +63,7 @@ async function main() {
 
   console.log("Deploying Staking contract...");
   const Staking = await hre.ethers.getContractFactory("Staking");
-  const staking = await Staking.deploy({
-    gasPrice,
-    gasLimit: 30000000,
-    });
+  const staking = await Staking.deploy();
     await staking.deployed();
   console.log("Staking contract deployed at:", staking.address);
 
