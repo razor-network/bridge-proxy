@@ -173,14 +173,14 @@ module.exports = {
       },
     //Testnets
     europaTestnet: {
-        chainId: 476158412,
-        url: "https://staging-v3.skalenodes.com/v1/staging-legal-crazy-castor",
+        chainId: 1444673419,
+        url: "https://testnet.skalenodes.com/v1/juicy-low-small-testnet",
         accounts: [process.env.TESTNET_DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
         timeout: 600000,
       },
       calypsoTestnet: {
-        chainId: 344106930,
-        url: "https://staging-v3.skalenodes.com/v1/staging-utter-unripe-menkar",
+        chainId: 974399131,
+        url: "https://testnet.skalenodes.com/v1/giant-half-dual-testnet",
         accounts: [process.env.TESTNET_DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
         timeout: 600000,
       },
