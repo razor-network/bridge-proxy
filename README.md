@@ -275,6 +275,12 @@ Make sure to install foundry following the steps [here](https://book.getfoundry.
 
 - Refer to **ENV** for required details **(NETWORK, DEPLOYER_ADDRESS, SIGNER_ADDRESS)**
 
+**Important**: 
+The following needs to be run before deploying contracts with forge. (prepend the deployment command)
+```bash
+npm run validate
+```
+
 using private key: 
 ```bash
 forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize --private-key ${PRIV_KEY} -vvv
@@ -285,12 +291,6 @@ using ledger:
 
 ```bash
 forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize  -vvvv --ledger --sender ${DEPLOYER_ADDRESS} --hd-paths "m/44'/60'/${index}'/0/0" 
-```
-
-**Important**: 
-The following needs to be run before deploying contracts with forge. (prepend the deployment command)
-```bash
-npm run validate
 ```
 
 Note: 
