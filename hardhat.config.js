@@ -248,7 +248,7 @@ module.exports = {
      },
      sepolia: {
         chainId: 11155111,
-        url: "https://eth-sepolia.g.alchemy.com/v2/djAOqbdbe8OwULJu8EQld-Yb4bWuiBnJ",
+        url: "https://sepolia.gateway.tenderly.co",
         accounts: [process.env.TESTNET_DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
         timeout: 600000,
       },
