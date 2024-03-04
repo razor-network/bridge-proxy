@@ -171,6 +171,14 @@ module.exports = {
       ],
         timeout: 600000,
       },
+      blast: {
+        chainId: 81457,
+        url: "https://rpc.blast.io", 
+        ledgerAccounts: [
+        process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
+        timeout: 600000,
+      },
     //Testnets
     europaTestnet: {
         chainId: 1444673419,
