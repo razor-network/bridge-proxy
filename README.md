@@ -273,7 +273,7 @@ You'll need to replace `[NETWORK_NAME]` with the identifier you specified in the
 
 Make sure to install foundry following the steps [here](https://book.getfoundry.sh/getting-started/installation).
 
-- refer to ENV for required details (NETWORK, DEPLOYER_ADDRESS, SIGNER_ADDRESS)
+- Refer to **ENV** for required details **(NETWORK, DEPLOYER_ADDRESS, SIGNER_ADDRESS)**
 
 using private key: 
 ```bash
@@ -287,9 +287,15 @@ using ledger:
 forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize  -vvvv --ledger --sender ${DEPLOYER_ADDRESS} --hd-paths "m/44'/60'/${index}'/0/0" 
 ```
 
+**Important**: 
+The following needs to be run before deploying contracts with forge. (prepend the deployment command)
+```bash
+npm run validate
+```
+
 Note: 
 - use `--broadcast` flag to deploy to live network
-- use `--verify` flag to verify contracts deployed to networks that support it
+- use `--slow` flag to wait for txn receipt before next txn
 
 
 ### 3. Raise a Pull Request (PR)
