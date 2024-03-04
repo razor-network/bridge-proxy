@@ -21,7 +21,7 @@ module.exports = {
     },
     ethereum: {
       chainId: 1,
-      url: "https://eth-mainnet.g.alchemy.com/v2/Dfl1-TVt6OKlnbADGvHTSRJBbrXEPeYG",
+      url: "https://eth.meowrpc.com",
       ledgerAccounts: [
         process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
       ],
