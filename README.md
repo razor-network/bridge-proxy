@@ -259,7 +259,7 @@ To add a new network in bridge:
    - `[YOUR-RPC-URL]` with the full URL to your network's RPC endpoint.
    - `[CHAIN_ID]` with the specific chain ID of your network.
 
-### 2. Deployment Script
+### 2. Deployment Script (HARDHAT)
 
 Once you've set up the network configuration, provide the following deployment script that needs to be run:
 
@@ -269,8 +269,39 @@ npx hardhat run scripts/deployBridge.js --network [NETWORK_NAME]
 
 You'll need to replace `[NETWORK_NAME]` with the identifier you specified in the first step.
 
+### 3. Deployment Script (FOUNDRY)
+
+Make sure to install foundry following the steps [here](https://book.getfoundry.sh/getting-started/installation).
+
+- Refer to **ENV** for required details **(NETWORK, DEPLOYER_ADDRESS, SIGNER_ADDRESS)**
+
+**Important**: 
+The following needs to be run before deploying contracts with forge. (prepend the deployment command)
+```bash
+npm run validate
+```
+
+using private key: 
+```bash
+forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize --private-key ${PRIV_KEY} -vvv
+```
+Note: the PRIV_KEY should match the derived DEPLOYER_ADDRESS set in ENV
+
+using ledger: 
+
+```bash
+forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize  -vvvv --ledger --sender ${DEPLOYER_ADDRESS} --hd-paths "m/44'/60'/${index}'/0/0" 
+```
+
+Note: 
+- use `--broadcast` flag to deploy to live network
+- use `--slow` flag to wait for txn receipt before next txn
+
+
 ### 3. Raise a Pull Request (PR)
 
 - Commit and push your changes.
 - Raise a PR against the original repository.
 - Describe your changes and wait for review.
+
+
