@@ -109,7 +109,7 @@ module.exports = {
       },
     opBNBMainnet: {
       chainId: 204,
-      url: "https://opbnb-mainnet-rpc.bnbchain.org	", 
+      url: "https://opbnb-mainnet-rpc.bnbchain.org", 
       ledgerAccounts: [
         process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
       ],
