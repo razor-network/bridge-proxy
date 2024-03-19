@@ -93,7 +93,7 @@ module.exports = {
     },
     canto: {
       chainId: 7700,
-      url: "http://127.0.0.1:1248", 
+      url: "https://canto.slingshot.finance/", 
       ledgerAccounts: [
         process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
       ],
@@ -179,7 +179,49 @@ module.exports = {
       ],
         timeout: 600000,
       },
+      gnosis: {
+        chainId: 100,
+        url: "https://rpc.gnosischain.com", 
+        ledgerAccounts: [
+        process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
+        timeout: 600000,
+      },
+      avalanche: {
+        chainId: 43114,
+        url: "https://avax.meowrpc.com", 
+        ledgerAccounts: [
+        process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
+        timeout: 600000,
+      },
+      conflux: {
+        chainId: 1030,
+        url: "https://evm.confluxrpc.com", 
+        ledgerAccounts: [
+        process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
+        timeout: 600000,
+      },
     //Testnets
+    confluxTestnet: {
+        chainId: 71,
+        url: "https://evmtestnet.confluxrpc.com",
+        accounts: [process.env.TESTNET_DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 600000,
+      },
+      gnosisTestnet: {
+        chainId: 10200,
+        url: "https://rpc.chiadochain.net",
+        accounts: [process.env.TESTNET_DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 600000,
+      },
+      avaxTestnet: {
+        chainId: 43113,
+        url: "https://api.avax-test.network/ext/C/rpc",
+        accounts: [process.env.TESTNET_DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 600000,
+      },
     europaTestnet: {
         chainId: 1444673419,
         url: "https://testnet.skalenodes.com/v1/juicy-low-small-testnet",
