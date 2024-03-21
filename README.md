@@ -33,6 +33,18 @@ message
 
 Deploy bridge on destination chain using `deployBridge.js` script.
 Run: `npx hardhat run scripts/deployBridge.js --network [NETWORK]`
+The above script will perform following operation:
+
+1. Deploy ResultManager contract.
+1. Deploy Forwarder contract.
+1. Deploy TransparentForwarder contract.
+1. Deploy Staking contract.
+1. In ResultManager contract, grant `FORWARDER_ROLE` to Forwarder contract address.
+1. In Forwarder contract, grant `TRANSPARENT_FORWARDER_ROLE` to TransparentForwarder contract address.
+1. In Forwarder contract, grant `FORWARDER_ADMIN_ROLE` to deployer address.
+1. In Forwarder contract, set `resultGetterSelector`, `updateSelector` and `validateSelector`.
+1. In TransparentForwarder contract, grant `TRANSPARENT_FORWARDER_ADMIN_ROLE` to deployer address.
+1. In Staking contract, grant `TRANSPARENT_FORWARDER_ROLE` to TransparentForwarder contract address.
 
 > **_NOTE:_** Please verify `SIGNER_ADDRESS`, and `DEPLOYER_ADDRESS` in `scripts/deployBridge.js` before deploying.
 
