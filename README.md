@@ -167,10 +167,10 @@ The above script will perform following operation:
 
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
-| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
-| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
-| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+| ResultManager        | 0x72f8aa0901732e251d02381e76506a226e3394b8 |
+| Forwarder            | 0xc8039f52ad8c4e5159e22cd6b9ac06cf6ba31bc7 |
+| TransparentForwarder | 0x8a666910eb0f0cdbd66e974fd79b52c1050520fc |
+| Staking              | 0x99ffef43ab37fb70e75ea40054fde33c6c386256 |
 
 
 ### Arbitrum Sepolia Testnet
