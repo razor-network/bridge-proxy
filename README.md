@@ -50,6 +50,15 @@ The above script will perform following operation:
 
 ## Contract Address
 
+### XDC Mainnet
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0x528E94882C5e3AB519ce2eFfc819509c062B32a0 |
+| Forwarder            | 0x73280eA1053164528517CF176dFf6Fb42d5Ca7d4 |
+| TransparentForwarder | 0xEb9324f0d17e4dEa7371f6dddf361D9bB453BEb9 |
+| Staking              | 0x34775d367350a9a644bf70129d0356CCFF6238C3 |
+
 ### Calypso Testnet
 
 | Contract             | Address                                    |
@@ -104,7 +113,6 @@ The above script will perform following operation:
 | TransparentForwarder | 0x35a08bE1C8Ae3D084d621f31622dFEB32c049Ef7 |
 | Staking              | 0x1a062C28715D521d7350E5f2F98766B899CCEae9 |
 
-
 ### XDC Testnet (Apothem)
 
 | Contract             | Address                                    |
@@ -132,7 +140,6 @@ The above script will perform following operation:
 | TransparentForwarder | 0xB95106C045D7d8FD5D14EDfe0D3ED48cd79cc844 |
 | Staking              | 0x3BD72F106d94F3c5c96C5F49F89158cCf7C066DE |
 
-
 ### Meter Testnet
 
 | Contract             | Address                                    |
@@ -141,7 +148,6 @@ The above script will perform following operation:
 | Forwarder            | 0x75f42f6fcc39A5FfAF3Ec8582591cE301A7487b1 |
 | TransparentForwarder | 0xF6bb487AA9Ea62e94B8737fA5c1B45835066499a |
 | Staking              | 0x91732f7865397ebc66B351D1f645CAe47BC0836f |
-
 
 ### Sepolia Testnet
 
@@ -152,7 +158,6 @@ The above script will perform following operation:
 | TransparentForwarder | 0x8cE69db7CA670A22073199C2934FAbC72084a3BC |
 | Staking              | 0x8246Fc36CB2BB9931AdC9F613B6761C65D6EBe32 |
 
-
 ### OP Sepolia Testnet
 
 | Contract             | Address                                    |
@@ -162,7 +167,6 @@ The above script will perform following operation:
 | TransparentForwarder | 0x8233Ff76BAa2B270f728a22061E2E0574AA4D2ef |
 | Staking              | 0xA21Ce507E2a636Ed3fcEd017DAD68B1CE2BcA1D1 |
 
-
 ### Base Sepolia Testnet
 
 | Contract             | Address                                    |
@@ -171,7 +175,6 @@ The above script will perform following operation:
 | Forwarder            | 0xc8039f52ad8c4e5159e22cd6b9ac06cf6ba31bc7 |
 | TransparentForwarder | 0x8a666910eb0f0cdbd66e974fd79b52c1050520fc |
 | Staking              | 0x99ffef43ab37fb70e75ea40054fde33c6c386256 |
-
 
 ### Arbitrum Sepolia Testnet
 
@@ -190,7 +193,6 @@ The above script will perform following operation:
 | Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
 | TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
 | Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF | -->
-
 
 ### Linea Goerli Testnet
 
@@ -218,8 +220,6 @@ The above script will perform following operation:
 | Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
 | TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
 | Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
-
-
 
 ## Adding a New Network to Bridge
 
@@ -265,33 +265,34 @@ Make sure to install foundry following the steps [here](https://book.getfoundry.
 
 - Refer to **ENV** for required details **(NETWORK, DEPLOYER_ADDRESS, SIGNER_ADDRESS)**
 
-**Important**: 
+**Important**:
 The following needs to be run before deploying contracts with forge. (prepend the deployment command)
+
 ```bash
 npm run validate
 ```
 
-using private key: 
+using private key:
+
 ```bash
 forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize --private-key ${PRIV_KEY} -vvv
 ```
+
 Note: the PRIV_KEY should match the derived DEPLOYER_ADDRESS set in ENV
 
-using ledger: 
+using ledger:
 
 ```bash
-forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize  -vvvv --ledger --sender ${DEPLOYER_ADDRESS} --hd-paths "m/44'/60'/${index}'/0/0" 
+forge script script/Deployer.s.sol:Deployer --rpc-url $RPC_URL --optimize  -vvvv --ledger --sender ${DEPLOYER_ADDRESS} --hd-paths "m/44'/60'/${index}'/0/0"
 ```
 
-Note: 
+Note:
+
 - use `--broadcast` flag to deploy to live network
 - use `--slow` flag to wait for txn receipt before next txn
-
 
 ### 3. Raise a Pull Request (PR)
 
 - Commit and push your changes.
 - Raise a PR against the original repository.
 - Describe your changes and wait for review.
-
-
