@@ -77,14 +77,14 @@ The above script will perform following operation:
 | TransparentForwarder | 0xed07cdA9bfA5337A50bFFE5c2ADD51cE8f2cF4EF |
 | Staking              | 0x10ae6E0a22c224F6f45a9aF16171f75B972385A8 |
 
-<!-- ### Moonbase Alpha
+### Moonbase Alpha
 
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| ResultManager        | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
-| Forwarder            | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
-| TransparentForwarder | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
-| Staking              | 0xe4371caE0ab6Fb4875BB1002c0230CB0a1423616 | -->
+| ResultManager        | 0xea0127Ebd31617D4672DBCAd34f7a6Be5e35D7e2 |
+| Forwarder            | 0x7c4A71d4A92431B76986aEbcfc3e6db49E432412 |
+| TransparentForwarder | 0xE6A9e42aE9ADE31D3Aef73202A8Df8167Ed01683 |
+| Staking              | 0x3D98095eb64d3d14C7f4EF3cf8b73cd1B20429c3 |
 
 ### zkSync Era Sepolia Testnet
 
