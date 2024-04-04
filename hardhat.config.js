@@ -203,6 +203,22 @@ module.exports = {
       ],
         timeout: 600000,
       },
+      fraxtal: {
+        chainId: 252,
+        url: "https://rpc.frax.com", 
+        ledgerAccounts: [
+        process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
+        timeout: 600000,
+      },
+      mode: {
+        chainId: 34443,
+        url: "https://mainnet.mode.network/", 
+        ledgerAccounts: [
+        process.env.DEPLOYER_ADDRESS, // specify Ledger Address here (required) ADMIN ADDRESS
+      ],
+        timeout: 600000,
+      },
     //Testnets
     confluxTestnet: {
         chainId: 71,
@@ -333,6 +349,18 @@ module.exports = {
       blastSepolia: {
         chainId: 168587773,
         url: "https://sepolia.blast.io",
+        accounts: [process.env.TESTNET_DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 600000,
+      },
+      fraxtalTestnet: {
+        chainId: 2522,
+        url: "https://rpc.testnet.frax.com",
+        accounts: [process.env.TESTNET_DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
+        timeout: 600000,
+      },
+      modeTestnet: {
+        chainId: 919,
+        url: "https://sepolia.mode.network",
         accounts: [process.env.TESTNET_DEPLOYER_KEY || "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"],
         timeout: 600000,
       },
