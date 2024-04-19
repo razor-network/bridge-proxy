@@ -21,42 +21,27 @@ module.exports = {
     },
     calypsoMainnet: {
       chainId: 1564830818,
-      url: " https://mainnet.skalenodes.com/v1/honorable-steel-rasalhague",
-      ledgerAccounts: [
-        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
-      ],
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame,
       timeout: 600000, // this is important, because otherwise the request can time out before you've reviewed and confirmed your transaction on the Ledger
     },
     nebulaMainnet: {
       chainId: 1482601649,
-      url: "https://mainnet.skalenodes.com/v1/green-giddy-denebola",
-      ledgerAccounts: [
-        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
-      ],
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame,
       timeout: 600000,
     },
     titanMainnet: {
       chainId: 1350216234,
-      url: "https://mainnet.skalenodes.com/v1/parallel-stormy-spica",
-      ledgerAccounts: [
-        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
-      ],
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame,
       timeout: 600000,
     },
     europaMainnet: {
       chainId: 2046399126,
-      url: "https://mainnet.skalenodes.com/v1/elated-tan-skat",
-      ledgerAccounts: [
-        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
-      ],
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame,
       timeout: 600000,
     },
     polygon: {
       chainId: 137,
-      url: "https://polygon-mumbai.g.alchemy.com/v2/qd48HaAN9IlVsVhr-Pp7mjWeE8CG7OG-",
-      ledgerAccounts: [
-        "0xB32A48c1FC59A9954617D8B22c72f509E985a852", // specify Ledger Address here (required) ADMIN ADDRESS
-      ],
+      url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame,
       timeout: 600000,
     },
     moonbeam: {
