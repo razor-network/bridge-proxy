@@ -24,6 +24,11 @@ module.exports = {
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame,
       timeout: 600000, // this is important, because otherwise the request can time out before you've reviewed and confirmed your transaction on the Ledger
     },
+    eth: {
+        chainId: 1,
+        url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame,
+        timeout: 600000, // this is important, because otherwise the request can time out before you've reviewed and confirmed your transaction on the Ledger
+      },
     nebulaMainnet: {
       chainId: 1482601649,
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame,
@@ -78,6 +83,7 @@ module.exports = {
       chainId: 1101,
       url: "http://127.0.0.1:1248", // this is the RPC endpoint exposed by Frame
       timeout: 600000,
+      gasPrice: 3000000000
       },
     xdcMainnet: {
       chainId: 50,
