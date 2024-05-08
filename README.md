@@ -80,6 +80,15 @@ The above script will perform following operation:
 | TransparentForwarder | 0xEb9324f0d17e4dEa7371f6dddf361D9bB453BEb9 |
 | Staking              | 0x34775d367350a9a644bf70129d0356CCFF6238C3 |
 
+### Base (forge)
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0x528E94882C5e3AB519ce2eFfc819509c062B32a0 |
+| Forwarder            | 0x73280eA1053164528517CF176dFf6Fb42d5Ca7d4 |
+| TransparentForwarder | 0xEb9324f0d17e4dEa7371f6dddf361D9bB453BEb9 |
+| Staking              | 0x34775d367350a9a644bf70129d0356CCFF6238C3 |
+
 ### Moonbeam (hardhat)
 
 | Contract             | Address                                    |
@@ -116,15 +125,6 @@ The above script will perform following operation:
 | TransparentForwarder | 0xEb9324f0d17e4dEa7371f6dddf361D9bB453BEb9 |
 | Staking              | 0x34775d367350a9a644bf70129d0356CCFF6238C3 |
 
-### Base (forge)
-
-| Contract             | Address                                    |
-| -------------------- | ------------------------------------------ |
-| ResultManager        | 0x528E94882C5e3AB519ce2eFfc819509c062B32a0 |
-| Forwarder            | 0x73280eA1053164528517CF176dFf6Fb42d5Ca7d4 |
-| TransparentForwarder | 0xEb9324f0d17e4dEa7371f6dddf361D9bB453BEb9 |
-| Staking              | 0x34775d367350a9a644bf70129d0356CCFF6238C3 |
-
 ### XDC Mainnet (hardhat)
 
 | Contract             | Address                                    |
@@ -134,15 +134,33 @@ The above script will perform following operation:
 | TransparentForwarder | 0xEb9324f0d17e4dEa7371f6dddf361D9bB453BEb9 |
 | Staking              | 0x34775d367350a9a644bf70129d0356CCFF6238C3 |
 
+### Europa Liquidity Hub (hardhat)
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0x951350581E842F85800cC8dA0b96192a71DfEc0d |
+| Forwarder            | 0xD910E832ead086314409D56ECD3D2dB1256CfF58 |
+| TransparentForwarder | 0xb28AE76CA80a461c633624F9764f37235800F533 |
+| Staking              | 0x7F56e39f6629e5D5E281fB9F65BdC7121F2F6E69 |
+
+### Titan AI Hub (hardhat)
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0x951350581E842F85800cC8dA0b96192a71DfEc0d |
+| Forwarder            | 0xD910E832ead086314409D56ECD3D2dB1256CfF58 |
+| TransparentForwarder | 0xb28AE76CA80a461c633624F9764f37235800F533 |
+| Staking              | 0x7F56e39f6629e5D5E281fB9F65BdC7121F2F6E69 |
+
 ## Testnet
 ### Calypso Testnet
 
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| ResultManager        | 0xFEb70E7Ad36b425b698184B3d5b1F856c8132a42 |
-| Forwarder            | 0xa26232204879C4370806cA56F821b9fe97eAeF5B |
-| TransparentForwarder | 0xbF5c5AD799b2245BA36562BebfcbAbc5D508Eb84 |
-| Staking              | 0x03bD73afB6d3C5B86578010C099E5474aF1aABeF |
+| ResultManager        | 0x528E94882C5e3AB519ce2eFfc819509c062B32a0 |
+| Forwarder            | 0x73280eA1053164528517CF176dFf6Fb42d5Ca7d4 |
+| TransparentForwarder | 0xEb9324f0d17e4dEa7371f6dddf361D9bB453BEb9 |
+| Staking              | 0x34775d367350a9a644bf70129d0356CCFF6238C3 |
 
 ### Europa Testnet
 
