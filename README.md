@@ -152,6 +152,15 @@ The above script will perform following operation:
 | TransparentForwarder | 0xb28AE76CA80a461c633624F9764f37235800F533 |
 | Staking              | 0x7F56e39f6629e5D5E281fB9F65BdC7121F2F6E69 |
 
+### Calypso hub (hardhat)
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xeDbaBd3D5A871f54838315d99BF7d06749159005 |
+| Forwarder            | 0xa9f5E56320EED42051db050DfB73B5549c78BB3B |
+| TransparentForwarder | 0x0AA11CC12410c0F09fc881a362b0c2E695969162 |
+| Staking              | 0x81321F01CE2CB74510A8B33f090c85887f51C402 |
+
 ## Testnet
 ### Calypso Testnet
 
