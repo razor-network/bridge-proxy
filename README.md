@@ -161,6 +161,15 @@ The above script will perform following operation:
 | TransparentForwarder | 0x0AA11CC12410c0F09fc881a362b0c2E695969162 |
 | Staking              | 0x81321F01CE2CB74510A8B33f090c85887f51C402 |
 
+### Nebula Gaming hub (hardhat)
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xBd4642B6E698cE2A6DFD7bd69FDF5Af968bE05d9 |
+| Forwarder            | 0x951350581E842F85800cC8dA0b96192a71DfEc0d |
+| TransparentForwarder | 0xD910E832ead086314409D56ECD3D2dB1256CfF58 |
+| Staking              | 0xb28AE76CA80a461c633624F9764f37235800F533 |
+
 ## Testnet
 ### Calypso Testnet
 
