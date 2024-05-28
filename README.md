@@ -152,6 +152,24 @@ The above script will perform following operation:
 | TransparentForwarder | 0xb28AE76CA80a461c633624F9764f37235800F533 |
 | Staking              | 0x7F56e39f6629e5D5E281fB9F65BdC7121F2F6E69 |
 
+### Calypso hub (hardhat)
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xeDbaBd3D5A871f54838315d99BF7d06749159005 |
+| Forwarder            | 0xa9f5E56320EED42051db050DfB73B5549c78BB3B |
+| TransparentForwarder | 0x0AA11CC12410c0F09fc881a362b0c2E695969162 |
+| Staking              | 0x81321F01CE2CB74510A8B33f090c85887f51C402 |
+
+### Nebula Gaming hub (hardhat)
+
+| Contract             | Address                                    |
+| -------------------- | ------------------------------------------ |
+| ResultManager        | 0xBd4642B6E698cE2A6DFD7bd69FDF5Af968bE05d9 |
+| Forwarder            | 0x951350581E842F85800cC8dA0b96192a71DfEc0d |
+| TransparentForwarder | 0xD910E832ead086314409D56ECD3D2dB1256CfF58 |
+| Staking              | 0xb28AE76CA80a461c633624F9764f37235800F533 |
+
 ## Testnet
 ### Calypso Testnet
 
