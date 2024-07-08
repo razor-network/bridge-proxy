@@ -35,8 +35,8 @@ async function main() {
     const tx2 = await transparentForwarder.setForwarder(forwarder.address);
     await tx2.wait();
     console.log("Transaction hash: ", tx2.hash);
-    console.log("Sleeping for 1 minute...")
-    await sleep(60000);
+    console.log("Sleeping for 30s...")
+    await sleep(30000);
     console.log("Awake...");
 
     console.log(
@@ -51,8 +51,8 @@ async function main() {
     await tx3.wait();
     console.log("Transaction hash: ", tx3.hash);
     console.log("--------------------------------------------------------------");
-    console.log("Sleeping for 1 minute...")
-    await sleep(60000);
+    console.log("Sleeping for 30s...")
+    await sleep(30000);
     console.log("Awake...");
 
     console.log(

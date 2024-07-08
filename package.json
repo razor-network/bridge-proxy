@@ -4,16 +4,17 @@
     "@nomicfoundation/hardhat-ledger": "^1.0.2",
     "@nomicfoundation/hardhat-toolbox": "^1.0.2",
     "@openzeppelin/merkle-tree": "^1.0.5",
-    "hardhat": "^2.10.0",
-    "hardhat-abi-exporter": "^2.10.0",
-    "hardhat-gas-reporter": "^1.0.9"
+    "hardhat": "^2.22.1",
+    "hardhat-abi-exporter": "^2.10.1",
+    "hardhat-gas-reporter": "^2.0.2"
   },
   "scripts": {
     "lint:sol": "solhint 'contracts/**/*.sol'",
     "lint:sol:fix": "prettier 'contracts/**/*.sol' -w",
     "gasCost": "npx hardhat test && node gasCost.js",
     "coverage": "hardhat coverage && npm run coverage:check",
-    "coverage:check": "istanbul check-coverage --statements 90 --branches 60 --functions 85 --lines 86"
+    "coverage:check": "istanbul check-coverage --statements 90 --branches 60 --functions 85 --lines 86",
+    "validate": "./scripts/validate.sh"
   },
   "dependencies": {
     "@openzeppelin/contracts": "^4.9.5",
