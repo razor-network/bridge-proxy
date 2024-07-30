@@ -156,19 +156,19 @@ The above script will perform following operation:
 
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| ResultManager        | 0xeDbaBd3D5A871f54838315d99BF7d06749159005 |
-| Forwarder            | 0xa9f5E56320EED42051db050DfB73B5549c78BB3B |
-| TransparentForwarder | 0x0AA11CC12410c0F09fc881a362b0c2E695969162 |
-| Staking              | 0x81321F01CE2CB74510A8B33f090c85887f51C402 |
+| ResultManager        | 0x25D59cDFac1333E0DFCD9dcB008a2C329b35f25E |
+| Forwarder            | 0xBd4642B6E698cE2A6DFD7bd69FDF5Af968bE05d9 |
+| TransparentForwarder | 0x951350581E842F85800cC8dA0b96192a71DfEc0d |
+| Staking              | 0xD910E832ead086314409D56ECD3D2dB1256CfF58 |
 
 ### Nebula Gaming hub (hardhat)
 
 | Contract             | Address                                    |
 | -------------------- | ------------------------------------------ |
-| ResultManager        | 0xBd4642B6E698cE2A6DFD7bd69FDF5Af968bE05d9 |
-| Forwarder            | 0x951350581E842F85800cC8dA0b96192a71DfEc0d |
-| TransparentForwarder | 0xD910E832ead086314409D56ECD3D2dB1256CfF58 |
-| Staking              | 0xb28AE76CA80a461c633624F9764f37235800F533 |
+| ResultManager        | 0x368016b697D259Fc1302E99023c43473d6a4f161 |
+| Forwarder            | 0x659ed1176508d5A821ca89C7FE4e19056FAaB92f |
+| TransparentForwarder | 0xa27a80D473a688A75469cb7Ef3bBDf1d250A5003 |
+| Staking              | 0xCA46B70cA3c510Ce9D0c43D25817032e2F5354c0 |
 
 ## Testnet
 ### Calypso Testnet
